@@ -20,6 +20,9 @@ dependencies = [
     "matplotlib>=3.10.3",
     "torch>=2.7.1",
     "torchvision>=0.22.1",
+    "rasterio>=1.4.3",
+    "flask-wtf>=1.2.2",
+    "wtforms>=3.2.1",
 ]
 
 [[tool.uv.index]]
