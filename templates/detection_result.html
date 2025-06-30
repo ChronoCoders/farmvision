@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block title %}Meyve Tespit Sonucu - Farm Vision{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <h1 class="mb-3">
+            <i class="fas fa-apple-alt me-2"></i>Meyve Tespit Sonucu
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ url_for('detection.index') }}">AI Tespit</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ url_for('detection.fruit_detection') }}">Meyve Tespiti</a>
+                </li>
+                <li class="breadcrumb-item active">Sonuç</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<!-- Result Summary -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card text-center bg-success text-white">
+            <div class="card-body">
+                <h2>{{ result.count }}</h2>
+                <p class="mb-0">Tespit Edilen</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center bg-primary text-white">
+            <div class="card-body">
+                <h2>{{ result.fruit_type|title }}</h2>
+                <p class="mb-0">Meyve Türü</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center bg-warning text-white">
+            <div class="card-body">
+                <h2>{{ "%.2f"|format(result.total_weight) }} kg</h2>
+                <p class="mb-0">Toplam Ağırlık</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center bg-info text-white">
+            <div class="card-body">
+                <h2>{{ "%.1f"|format(result.confidence * 100) }}%</h2>
+                <p class="mb-0">Güven Skoru</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Images Comparison -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-image me-2"></i>Orijinal Görüntü
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <img src="{{ url_for('static', filename=original_image.replace('static/', '')) }}" 
+                     class="img-fluid rounded shadow" alt="Orijinal Görüntü"
+                     style="max-height: 400px; width: auto;">
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-search me-2"></i>Tespit Sonucu
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                {% if result.result_path %}
+                <img src="{{ url_for('static', filename=result.result_path.replace('static/', '')) }}" 
+                     class="img-fluid rounded shadow" alt="Tespit Sonucu"
+                     style="max-height: 400px; width: auto;">
+                {% else %}
+                <div class="alert alert-warning" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Tespit sonucu görüntüsü henüz hazır değil.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Results -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Detaylı Sonuçlar
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td><strong>Tespit Tarihi:</strong></td>
+                                <td>{{ result.created_at.strftime('%d.%m.%Y %H:%M:%S') }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Meyve Türü:</strong></td>
+                                <td>
+                                    <span class="badge bg-success fs-6">{{ result.fruit_type|title }}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tespit Edilen Sayı:</strong></td>
+                                <td>{{ result.count }} adet</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Birim Ağırlık:</strong></td>
+                                <td>
+                                    {% if result.fruit_type == 'elma' %}0.105 kg
+                                    {% elif result.fruit_type == 'armut' %}0.220 kg
+                                    {% elif result.fruit_type == 'mandalina' %}0.125 kg
+                                    {% elif result.fruit_type == 'seftali' %}0.185 kg
+                                    {% elif result.fruit_type == 'portakal' %}0.150 kg
+                                    {% elif result.fruit_type == 'nar' %}0.300 kg
+                                    {% elif result.fruit_type == 'hurma' %}0.200 kg
+                                    {% else %}Bilinmiyor
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Toplam Ağırlık:</strong></td>
+                                <td>{{ "%.2f"|format(result.total_weight) }} kg</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Güven Skoru:</strong></td>
+                                <td>
+                                    <div class="progress" style="height: 25px; width: 200px;">
+                                        <div class="progress-bar" role="progressbar" 
+                                             style="width: {{ (result.confidence * 100)|round }}%">
+                                            {{ "%.1f"|format(result.confidence * 100) }}%
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>İşlem Süresi:</strong></td>
+                                <td>{{ "%.2f"|format(result.processing_time) }} saniye</td>
+                            </tr>
+                            {% if result.project %}
+                            <tr>
+                                <td><strong>Proje:</strong></td>
+                                <td>
+                                    <a href="{{ url_for('main.project_detail', project_id=result.project.id) }}" 
+                                       class="text-decoration-none">
+                                        {{ result.project.title }}
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-download me-2"></i>İndirme Seçenekleri
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    {% if result.result_path %}
+                    <a href="{{ url_for('static', filename=result.result_path.replace('static/', '')) }}" 
+                       download class="btn btn-success">
+                        <i class="fas fa-download me-2"></i>Tespit Sonucu
+                    </a>
+                    {% endif %}
+                    
+                    <a href="{{ url_for('static', filename=original_image.replace('static/', '')) }}" 
+                       download class="btn btn-outline-primary">
+                        <i class="fas fa-download me-2"></i>Orijinal Görüntü
+                    </a>
+                    
+                    <button class="btn btn-outline-info" onclick="generateReport()">
+                        <i class="fas fa-file-pdf me-2"></i>PDF Rapor
+                    </button>
+                    
+                    <button class="btn btn-outline-secondary" onclick="shareResult()">
+                        <i class="fas fa-share me-2"></i>Paylaş
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>Analiz Özeti
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="fruitChart" width="200" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Action Buttons -->
+<div class="row">
+    <div class="col-12 text-center">
+        <a href="{{ url_for('detection.fruit_detection') }}" class="btn btn-primary me-2">
+            <i class="fas fa-plus me-2"></i>Yeni Tespit
+        </a>
+        <a href="{{ url_for('detection.results') }}" class="btn btn-outline-secondary me-2">
+            <i class="fas fa-list me-2"></i>Tüm Sonuçlar
+        </a>
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-primary">
+            <i class="fas fa-home me-2"></i>Dashboard
+        </a>
+    </div>
+</div>
+
+<script>
+// Fruit detection pie chart
+const ctx = document.getElementById('fruitChart').getContext('2d');
+const fruitChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Tespit Edilen', 'Güven Oranı', 'İşlem Hızı'],
+        datasets: [{
+            data: [{{ result.count }}, {{ (result.confidence * 100)|round }}, {{ (100 - result.processing_time * 10)|round }}],
+            backgroundColor: [
+                '#198754',
+                '#0d6efd',
+                '#ffc107'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+function generateReport() {
+    alert('PDF rapor oluşturuluyor...');
+    // Implementation for PDF report generation
+}
+
+function shareResult() {
+    if (navigator.share) {
+        navigator.share({
+            title: 'Farm Vision Meyve Tespit Sonucu',
+            text: `{{ result.count }} adet {{ result.fruit_type }} tespit edildi ({{ "%.2f"|format(result.total_weight) }} kg)`,
+            url: window.location.href
+        });
+    } else {
+        // Fallback for browsers that don't support Web Share API
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(() => {
+            alert('Link panoya kopyalandı!');
+        });
+    }
+}
+</script>
+{% endblock %}

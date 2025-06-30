@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Yeni Proje - Farm Vision{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-plus me-2"></i>Yeni Proje Oluştur
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Proje Başlığı *</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-heading"></i>
+                            </span>
+                            <input type="text" class="form-control" id="title" name="title" 
+                                   placeholder="Örn: 2025 Yaz Dönemi Elma Hasadı" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Açıklama</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"
+                                  placeholder="Proje hakkında detaylı bilgi verin..."></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="farm_name" class="form-label">Çiftlik Adı</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-seedling"></i>
+                                </span>
+                                <input type="text" class="form-control" id="farm_name" name="farm_name" 
+                                       placeholder="Örn: Yeşil Vadi Çiftliği">
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="field_name" class="form-label">Tarla Adı</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-map"></i>
+                                </span>
+                                <input type="text" class="form-control" id="field_name" name="field_name" 
+                                       placeholder="Örn: Kuzey Parseli">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="location" class="form-label">Konum</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </span>
+                            <input type="text" class="form-control" id="location" name="location" 
+                                   placeholder="Örn: Ankara, Çankaya">
+                        </div>
+                        <div class="form-text">
+                            Şehir, ilçe veya koordinat bilgisi ekleyebilirsiniz.
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a href="{{ url_for('main.projects') }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>İptal
+                            </a>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-2"></i>Projeyi Oluştur
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Project Creation Tips -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>Proje Oluşturma İpuçları
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-check-circle text-success me-2"></i>İyi Proje Başlığı:</h6>
+                        <ul class="list-unstyled small text-muted">
+                            <li>• Açık ve anlaşılır olmalı</li>
+                            <li>• Tarih ve sezon bilgisi içermeli</li>
+                            <li>• Ürün türünü belirtmeli</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-info-circle text-info me-2"></i>Açıklama Önerileri:</h6>
+                        <ul class="list-unstyled small text-muted">
+                            <li>• Proje hedeflerini yazın</li>
+                            <li>• Beklenen sonuçları belirtin</li>
+                            <li>• Özel notlar ekleyin</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <hr class="my-3">
+                
+                <div class="alert alert-info mb-0" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Bilgi:</strong> Proje oluşturduktan sonra bu projeye AI tespitleri ve bitki analizi sonuçlarını atayabilirsiniz.
+                    Bu sayede tüm çalışmalarınızı organize bir şekilde takip edebilirsiniz.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Form validation
+document.querySelector('form').addEventListener('submit', function(e) {
+    const title = document.getElementById('title').value.trim();
+    
+    if (title.length < 3) {
+        e.preventDefault();
+        alert('Proje başlığı en az 3 karakter olmalıdır.');
+        return false;
+    }
+    
+    if (title.length > 200) {
+        e.preventDefault();
+        alert('Proje başlığı en fazla 200 karakter olabilir.');
+        return false;
+    }
+});
+
+// Character counter for description
+document.getElementById('description').addEventListener('input', function() {
+    const maxLength = 500;
+    const currentLength = this.value.length;
+    
+    // Add character counter if it doesn't exist
+    let counter = document.getElementById('description-counter');
+    if (!counter) {
+        counter = document.createElement('div');
+        counter.id = 'description-counter';
+        counter.className = 'form-text text-end';
+        this.parentNode.appendChild(counter);
+    }
+    
+    counter.textContent = `${currentLength}/${maxLength} karakter`;
+    counter.className = currentLength > maxLength ? 'form-text text-end text-danger' : 'form-text text-end text-muted';
+});
+</script>
+{% endblock %}

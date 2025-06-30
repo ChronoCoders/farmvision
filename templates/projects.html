@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Projeler - Farm Vision{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1>
+                <i class="fas fa-folder me-2"></i>Projelerim
+            </h1>
+            <a href="{{ url_for('main.new_project') }}" class="btn btn-success">
+                <i class="fas fa-plus me-2"></i>Yeni Proje
+            </a>
+        </div>
+    </div>
+</div>
+
+{% if projects %}
+<div class="row">
+    {% for project in projects %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">{{ project.title }}</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ project.description or 'Açıklama eklenmemiş.' }}</p>
+                
+                <div class="mb-2">
+                    <small class="text-muted">
+                        <i class="fas fa-seedling me-1"></i>
+                        <strong>Çiftlik:</strong> {{ project.farm_name or 'Belirtilmemiş' }}
+                    </small>
+                </div>
+                
+                <div class="mb-2">
+                    <small class="text-muted">
+                        <i class="fas fa-map me-1"></i>
+                        <strong>Tarla:</strong> {{ project.field_name or 'Belirtilmemiş' }}
+                    </small>
+                </div>
+                
+                <div class="mb-3">
+                    <small class="text-muted">
+                        <i class="fas fa-map-marker-alt me-1"></i>
+                        <strong>Konum:</strong> {{ project.location or 'Belirtilmemiş' }}
+                    </small>
+                </div>
+                
+                <!-- Project Stats -->
+                <div class="row text-center mb-3">
+                    <div class="col-4">
+                        <small class="text-muted d-block">Tespitler</small>
+                        <strong class="text-success">{{ project.detection_results|length }}</strong>
+                    </div>
+                    <div class="col-4">
+                        <small class="text-muted d-block">Analizler</small>
+                        <strong class="text-warning">{{ project.vegetation_analyses|length }}</strong>
+                    </div>
+                    <div class="col-4">
+                        <small class="text-muted d-block">Güncelleme</small>
+                        <strong class="text-info">{{ project.updated_at.strftime('%d.%m') }}</strong>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-footer bg-light">
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        <i class="fas fa-calendar me-1"></i>
+                        {{ project.created_at.strftime('%d.%m.%Y') }}
+                    </small>
+                    <div>
+                        <a href="{{ url_for('main.project_detail', project_id=project.id) }}" 
+                           class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-eye me-1"></i>Detay
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Project Summary -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>Proje Özeti
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3 mb-3">
+                        <h3 class="text-primary">{{ projects|length }}</h3>
+                        <p class="text-muted mb-0">Toplam Proje</p>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <h3 class="text-success">
+                            {{ projects|sum(attribute='detection_results|length') or 0 }}
+                        </h3>
+                        <p class="text-muted mb-0">Toplam Tespit</p>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <h3 class="text-warning">
+                            {{ projects|sum(attribute='vegetation_analyses|length') or 0 }}
+                        </h3>
+                        <p class="text-muted mb-0">Toplam Analiz</p>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <h3 class="text-info">
+                            {{ projects|selectattr('updated_at')|list|length }}
+                        </h3>
+                        <p class="text-muted mb-0">Aktif Proje</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<!-- Empty State -->
+<div class="row">
+    <div class="col-12">
+        <div class="card text-center py-5">
+            <div class="card-body">
+                <i class="fas fa-folder-open fa-5x text-muted mb-4"></i>
+                <h3 class="text-muted mb-3">Henüz Proje Yok</h3>
+                <p class="text-muted mb-4">
+                    İlk tarım projenizi oluşturarak Farm Vision'ı kullanmaya başlayın.
+                    Projeler sayesinde tespitlerinizi ve analizlerinizi organize edebilirsiniz.
+                </p>
+                <a href="{{ url_for('main.new_project') }}" class="btn btn-success btn-lg">
+                    <i class="fas fa-plus me-2"></i>İlk Projeyi Oluştur
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
