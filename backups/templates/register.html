@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Kayıt - Farm Vision{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <i class="fas fa-seedling fa-3x text-success mb-3"></i>
+                    <h2 class="h3 mb-3">Farm Vision'a Katılın</h2>
+                    <p class="text-muted">Yeni hesap oluşturun</p>
+                </div>
+                
+                <form method="POST" id="registerForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="first_name" class="form-label">Ad</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                                <input type="text" class="form-control" id="first_name" name="first_name" 
+                                       placeholder="Adınız">
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="last_name" class="form-label">Soyad</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                                <input type="text" class="form-control" id="last_name" name="last_name" 
+                                       placeholder="Soyadınız">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Kullanıcı Adı *</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-at"></i>
+                            </span>
+                            <input type="text" class="form-control" id="username" name="username" 
+                                   placeholder="Kullanıcı adınız" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-posta *</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-envelope"></i>
+                            </span>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   placeholder="ornek@email.com" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Telefon</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-phone"></i>
+                            </span>
+                            <input type="tel" class="form-control" id="phone" name="phone" 
+                                   placeholder="+90 5XX XXX XX XX">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label">Şifre *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                <input type="password" class="form-control" id="password" name="password" 
+                                       placeholder="En az 6 karakter" required minlength="6">
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="confirm_password" class="form-label">Şifre Tekrar *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" 
+                                       placeholder="Şifreyi tekrarlayın" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="terms" required>
+                            <label class="form-check-label" for="terms">
+                                <a href="#" class="text-success">Kullanım şartlarını</a> ve 
+                                <a href="#" class="text-success">gizlilik politikasını</a> kabul ediyorum *
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Hesap Oluştur
+                        </button>
+                    </div>
+                </form>
+                
+                <hr class="my-4">
+                
+                <div class="text-center">
+                    <p class="mb-0">
+                        Zaten hesabınız var mı? 
+                        <a href="{{ url_for('auth.login') }}" class="text-success">
+                            <i class="fas fa-sign-in-alt me-1"></i>Giriş yapın
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirm_password').value;
+    
+    if (password !== confirmPassword) {
+        e.preventDefault();
+        alert('Şifreler eşleşmiyor!');
+        return false;
+    }
+});
+</script>
+{% endblock %}

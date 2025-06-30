@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.title }} - Farm Vision{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ url_for('main.projects') }}">Projeler</a>
+                </li>
+                <li class="breadcrumb-item active">{{ project.title }}</li>
+            </ol>
+        </nav>
+        
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h1 class="display-6">{{ project.title }}</h1>
+                <p class="text-muted mb-2">{{ project.description or 'Açıklama eklenmemiş.' }}</p>
+                <div class="d-flex gap-3 text-muted small">
+                    {% if project.farm_name %}
+                    <span><i class="fas fa-seedling me-1"></i>{{ project.farm_name }}</span>
+                    {% endif %}
+                    {% if project.field_name %}
+                    <span><i class="fas fa-map me-1"></i>{{ project.field_name }}</span>
+                    {% endif %}
+                    {% if project.location %}
+                    <span><i class="fas fa-map-marker-alt me-1"></i>{{ project.location }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Düzenle</a></li>
+                    <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i>Sil</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Project Statistics -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card text-center bg-primary text-white">
+            <div class="card-body">
+                <h3>{{ detections|length }}</h3>
+                <p class="mb-0">AI Tespit</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center bg-success text-white">
+            <div class="card-body">
+                <h3>{{ vegetation_analyses|length }}</h3>
+                <p class="mb-0">Bitki Analizi</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center bg-warning text-white">
+            <div class="card-body">
+                <h3>{{ detections|selectattr('detection_type', 'equalto', 'fruit')|sum(attribute='count') or 0 }}</h3>
+                <p class="mb-0">Toplam Meyve</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center bg-info text-white">
+            <div class="card-body">
+                <h3>{{ project.updated_at.strftime('%d.%m') }}</h3>
+                <p class="mb-0">Son Güncelleme</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions for Project -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i>Proje İşlemleri
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('detection.fruit_detection') }}?project_id={{ project.id }}" 
+                           class="btn btn-outline-success w-100 py-3">
+                            <i class="fas fa-apple-alt fa-2x d-block mb-2"></i>
+                            <strong>Meyve Tespiti</strong>
+                            <small class="d-block text-muted">Bu projeye meyve tespiti ekle</small>
+                        </a>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('detection.leaf_detection') }}?project_id={{ project.id }}" 
+                           class="btn btn-outline-warning w-100 py-3">
+                            <i class="fas fa-leaf fa-2x d-block mb-2"></i>
+                            <strong>Hastalık Tespiti</strong>
+                            <small class="d-block text-muted">Yaprak hastalık analizi</small>
+                        </a>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('mapping.vegetation_analysis') }}?project_id={{ project.id }}" 
+                           class="btn btn-outline-primary w-100 py-3">
+                            <i class="fas fa-chart-area fa-2x d-block mb-2"></i>
+                            <strong>Bitki Analizi</strong>
+                            <small class="d-block text-muted">NDVI ve spektral analiz</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detection Results -->
+{% if detections %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-search me-2"></i>AI Tespit Sonuçları
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tarih</th>
+                                <th>Tespit Türü</th>
+                                <th>Sonuç</th>
+                                <th>Güven Skoru</th>
+                                <th>İşlem Süresi</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for detection in detections %}
+                            <tr>
+                                <td>{{ detection.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                                <td>
+                                    {% if detection.detection_type == 'fruit' %}
+                                        <span class="badge bg-success">Meyve</span>
+                                    {% elif detection.detection_type == 'leaf_disease' %}
+                                        <span class="badge bg-warning">Hastalık</span>
+                                    {% else %}
+                                        <span class="badge bg-primary">Ağaç</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if detection.detection_type == 'fruit' %}
+                                        {{ detection.count }} adet {{ detection.fruit_type }}
+                                        {% if detection.total_weight %}
+                                            <br><small class="text-muted">{{ "%.2f"|format(detection.total_weight) }} kg</small>
+                                        {% endif %}
+                                    {% else %}
+                                        {{ detection.fruit_type }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if detection.confidence %}
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar" role="progressbar" 
+                                                 style="width: {{ (detection.confidence * 100)|round }}%">
+                                                {{ "%.1f"|format(detection.confidence * 100) }}%
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if detection.processing_time %}
+                                        {{ "%.2f"|format(detection.processing_time) }}s
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="viewDetection({{ detection.id }})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success" onclick="downloadResult({{ detection.id }})">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Vegetation Analysis Results -->
+{% if vegetation_analyses %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-area me-2"></i>Bitki Örtüsü Analiz Sonuçları
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tarih</th>
+                                <th>Algoritma</th>
+                                <th>Renk Haritası</th>
+                                <th>Değer Aralığı</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for analysis in vegetation_analyses %}
+                            <tr>
+                                <td>{{ analysis.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                                <td>
+                                    <span class="badge bg-success">{{ analysis.algorithm.upper() }}</span>
+                                </td>
+                                <td>{{ analysis.colormap }}</td>
+                                <td>
+                                    {% if analysis.min_range is not none and analysis.max_range is not none %}
+                                        {{ "%.2f"|format(analysis.min_range) }} - {{ "%.2f"|format(analysis.max_range) }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="viewAnalysis({{ analysis.id }})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success" onclick="downloadAnalysis({{ analysis.id }})">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Empty State -->
+{% if not detections and not vegetation_analyses %}
+<div class="row">
+    <div class="col-12">
+        <div class="card text-center py-5">
+            <div class="card-body">
+                <i class="fas fa-chart-line fa-5x text-muted mb-4"></i>
+                <h3 class="text-muted mb-3">Henüz Veri Yok</h3>
+                <p class="text-muted mb-4">
+                    Bu projeye henüz AI tespit veya bitki analizi eklenmemiş.
+                    Yukarıdaki hızlı işlemler bölümünden başlayabilirsiniz.
+                </p>
+                <div class="d-flex justify-content-center gap-2">
+                    <a href="{{ url_for('detection.fruit_detection') }}?project_id={{ project.id }}" 
+                       class="btn btn-success">
+                        <i class="fas fa-apple-alt me-2"></i>Meyve Tespiti
+                    </a>
+                    <a href="{{ url_for('mapping.vegetation_analysis') }}?project_id={{ project.id }}" 
+                       class="btn btn-primary">
+                        <i class="fas fa-chart-area me-2"></i>Bitki Analizi
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+function viewDetection(detectionId) {
+    // Implementation for viewing detection details
+    alert('Tespit detayları görüntüleniyor: ' + detectionId);
+}
+
+function downloadResult(detectionId) {
+    // Implementation for downloading detection result
+    alert('Sonuç indiriliyor: ' + detectionId);
+}
+
+function viewAnalysis(analysisId) {
+    // Implementation for viewing analysis details
+    alert('Analiz detayları görüntüleniyor: ' + analysisId);
+}
+
+function downloadAnalysis(analysisId) {
+    // Implementation for downloading analysis result
+    alert('Analiz sonucu indiriliyor: ' + analysisId);
+}
+</script>
+{% endblock %}

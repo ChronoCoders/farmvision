@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+
+{% block title %}Yaprak Hastalık Tespit Sonucu - Farm Vision{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <h1 class="mb-3">
+            <i class="fas fa-leaf me-2"></i>Yaprak Hastalık Tespit Sonucu
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ url_for('detection.index') }}">AI Tespit</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ url_for('detection.leaf_detection') }}">Hastalık Tespiti</a>
+                </li>
+                <li class="breadcrumb-item active">Sonuç</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<!-- Result Summary -->
+<div class="row mb-4">
+    <div class="col-md-6 mb-3">
+        <div class="card text-center h-100 
+        {% if 'healthy' in detection_result.name.lower() or 'sağlıklı' in detection_result.name.lower() %}
+        bg-success text-white
+        {% else %}
+        bg-warning text-dark
+        {% endif %}">
+            <div class="card-body">
+                <i class="fas fa-{{ 'check-circle' if 'healthy' in detection_result.name.lower() or 'sağlıklı' in detection_result.name.lower() else 'exclamation-triangle' }} fa-3x mb-3"></i>
+                <h4>{{ detection_result.name }}</h4>
+                <p class="mb-0">Tespit Edilen Durum</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center bg-info text-white h-100">
+            <div class="card-body">
+                <h2>{{ "%.1f"|format(result.confidence * 100) }}%</h2>
+                <p class="mb-0">Güven Skoru</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center bg-primary text-white h-100">
+            <div class="card-body">
+                <h2>{{ "%.2f"|format(result.processing_time) }}s</h2>
+                <p class="mb-0">İşlem Süresi</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Images Comparison -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-image me-2"></i>Orijinal Yaprak Görüntüsü
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <img src="{{ url_for('static', filename=original_image.replace('static/', '')) }}" 
+                     class="img-fluid rounded shadow" alt="Orijinal Görüntü"
+                     style="max-height: 400px; width: auto;">
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-microscope me-2"></i>Tespit Sonucu
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                {% if result.result_path %}
+                <img src="{{ url_for('static', filename=result.result_path.replace('static/', '')) }}" 
+                     class="img-fluid rounded shadow" alt="Tespit Sonucu"
+                     style="max-height: 400px; width: auto;">
+                {% else %}
+                <div class="alert alert-warning" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Tespit sonucu görüntüsü henüz hazır değil.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Diagnosis and Recommendations -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-stethoscope me-2"></i>Tanı ve Öneriler
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <strong>Tespit Edilen Durum:</strong>
+                    </div>
+                    <div class="col-md-8">
+                        <span class="badge 
+                        {% if 'healthy' in detection_result.name.lower() or 'sağlıklı' in detection_result.name.lower() %}
+                        bg-success
+                        {% else %}
+                        bg-warning
+                        {% endif %} fs-6">
+                            {{ detection_result.name }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <strong>Güven Düzeyi:</strong>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar 
+                            {% if result.confidence > 0.8 %}bg-success
+                            {% elif result.confidence > 0.6 %}bg-warning
+                            {% else %}bg-danger
+                            {% endif %}" 
+                                 role="progressbar" style="width: {{ (result.confidence * 100)|round }}%">
+                                {{ "%.1f"|format(result.confidence * 100) }}%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h6><i class="fas fa-prescription-bottle-alt me-2"></i>Tedavi Önerileri:</h6>
+                <div class="alert 
+                {% if 'healthy' in detection_result.name.lower() or 'sağlıklı' in detection_result.name.lower() %}
+                alert-success
+                {% else %}
+                alert-warning
+                {% endif %}" role="alert">
+                    {{ detection_result.recommendations }}
+                </div>
+                
+                {% if not ('healthy' in detection_result.name.lower() or 'sağlıklı' in detection_result.name.lower()) %}
+                <div class="alert alert-info" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Önemli:</strong> Bu sonuçlar AI tabanlı bir analiz olup, kesin tanı için bir tarım uzmanına danışmanız önerilir.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Analiz Detayları
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-borderless table-sm">
+                        <tbody>
+                            <tr>
+                                <td><strong>Tarih:</strong></td>
+                                <td>{{ result.created_at.strftime('%d.%m.%Y') }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Saat:</strong></td>
+                                <td>{{ result.created_at.strftime('%H:%M:%S') }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Model:</strong></td>
+                                <td>YOLO v7</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Güven:</strong></td>
+                                <td>{{ "%.1f"|format(result.confidence * 100) }}%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>İşlem:</strong></td>
+                                <td>{{ "%.2f"|format(result.processing_time) }}s</td>
+                            </tr>
+                            {% if result.project %}
+                            <tr>
+                                <td><strong>Proje:</strong></td>
+                                <td>
+                                    <a href="{{ url_for('main.project_detail', project_id=result.project.id) }}" 
+                                       class="text-decoration-none">
+                                        {{ result.project.title }}
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-download me-2"></i>İndirme
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    {% if result.result_path %}
+                    <a href="{{ url_for('static', filename=result.result_path.replace('static/', '')) }}" 
+                       download class="btn btn-warning">
+                        <i class="fas fa-download me-2"></i>Tespit Sonucu
+                    </a>
+                    {% endif %}
+                    
+                    <button class="btn btn-outline-info" onclick="generateReport()">
+                        <i class="fas fa-file-pdf me-2"></i>PDF Rapor
+                    </button>
+                    
+                    <button class="btn btn-outline-secondary" onclick="shareResult()">
+                        <i class="fas fa-share me-2"></i>Paylaş
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Disease Information -->
+{% if not ('healthy' in detection_result.name.lower() or 'sağlıklı' in detection_result.name.lower()) %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-book me-2"></i>Hastalık Hakkında Detaylı Bilgi
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Hastalık Belirtileri:</h6>
+                        <ul class="list-unstyled">
+                            {% if 'Cercospora' in detection_result.name %}
+                            <li><i class="fas fa-dot-circle text-warning me-2"></i>Küçük, gri, oval lekeler</li>
+                            <li><i class="fas fa-dot-circle text-warning me-2"></i>Yaprak kenarlarında nekrotik alanlar</li>
+                            <li><i class="fas fa-dot-circle text-warning me-2"></i>Erken yaprak dökülmesi</li>
+                            {% elif 'Northern' in detection_result.name %}
+                            <li><i class="fas fa-dot-circle text-danger me-2"></i>Uzun, oval, gri-yeşil lekeler</li>
+                            <li><i class="fas fa-dot-circle text-danger me-2"></i>Nekrotik hale gelen lekeler</li>
+                            <li><i class="fas fa-dot-circle text-danger me-2"></i>Verim kaybına neden olur</li>
+                            {% elif 'rust' in detection_result.name.lower() %}
+                            <li><i class="fas fa-dot-circle text-warning me-2"></i>Küçük, yuvarlak pustüller</li>
+                            <li><i class="fas fa-dot-circle text-warning me-2"></i>Turuncu-kahverengi renk</li>
+                            <li><i class="fas fa-dot-circle text-warning me-2"></i>Yaprak yüzeyinde yoğun dağılım</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Önleme Yöntemleri:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Dayanıklı çeşit kullanımı</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Ekim nöbeti uygulaması</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Tarla temizliği</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Fungisit uygulaması</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Sulama yönetimi</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Action Buttons -->
+<div class="row">
+    <div class="col-12 text-center">
+        <a href="{{ url_for('detection.leaf_detection') }}" class="btn btn-warning me-2">
+            <i class="fas fa-plus me-2"></i>Yeni Tespit
+        </a>
+        <a href="{{ url_for('detection.results') }}" class="btn btn-outline-secondary me-2">
+            <i class="fas fa-list me-2"></i>Tüm Sonuçlar
+        </a>
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-primary">
+            <i class="fas fa-home me-2"></i>Dashboard
+        </a>
+    </div>
+</div>
+
+<script>
+function generateReport() {
+    alert('PDF rapor oluşturuluyor...');
+    // Implementation for PDF report generation
+}
+
+function shareResult() {
+    if (navigator.share) {
+        navigator.share({
+            title: 'Farm Vision Yaprak Hastalık Tespiti',
+            text: `Tespit: {{ detection_result.name }} ({{ "%.1f"|format(result.confidence * 100) }}% güven)`,
+            url: window.location.href
+        });
+    } else {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(() => {
+            alert('Link panoya kopyalandı!');
+        });
+    }
+}
+</script>
+{% endblock %}
