@@ -1,0 +1,68 @@
+<div class="col-lg-6 col-12">
+				<div class="box-content card white">
+					<h4 class="box-title">Giriş deyerleri</h4>
+					<!-- /.box-title -->
+					<div class="card-content">
+	<form  action="{% url 'detection:multi_detection_image' %}" method="post" enctype="multipart/form-data" >
+		{% csrf_token %}
+						<div class="form-group margin-bottom-20">
+							<select name="meyve_qrupu" class="form-control">
+								<option name="" value="">Meyve qrupu</option>
+								<option value="mandalina">Mandalina</option>
+					            <option value="elma">Elma</option>
+					            <option value="armut">Armut</option>
+					            <option value="seftale">Şeftali</option>
+					            <option value="portakal">Portakal</option>
+					            <option value="nar">Nar</option>
+					            <option value="hurma">Hurma</option>    
+							</select>
+						</div>
+
+						<div class="input-group margin-bottom-20">
+							<div class="input-group-btn"><label for="ig-1" class="btn btn-default">
+								<i class="fa-solid fa-tree"></i>
+							</label></div>
+							<!-- /.input-group-btn -->
+							<input  type="text" name="ekilis_sira" class="form-control" placeholder="Ekiliş sırası 3-5">
+						</div>
+						
+						
+					
+						<!-- /.input-group -->
+						<div class="form-group">
+								<label for="exampleInputFile" class="btn btn-default">Meyve resmini seç <i class="ico fa-solid fa-image"></i></label>
+								<input id="exampleInputFile"style="display: none" type="file" name="file" accept="image/*"  onchange="loadFile(event)" multiple>
+								{% load static %}
+								
+								<div class="col-lg-3 col-6"> 
+								<a href="#" class="thumbnail">
+									<img id="output" >
+								</a>
+							</div>
+							</div>
+							
+							<button type="submit" name="success" value="{{csrf_token}}" class="btn btn-primary btn-sm waves-effect waves-light">Submit</button>
+						</form>
+					</div>
+					<!-- /.card-content -->
+				</div>
+				<!-- /.box-content card white -->
+				<div class="col-lg-12 ">
+				
+					{% if response != None %}
+					<a href="{% url 'detection:download_image' response %}" class="btn btn-fill wow fadeInUp" data-wow-duration="0.8s" data-wow-delay="0.4s">Downlaod <i class="fa fa-download"></i></a>
+					{% endif %}
+				</div>
+			</div>
+
+
+<script>
+  var loadFile = function(event) {
+    var reader = new FileReader();
+    reader.onload = function(){
+      var output = document.getElementById('output');
+      output.src = reader.result;
+    };
+    reader.readAsDataURL(event.target.files[0]);
+  };
+</script>

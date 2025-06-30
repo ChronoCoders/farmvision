@@ -1,0 +1,76 @@
+<div class="col-lg-6 col-12">
+				<div class="box-content card white">
+					<h4 class="box-title">Giriş deyerleri</h4>
+					<!-- /.box-title -->
+					<div class="card-content">
+	<form id="upload-file" action="{% url 'detection:index' %}" method="post" enctype="multipart/form-data" >
+		{% csrf_token %}
+						<div class="form-group margin-bottom-20">
+							<select name="meyve_qrupu" class="form-control">
+								<option name="" value="">Meyve qrupu</option>
+								<option value="mandalina">Mandalina</option>
+					            <option value="elma">Elma</option>
+					            <option value="armut">Armut</option>
+					            <option value="seftale">Şeftali</option>
+					            <option value="portakal">Portakal</option>
+					            <option value="nar">Nar</option>
+					            <option value="hurma">Hurma</option>    
+							</select>
+						</div>
+
+
+						<div class="input-group margin-bottom-20">
+							<div class="input-group-btn"><label for="ig-1" class="btn btn-default">
+								<i class="fa-solid fa-tree"></i>
+							</label></div>
+							<!-- /.input-group-btn -->
+							<input  type="text" name="agac_sayi" class="form-control" placeholder="Toplam Ağac Sayı">
+						</div>
+						<!-- /.input-group -->
+						<div class="input-group margin-bottom-20">
+							<div class="input-group-btn">
+								<label for="ig-2" class="btn btn-default">
+								<i class="fa-brands fa-pagelines"></i>
+							</label></div>
+							<!-- /.input-group-btn -->
+							<input type="text" name="agac_yasi" class="form-control" placeholder="Ağac kaç yaşında">
+						</div>
+						<!-- /.input-group -->
+						<div class="input-group">
+							<div class="input-group-btn"><label for="ig-3" class="btn btn-default">
+								<i class="fa-regular fa-chart-simple"></i>
+							</label></div>
+							<!-- /.input-group-btn -->
+							<input  type="text" name="ekilis_sira" class="form-control" placeholder="Ekiliş sırası">
+						</div>
+						<!-- /.input-group -->
+						<div class="form-group">
+								<label for="exampleInputFile" class="btn btn-default">Meyve resmini seç <i class="ico fa-solid fa-image"></i></label>
+								<input id="exampleInputFile"style="display: none" type="file" name="file" onchange="loadFile(event)">
+								{% load static %}
+								
+								<div class="col-lg-3 col-6"> 
+								<a href="#" class="thumbnail">
+									<img id="output" >
+								</a>
+							</div>
+							</div>
+							<button type="submit" name="success" value="{{csrf_token}}" class="btn btn-primary btn-sm waves-effect waves-light">Submit</button>
+						</form>
+					</div>
+					<!-- /.card-content -->
+				</div>
+				<!-- /.box-content card white -->
+			</div>
+
+
+<script>
+  var loadFile = function(event) {
+    var reader = new FileReader();
+    reader.onload = function(){
+      var output = document.getElementById('output');
+      output.src = reader.result;
+    };
+    reader.readAsDataURL(event.target.files[0]);
+  };
+</script>

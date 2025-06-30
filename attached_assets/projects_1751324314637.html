@@ -1,0 +1,108 @@
+{% extends 'header.html' %}
+{% block body %}
+      {% load static %}
+      {% include 'menu.html' %}
+      {% include 'navbar.html' with picture=userss.picture %}
+
+
+
+
+      <div id="wrapper">
+            <div class="main-content">
+                  <div class="row small-spacing">
+                        	
+                              
+                              <div class=" col-12">
+                                    <div class="box-content">
+                                          <h4 class="box-title">Projeler</h4>
+                                          <!-- /.box-title -->
+                                          <div class="dropdown js__drop_down">
+                                                <a href="#" class="dropdown-icon fas fa-ellipsis-v js__drop_down_button"></a>
+                                                <ul class="sub-menu">
+                                                      <li><a href="{% url 'dron_map:add_projects' slug='add'  %}">Add New Farm</a></li>
+                                                     
+                                                </ul>
+                                                <!-- /.sub-menu -->
+                                          </div>
+                                          <!-- /.dropdown js__dropdown -->
+                                          <table class="table table-striped margin-bottom-10">
+                                                <thead>
+                                                      <tr>
+                                                            <th >Farm</th>
+                                                            <th>Field</th>
+                                                            <th>Title</th>
+                                                            <th>State</th>
+                                                            <th>Date</th>
+                                                            
+                                                           
+                                                      </tr>
+                                                </thead>
+                                                <tbody>
+                                                      {% if projes != None %}
+                                                      {% for proj in projes  %}
+                                                      <tr>
+                                                            <td><a href="{% url 'dron_map:map' proj.id %}">{{proj.Farm}}</a></td>
+                                                            
+                                                            <td>{{proj.Field}}</td>
+                                                            <td >{{proj.Title}}</td>
+                                                            <td >{{proj.State}}</td>
+                                                            <td class="text-success">{{proj.Data_time}}</td>
+                                                            
+                                                            
+                                                            <td><a href="{% url 'dron_map:add_projects' slug='update' id=proj.id %}"><i class="fa-solid fa-pen-to-square"></i></a></td>
+                                                            <td><a href="{% url 'dron_map:add_projects' slug='delete' id=proj.id %}"><i class="fa-solid fa-eraser"></i></a></td>
+                                                            
+                                                      </tr>
+                                                      {% endfor %}
+                                                      {% endif %}
+                                                      
+                                                      
+                                                </tbody>
+                                          </table>
+                                          <!-- /.table -->
+                                    </div>
+                                    <!-- /.box-content -->
+                              </div>
+                   
+                        <!-- /.row small-spacing -->	
+                        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				
+
+				
+</div>
+
+      </div>
+      <!-- /.main-content -->
+</div><!--/#wrapper -->
+{% endblock %}

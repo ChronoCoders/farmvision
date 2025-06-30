@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<title>Home</title>
+	<link rel="stylesheet" href="{% static 'assets/styles/style.min.css' %}">
+	<link rel="stylesheet" href="{% static 'assets/styles/custom.css' %}">
+		<!-- Waves Effect -->
+	
+		<link rel="stylesheet" href="{% static 'assets/plugin/waves/waves.min.css' %}">
+
+</head>
+
+<body>
+
+<div id="single-wrapper">
+	<form action="{% url 'user_registration:signup' %}" method="post" class="frm-single">
+		{% csrf_token %}
+		<div class="inside">
+			<div class="title"><strong>Sign Up</strong></div>
+			<!-- /.title -->
+			
+			<!-- /.frm-title -->
+			<div class="frm-input"><input type="email" name="email" placeholder="Email" class="frm-inp"><i class="fa fa-envelope frm-ico"></i></div>
+			{% if form.errors.email != None %}
+			<div class="alert alert-danger alert-dismissible" role="alert"> 
+				
+				<strong>{{ form.errors.email }}</strong> 
+			</div>
+			{% else %}
+			{% endif %}
+			<div class="frm-input"><input type="text" placeholder="Username" name="username" class="frm-inp"><i class="fa fa-user frm-ico"></i></div>
+			{% if form.errors.username != None %}
+			<div class="alert alert-danger alert-dismissible" role="alert"> 
+				
+				<strong>{{ form.errors.username }}</strong> 
+			</div>
+			{% else %}
+			{% endif %}
+			<div class="frm-input"><input type="password" name="password1" placeholder="Password" class="frm-inp"><i class="fa fa-lock frm-ico"></i></div>
+			{% if form.errors.password1 != None %}
+			<div class="alert alert-danger alert-dismissible" role="alert"> 
+				
+				<strong>{{ form.errors.password1 }}</strong> 
+			</div>
+			{% else %}
+			{% endif %}
+			<div class="frm-input"><input type="password" name="password2" placeholder="Password" class="frm-inp"><i class="fa fa-lock frm-ico"></i></div>
+			<!-- /.frm-input -->
+			{% if form.errors.password2 != None %}
+			<div class="alert alert-danger alert-dismissible" role="alert"> 
+				
+				<strong>{{ form.errors.password2 }}</strong> 
+			</div>
+			{% else %}
+			{% endif %}
+			<!-- /.clearfix -->
+			
+			<input type="text" name="date_joined" placeholder="date_joined" class="frm-inp" value="{% now "jS F Y H:i" %}">
+			{% if form.errors.date_joined != None %}
+			<div class="alert alert-danger alert-dismissible" role="alert"> 
+				
+				<strong>{{ form.errors.date_joined }}</strong> 
+			</div>
+			{% else %}
+			{% endif %}
+			<button type="submit" class="frm-submit">Sign Up<i class="fa fa-arrow-circle-right"></i></button>
+		
+			<!-- /.row -->
+			<a href="{% url 'user_registration:login' %}" class="a-link"><i class="fa fa-sign-in"></i>Already have account? Sign in.</a>
+			<div class="frm-footer">Admin © 2023.</div>
+			<!-- /.footer -->
+		</div>
+		<!-- .inside -->
+	</form>
+	<!-- /.frm-single -->
+</div><!--/#single-wrapper -->
+
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	<!--[if lt IE 9]>
+		<script src="assets/script/html5shiv.min.js"></script>
+		<script src="assets/script/respond.min.js"></script>
+	<![endif]-->
+	<!-- 
+	================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script src="assets/scripts/jquery.min.js" type="c711b7cc6e061d3aef212a83-text/javascript"></script>
+	<script src="assets/scripts/modernizr.min.js" type="c711b7cc6e061d3aef212a83-text/javascript"></script>
+	<script src="assets/plugin/bootstrap/js/bootstrap.min.js" type="c711b7cc6e061d3aef212a83-text/javascript"></script>
+	<script src="assets/plugin/nprogress/nprogress.js" type="c711b7cc6e061d3aef212a83-text/javascript"></script>
+	<script src="assets/plugin/waves/waves.min.js" type="c711b7cc6e061d3aef212a83-text/javascript"></script>
+
+	<script src="assets/scripts/main.min.js" type="c711b7cc6e061d3aef212a83-text/javascript"></script>
+<script src="assets/scripts/mycommon.js" type="c711b7cc6e061d3aef212a83-text/javascript"></script>
+<script src="/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js" data-cf-settings="c711b7cc6e061d3aef212a83-|49" defer=""></script></body>
+</html>

@@ -1,0 +1,65 @@
+
+			<div class="col-xl-6 col-lg-12">
+				<div class="box-content">
+					<h4 class="box-title">Line Chart</h4>
+					<!-- /.box-title -->
+					<div class="dropdown js__drop_down">
+						<a href="#" class="dropdown-icon glyphicon glyphicon-option-vertical js__drop_down_button"></a>
+						<ul class="sub-menu">
+							<li><a href="#">Action</a></li>
+							<li><a href="#">Another action</a></li>
+							<li><a href="#">Something else there</a></li>
+							<li class="split"></li>
+							<li><a href="#">Separated link</a></li>
+						</ul>
+						<!-- /.sub-menu -->
+					</div>
+					<!-- /.dropdown js__dropdown -->
+					<canvas id="line-chartjs-chart" class="chartjs-chart" width="480" height="320"></canvas>
+					<!-- /#line-chartjs-chart.chartjs-chart -->
+				</div>
+				<!-- /.box-content -->
+			</div>
+			<!-- /.col-xl-6 col-lg-12 -->
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('line-chartjs-chart');
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: [1990,	1991,	1992,	1993,	1994,	1995,	1996,	1997,	1998,	1999,	2000,	2001,	2002,	2003,	2004,	2005,	2006,	2007,	2008,	2009,	2010,	2011,	2012,	2013,	2014,	2015,	2016,	2017,	2018,	2019,	2020],
+      datasets: [{
+        label: 'Turkiye ağac statitik',
+        backgroundColor: [
+      'rgba(255, 99, 132, 0.2)',
+      'rgba(255, 159, 64, 0.2)',
+      'rgba(255, 205, 86, 0.2)',
+      'rgba(75, 192, 192, 0.2)',
+      'rgba(54, 162, 235, 0.2)',
+      'rgba(153, 102, 255, 0.2)',
+      'rgba(201, 203, 207, 0.2)'
+    ],
+    borderColor: [
+      'rgb(255, 99, 132)',
+      'rgb(255, 159, 64)',
+      'rgb(255, 205, 86)',
+      'rgb(75, 192, 192)',
+      'rgb(54, 162, 235)',
+      'rgb(153, 102, 255)',
+      'rgb(201, 203, 207)'
+    ],
+    borderWidth: 1,
+        data: [25.70518301,	25.75259151,	25.8,	25.84740849,	25.89481699,	25.94222548,	25.98963398,	26.03704247,	26.08445097,	26.13185946,	26.17926796,	26.30071983,	26.42217169,	26.54362356,	26.66507543,	26.78652729,	26.90797916,	27.02943103,	27.15088289,	27.27233476,	27.39378662,	27.53599002,	27.67819342,	27.82039681,	27.96260021,	28.10480361,	28.10480361,	28.26352923,	28.4660941,	28.6687889,	28.8714837],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+</script>

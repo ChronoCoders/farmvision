@@ -1,0 +1,22 @@
+{% extends 'header.html' %}
+{% block body %}
+      {% load static %}
+      {% include 'menu.html' %}
+      {% include 'navbar.html' with picture=userss.picture %}
+
+
+
+<div id="wrapper">
+      <div class="main-content">
+            <div class="row small-spacing">
+{% include 'form2.html' %}
+
+
+
+</div>
+
+      </div>
+      <!-- /.main-content -->
+</div><!--/#wrapper -->
+
+{% endblock %}

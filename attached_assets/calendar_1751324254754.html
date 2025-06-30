@@ -1,0 +1,84 @@
+{% extends 'header.html' %}
+{% block body %}
+      {% load static %}
+      {% include 'menu.html' %}
+      {% include 'navbar.html' with picture=userss.picture %}
+
+
+<div id="wrapper">
+      <div class="main-content">
+            
+                              <div class="row">
+                                    <div class="col-lg-3">
+                                          <a href="#" data-toggle="modal" data-target="#add-category" class="btn btn-lg btn-success btn-block waves-effect waves-light">
+                                                <i class="fa fa-plus"></i> Create New
+                                          </a>
+                                          <div id="external-events" class="margin-top-30">
+                                                <p>Drag and drop your event or click in the calendar</p>
+                                                <div class="fc-event bg-success">My Event One</div>
+                                                <!-- /.fc-event bg-success -->
+                                                <div class="fc-event bg-info">My Event Two</div>
+                                                <!-- /.fc-event bg-info -->
+                                                <div class="fc-event bg-orange">My Event Three</div>
+                                                <!-- /.fc-event bg-orange -->
+                                                <div class="fc-event bg-inverse">My Event Four</div>
+                                                <!-- /.fc-event bg-info -->
+                                                <div class="checkbox margin-top-30">
+                                                      <input id="drop-remove" type="checkbox">
+                                                      <label for="drop-remove">Remove after drop</label>
+                                                </div>
+                                          </div>
+                                          <!-- /#external-events.margin-top-20 -->
+                                    </div>
+                                    <!-- /.col-lg-3 -->
+                                    <div class="col-lg-9">
+                                          <div class="box-content">
+                                                <div id="calendar"></div>
+                                                <!-- /#calendar -->
+                                          </div>
+                                          <!-- /.box-content -->
+                                    </div>
+                                    <!-- /.col-lg-9 -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				
+
+				
+</div>
+
+      </div>
+      <!-- /.main-content -->
+</div><!--/#wrapper -->
+{% endblock %}

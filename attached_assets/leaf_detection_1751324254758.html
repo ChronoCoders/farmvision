@@ -1,0 +1,111 @@
+{% extends 'header.html' %}
+{% block body %}
+      {% load static %}
+      {% include 'menu.html' %}
+      {% include 'navbar.html' with picture=userss.picture %}
+
+
+
+<div id="wrapper">
+      <div class="main-content">
+            <div class="row small-spacing">
+<div class="col-lg-6 col-12">
+				<div class="box-content card white">
+					<h4 class="box-title">Giriş deyerleri</h4>
+					<!-- /.box-title -->
+					<div class="card-content">
+	<form id="upload-file" action="{% url 'detection:leaf_detection_image' %}" method="post" enctype="multipart/form-data" >
+		{% csrf_token %}
+						<div class="box-content">
+					
+					<!-- /.box-title -->
+					<div class="dropdown js__drop_down">
+						<a href="#" class="dropdown-icon glyphicon glyphicon-option-vertical js__drop_down_button"></a>
+						<ul class="sub-menu">
+							<li><a href="#">Action</a></li>
+							<li><a href="#">Another action</a></li>
+							<li><a href="#">Something else there</a></li>
+							<li class="split"></li>
+							<li><a href="#">Separated link</a></li>
+						</ul>
+						<!-- /.sub-menu -->
+					</div>
+					<!-- /.dropdown js__dropdown -->
+					<div class="dropify-wrapper"><div class="dropify-message"><span class="file-icon"></span> <p>Drag and drop a file here or click</p>
+                        <p class="dropify-error">Ooops, something wrong appended.</p></div><div class="dropify-loader"></div>
+                        <div class="dropify-errors-container"><ul></ul></div>
+                        <input type="file" name="file" onchange="loadFile(event)" id="input-file-to-destroy" class="dropify" data-allowed-formats="portrait square" >
+                        <button type="button" class="dropify-clear">Remove</button><div class="dropify-preview"><span class="dropify-render"></span>
+                            <div class="dropify-infos"><div class="dropify-infos-inner"><p class="dropify-filename"><span class="file-icon"></span> 
+                                <span class="dropify-filename-inner"></span></p><p class="dropify-infos-message">Drag and drop or click to replace</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                   
+				</div>
+
+						<!-- /.input-group -->
+						
+							<button type="submit" name="success" value="{{csrf_token}}" class="btn btn-primary btn-sm waves-effect waves-light">Submit</button>
+						</form>
+					</div>
+					<!-- /.card-content -->
+				</div>
+				<!-- /.box-content card white -->
+			</div>
+
+
+<script>
+  var loadFile = function(event) {
+    var reader = new FileReader();
+    reader.onload = function(){
+      var output = document.getElementById('output');
+      output.src = reader.result;
+    };
+    reader.readAsDataURL(event.target.files[0]);
+  };
+</script>
+{% if leaf_detection %}
+<div class="col-xl-4 col-lg-6 col-12">
+				<div class="box-content card bordered-all success">
+					<h4 class="box-title bg-success"><i class="ico fa fa-heartbeat"></i>Yaprak Tesbiti</h4>
+					<!-- /.box-title -->
+					<div class="dropdown js__drop_down">
+						<a href="#" class="dropdown-icon glyphicon glyphicon-option-vertical js__drop_down_button"></a>
+						<ul class="sub-menu">
+							<li><a href="#">Action</a></li>
+							<li><a href="#">Another action</a></li>
+							<li><a href="#">Something else there</a></li>
+							<li class="split"></li>
+							<li><a href="#">Separated link</a></li>
+						</ul>
+						<!-- /.sub-menu -->
+					</div>
+					<!-- /.dropdown js__dropdown -->
+					<div class="card-content">
+						<p><b>{{leaf_detection.name}}</b></p>
+						<p>{{leaf_detection.recommendations}}</p>
+					</div>
+					<!-- /.card-content -->
+				</div>
+				<!-- /.box-content -->
+			</div>
+             {% endif %}
+
+{% if response != None %}
+
+{% include 'upload.html' with  image=response.image image_detection=response.image_detection%}
+
+{% else %}
+
+
+
+
+</div>
+
+      </div>
+      <!-- /.main-content -->
+</div><!--/#wrapper -->
+{% endif %}
+{% endblock %}

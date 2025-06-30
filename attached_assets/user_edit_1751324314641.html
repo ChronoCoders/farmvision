@@ -1,0 +1,126 @@
+{% extends 'header.html' %}
+{% block body %}
+      {% load static %}
+      {% include 'menu.html' %}
+      {% include 'navbar.html' with picture=userss.picture %}
+
+      <div id="wrapper">
+        <div class="main-content">
+              <div class="row small-spacing">
+
+                <div class="col-xl-12 col-12">
+                    <div class="box-content card white">
+                        <h4 class="box-title">Basic example</h4>
+                        <!-- /.box-title -->
+                        <div class="card-content">
+                            {% if userss != None %}
+                            <form action="{% url 'polls:user_edit' user.id %}" method="post" enctype="multipart/form-data">
+                                <div class="form-group"
+                                >{% csrf_token %}
+                                    <label for="exampleInputEmail1">Email address</label>
+                                    <input type="email" name="email" class="form-control" placeholder="Enter your email" value="{{userss.kat_id.email}}">
+                                    <input type="hidden" name="kat_id" class="form-control" placeholder="Enter your email" value="{{userss.kat_id.id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">İsim</label>
+                                    <input type="text" placeholder="İsim" name="first_name" class="form-control" value="{{userss.first_name}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Baba Adı</label>
+                                    <input type="text" placeholder="Baba Adı" name="father_name" class="form-control" value="{{userss.father_name}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Soyadı</label>
+                                    <input type="text" placeholder="Soyadı" name="last_name" class="form-control" value="{{userss.last_name}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">İş</label>
+                                    <input type="text" placeholder="İş" name="departments" class="form-control" value="{{userss.departments}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Şehir ve ya Ülke</label>
+                                    <input type="text" placeholder="Şehir ve ya Ülke" name="city" class="form-control" value="{{userss.city}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Cinsi</label>
+                                    <input type="text" placeholder="Cinsi" name="gender" class="form-control" value="{{userss.gender}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Hakkında</label>
+                                    <textarea class="form-control" name="bio" placeholder="Hakkında">{{userss.bio}}</textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Doğum Günü </label>
+                                    <input type="text" placeholder="Doğum Günü" name="birthday" class="form-control" value="{{userss.birthday|date:'d/m/Y' }}">
+                                    
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputPassword1">Ünvan</label>
+                                    <input type="text" name="address" class="form-control" placeholder="Ünvan" value="{{userss.address}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputPassword1">Web site</label>
+                                    <input type="url" name="website" class="form-control" placeholder="Web site" value="{{userss.website}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputPassword1">Telefon</label>
+                                    <input type="text" name="phone" class="form-control" placeholder="Web site" value="{{userss.phone}}">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="exampleInputFile" class="btn btn-default">{{userss.first_name}} Resmini seç <i class="ico fa-solid fa-image"></i></label>
+								<input id="exampleInputFile"style="display: none" type="file" name="picture" accept="image/*" onchange="loadFile(event)">
+                                    {% load static %}
+								
+								<div class="col-lg-3 col-6"> 
+								
+									<img id="output" src="{% static userss.picture %}">
+								
+							</div>
+                                </div>
+                             
+                                <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light">Submit</button>
+                            </form>
+                        </div>
+                        {% endif %}
+                        <!-- /.card-content -->
+                    </div>
+                    <!-- /.box-content -->
+                </div>
+
+
+
+
+
+
+
+
+<script>
+    var loadFile = function(event) {
+        var reader = new FileReader();
+        reader.onload = function(){
+        var output = document.getElementById('output');
+        output.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    };
+</script>
+
+
+
+
+
+
+              </div>
+              <!-- /.box-content card -->
+          </div>
+
+
+
+
+</div>
+
+</div>
+<!-- /.main-content -->
+</div><!--/#wrapper -->
+{% endblock %}

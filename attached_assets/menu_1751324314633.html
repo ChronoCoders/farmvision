@@ -1,0 +1,58 @@
+<div class="main-menu">
+	<header class="header">
+		<a href="{% url 'detection:index' %}" class="logo">CoreMeda</a>
+		<button type="button" class="button-close fa fa-times js__menu_close"></button>
+	</header>
+	<!-- /.header -->
+	<div class="content">
+
+		<div class="navigation">
+			<ul class="menu js__accordion">
+				<li>
+					<a class="waves-effect" href="{% url 'detection:index' %}"><i class="menu-icon  fa-solid fa-house"></i><span>Dashboard</span></a>
+				</li>
+				<li>
+					<a class="waves-effect" href="{% url 'detection:multi_detection_image' %}"><i class="menu-icon  fa-solid fa-tree"></i><span>Multi Counting Tree Image </span></a>
+				</li>
+					<li>
+					<a class="waves-effect" href="{% url 'detection:leaf_detection_image' %}"><i class="menu-icon  fa-solid fa-leaf"></i><span>Leaf Disease Detection </span></a>
+				</li>
+
+				<li>
+					<a class="waves-effect" href="{% url 'user_registration:calendar' %}"><i class="menu-icon fa-solid fa-calendar"></i><span>Calendar</span></a>
+				</li>
+				<li>
+					<a class="waves-effect" href="{% url 'user_registration:pricing' %}"><i class="menu-icon fa-solid fa-shop"></i><span>Pricing</span></a>
+				</li>
+				<li>
+					<a class="waves-effect" href="{% url 'dron_map:projects' %}"><i class="menu-icon fa-sharp fa-regular fa-tractor"></i><span>Projects</span></a>
+				</li>
+				
+				<li class="">
+					<a class="waves-effect parent-item js__control" href="#"><i class="menu-icon  fa-solid fa-users"></i><span>Authentication</span><span class="menu-arrow fa fa-angle-down"></span></a>
+					<ul class="sub-menu js__content" style="display: none;">
+						<li>
+							<a class="waves-effect" href="{% url 'user_registration:login' %}"><i class="menu-icon fa-solid fa-user"></i><span>Login</span></a>
+						</li>
+						<li>
+							<a class="waves-effect" href="{% url 'user_registration:signup' %}"><i class="menu-icon fa-solid fa-key"></i><span>Signup</span></a>
+						</li>
+						<li>
+							<a class="waves-effect" href="{% url 'user_registration:forgot_password' %}"><i class="menu-icon fa-solid fa-lock"></i><span>Forgot Password</span></a>
+						</li>
+					</ul>
+					<!-- /.sub-menu js__content -->
+				</li>
+			</ul>
+			<!-- /.menu js__accordion -->
+		</div>
+		<!-- /.navigation -->
+	</div>
+	<!-- /.content -->
+</div>
+<!-- /.main-menu -->
+
+
+
+
+

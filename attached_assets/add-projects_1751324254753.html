@@ -1,0 +1,96 @@
+{% extends 'header.html' %}
+{% block body %}
+      {% load static %}
+      {% include 'menu.html' %}
+      {% include 'navbar.html' with picture=userss.picture %}
+
+      <div id="wrapper">
+        <div class="main-content">
+              <div class="row small-spacing">
+
+                <div class="col-xl-12 col-12">
+                    <div class="box-content card white">
+                        <h4 class="box-title">Basic example </h4>
+                        <!-- /.box-title -->
+                        <div class="card-content">
+                            {% if userss != None %}
+                            
+                            <form action="{{ request.path|urlencode }}" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Farm</label>
+                                    <input type="text" placeholder="Farm" name="Farm" class="form-control" value="{% if projes != None %}{{projes.Farm}} {% endif %}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Field</label>
+                                    <input type="text" placeholder="Field" name="Field" class="form-control" value="{% if projes != None %}{{projes.Field}} {% endif %}">
+                                    <input type="hidden" name="kat_user" class="form-control" value="{{userss.id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Title</label>
+                                    <input type="text" placeholder="Title" name="Title" class="form-control" value="{% if projes != None %}{{projes.Title}} {% endif %}">
+                                </div>
+                               
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">State</label>
+                                    <input type="text" placeholder="State" name="State" class="form-control" value="{% if projes != None %}{{projes.State}} {% endif %}">
+                                </div>
+                               
+                                 <input type="hidden" id="hashing_path" name="hashing_path" value="0">
+                                <div class="form-group">
+                                    <label for="exampleInputFile" class="btn btn-default"> Resmini seç <i class="ico fa-solid fa-image"></i></label>
+								<input id="exampleInputFile"style="display: none" type="file" name="picture" accept="image/*" onchange="loadFile(event)" multiple>
+                                    {% load static %}
+								
+								<div class="col-lg-3 col-6"> 
+								
+									<img id="output" src="{% if projes != None %}{% static projes.picture %} {% endif %}">
+								
+							</div>
+                                </div>
+                             
+                                <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light">Submit</button>
+                            </form>
+                        </div>
+                        {% endif %}
+                        <!-- /.card-content -->
+                    </div>
+                    <!-- /.box-content -->
+                </div>
+
+
+
+
+
+
+
+
+<script>
+    var loadFile = function(event) {
+        var reader = new FileReader();
+        reader.onload = function(){
+        var output = document.getElementById('output');
+        output.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    };
+</script>
+
+
+
+
+
+
+              </div>
+              <!-- /.box-content card -->
+          </div>
+
+
+
+
+</div>
+
+</div>
+<!-- /.main-content -->
+</div><!--/#wrapper -->
+{% endblock %}

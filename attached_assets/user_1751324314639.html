@@ -1,0 +1,218 @@
+{% extends 'header.html' %}
+{% block body %}
+      {% load static %}
+      {% include 'menu.html' %}
+      {% include 'navbar.html' with picture=userss.picture %}
+
+
+<div id="wrapper">
+      <div class="main-content">
+            <div class="row small-spacing">
+
+                {% if userss != None %}
+                <div class="col-lg-3 col-12">
+					<div class="box-content bordered primary margin-bottom-20">
+						<div class="profile-avatar">
+							<img src="{% static userss.picture %}" alt="">
+							
+							<h3><strong>{{userss.first_name}} {{userss.last_name}}</strong></h3>
+							<h4 class="job">{{userss.departments}}</h4>
+							<p>{{userss.bio}}</p>
+						</div>
+						<!-- .profile-avatar -->
+						<table class="table table-hover no-margin">
+							<tbody>
+								<tr>
+									<td>Status</td>
+									<td><span class="notice notice-danger">Active</span></td>
+								</tr>
+								<tr>
+									<td>User Rating</td>
+									<td><i class="fa fa-star text-warning"></i> <i class="fa fa-star text-warning"></i> <i class="fa fa-star text-warning"></i> <i class="fa fa-star text-warning"></i> <i class="fa fa-star text-warning"></i></td>
+								</tr>
+								<tr>
+									<td>Member Since</td>
+									<td>Jan 07, 2014</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<!-- /.box-content bordered -->
+
+					
+					<!-- /.box-content -->
+				</div>
+                {% endif %}
+                <div class="col-lg-9 col-12">
+					<div class="row">
+					
+                    <div class="col-12">
+                    <div class="box-content card">
+                        <h4 class="box-title"><i class="fa fa-user ico"></i>About</h4>
+                        <!-- /.box-title -->
+                        <div class="dropdown js__drop_down">
+                            <a href="#" class="dropdown-icon fas fa-ellipsis-v js__drop_down_button"></a>
+                            <ul class="sub-menu">
+                                <li><a href="{% url 'polls:user_edit' user.id %}">Edit</a></li>
+                                
+                            </ul>
+                            <!-- /.sub-menu -->
+                        </div>
+                        <!-- /.dropdown js__dropdown -->
+                        <div class="card-content">
+                            <div class="row">
+                                {% if userss != None %}
+                                
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="col-5"><label>İsmi:</label></div>
+                                        <!-- /.col-5 -->
+                                        <div class="col-7">{{userss.first_name}}</div>
+                                        <!-- /.col-7 -->
+                                    </div>
+                                    <!-- /.row -->
+                                </div>
+                                <!-- /.col-lg-6 -->
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="col-5"><label>Soyadı:</label></div>
+                                        <!-- /.col-5 -->
+                                        <div class="col-7">{{userss.last_name}}</div>
+                                        <!-- /.col-7 -->
+                                    </div>
+                                    <!-- /.row -->
+                                </div>
+                                <!-- /.col-lg-6 -->
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="col-5"><label>Baba Adı:</label></div>
+                                        <!-- /.col-5 -->
+                                        <div class="col-7">{{userss.father_name}}</div>
+                                        <!-- /.col-7 -->
+                                    </div>
+                                    <!-- /.row -->
+                                </div>
+                                <!-- /.col-lg-6 -->
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="col-5"><label>Email:</label></div>
+                                        <!-- /.col-5 -->
+                                        <div class="col-7">{{userss.kat_id.email}}</div>
+                                        <!-- /.col-7 -->
+                                    </div>
+                                    <!-- /.row -->
+                                </div>
+                                <!-- /.col-lg-6 -->
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="col-5"><label>City:</label></div>
+                                        <!-- /.col-5 -->
+                                        <div class="col-7">{{userss.city}}</div>
+                                        <!-- /.col-7 -->
+                                    </div>
+                                    <!-- /.row -->
+                                </div>
+                                <!-- /.col-lg-6 -->
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="col-5"><label>Country:</label></div>
+                                        <!-- /.col-5 -->
+                                        <div class="col-7">{{userss.address}}</div>
+                                        <!-- /.col-7 -->
+                                    </div>
+                                    <!-- /.row -->
+                                </div>
+                                <!-- /.col-lg-6 -->
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="col-5"><label>Birthday:</label></div>
+                                        <!-- /.col-5 -->
+                                        <div class="col-7">{{userss.birthday}}</div>
+                                        <!-- /.col-7 -->
+                                    </div>
+                                    <!-- /.row -->
+                                </div>
+                                <!-- /.col-lg-6 -->
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="col-5"><label>Cinsi:</label></div>
+                                        <!-- /.col-5 -->
+                                        <div class="col-7">{{userss.gender}}</div>
+                                        <!-- /.col-7 -->
+                                    </div>
+                                    <!-- /.row -->
+                                </div>
+                                <!-- /.col-lg-6 -->
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="col-5"><label>Website:</label></div>
+                                        <!-- /.col-5 -->
+                                        <div class="col-7"><a href="#">{{userss.website}}</a></div>
+                                        <!-- /.col-7 -->
+                                    </div>
+                                    <!-- /.row -->
+                                </div>
+                                <!-- /.col-lg-6 -->
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="col-5"><label>Phone:</label></div>
+                                        <!-- /.col-5 -->
+                                        <div class="col-7">{{userss.phone}}</div>
+                                        <!-- /.col-7 -->
+                                    </div>
+                                    <!-- /.row -->
+                                </div>
+                                <!-- /.col-lg-6 -->
+                                {% endif %}
+                            </div>
+                            <!-- /.row -->
+                        </div>
+                        <!-- /.card-content -->
+                    </div>
+                    <!-- /.box-content card -->
+                </div>
+
+
+
+                
+
+
+
+
+
+
+            </div>
+            <!-- /.box-content card -->
+        </div>
+
+
+
+        
+
+<script>
+    var loadFile = function(event) {
+        var reader = new FileReader();
+        reader.onload = function(){
+        var output = document.getElementById('output');
+        output.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    };
+</script>
+
+
+</div>
+<footer class="footer">
+                  <ul class="list-inline">
+                        <li>2023 © Adminpanel.</li>
+                        
+                  </ul>
+            </footer>
+      </div>
+      <!-- /.main-content -->
+</div><!--/#wrapper -->
+{% endblock %}
+
+
+
+

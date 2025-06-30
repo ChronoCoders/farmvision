@@ -1,0 +1,129 @@
+{% extends 'header.html' %}
+{% block body %}
+      {% load static %}
+      {% include 'menu3.html' with picture=projes.picture%}
+      {% include 'navbar.html' with picture=userss.picture  orthophoto=orthophoto static=static images_info=images_info%}
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+      integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+      crossorigin=""/>
+      <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+      integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+      crossorigin=""></script>
+      
+      <script src="https://unpkg.com/georaster"></script>
+      <script src="https://unpkg.com/proj4"></script>
+      <script src="https://unpkg.com/georaster-layer-for-leaflet"></script>
+      <style>
+        #map {
+            
+            width:100%;
+            height: 90hv;
+        }
+        
+        .leaflet-container {
+            width:100%;
+            height: 90vh;
+        }
+        
+        </style>
+        
+        <div id="wrapper">
+            <div class="main-content">
+                
+                  <div class="row small-spacing">
+<div id="map"></div>
+                  </div>
+                  </div>
+                </div>
+      
+
+<script >   
+
+var popup = L.popup();
+var map = L.map('map'); //.setView([0, 0], 5)
+
+var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    markerZoomAnimation: true,
+    zoomControl: true,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+})//.addTo(map);
+
+
+var osm2 = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    maxZoom: 25,
+          attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+      })//.addTo(map);
+
+
+
+
+
+
+
+
+
+googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+        maxZoom: 20,
+        subdomains:['mt0','mt1','mt2','mt3']
+})//.addTo(map);
+googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+        maxZoom: 25,
+        subdomains:['mt0','mt1','mt2','mt3']
+}).addTo(map);
+googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+        maxZoom: 20,
+        subdomains:['mt0','mt1','mt2','mt3']
+})//.addTo(map);
+googleTerrain = L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',{
+        maxZoom: 20,
+        subdomains:['mt0','mt1','mt2','mt3']
+})//.addTo(map);
+
+
+var baseLayers = {
+    //"Satellite":googleSat,
+    //"Open Street Map": osm,
+    //"OSM Mapnik": osm2,
+    //"Google Map":googleStreets,
+    //"Google Terrain":googleTerrain,
+    "Google Hybrid":googleHybrid
+};
+
+
+L.control.layers(baseLayers).addTo(map);
+
+var url_to_geotiff_file = "{% if orthophoto.path is not None %} {% static orthophoto.path %} {% else %} {% static orthophoto.odm_orthophoto %} {% endif %}";
+
+fetch(url_to_geotiff_file)
+  .then(response => response.arrayBuffer())
+  .then(arrayBuffer => {
+    parseGeoraster(arrayBuffer).then(georaster => {
+      console.log("georaster:", georaster);
+
+      /*
+          GeoRasterLayer is an extension of GridLayer,
+          which means can use GridLayer options like opacity.
+
+          Just make sure to include the georaster option!
+
+          Optionally set the pixelValuesToColorFn function option to customize
+          how values for a pixel are translated to a color.
+
+          https://leafletjs.com/reference.html#gridlayer
+      */
+      var layer = new GeoRasterLayer({
+        georaster: georaster,
+        opacity: 100,
+        resolution: 256
+      });
+      layer.addTo(map);
+
+      map.fitBounds(layer.getBounds());
+
+  });
+});
+      </script>
+
+
+{% endblock %}
