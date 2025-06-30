@@ -5,6 +5,8 @@ from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from models import DetectionResult, Project
 from utils.ai_detection import detect_fruits, detect_leaf_disease, detect_trees
+from utils.yolo_detection import detect_fruits_yolo, detect_leaf_disease_corn, detect_trees_from_drone
+from utils.advanced_vegetation import analyze_vegetation_comprehensive
 from utils.helpers import allowed_file, save_uploaded_file
 from app import db, app
 
@@ -223,3 +225,82 @@ def results():
                                   .order_by(DetectionResult.created_at.desc())\
                                   .paginate(page=page, per_page=20, error_out=False)
     return render_template('detection_results.html', results=results)
+
+@detection_bp.route('/advanced_multi_detection')
+@login_required
+def advanced_multi_detection():
+    """Advanced multi-fruit detection page"""
+    projects = Project.query.filter_by(user_id=current_user.id).all()
+    return render_template('advanced_multi_detection.html', projects=projects)
+
+@detection_bp.route('/advanced_multi_detection', methods=['POST'])
+@login_required 
+def process_advanced_multi_detection():
+    """Process advanced multi-fruit detection"""
+    try:
+        if 'image' not in request.files:
+            flash('Lütfen bir görüntü dosyası seçin.', 'error')
+            return redirect(url_for('detection.advanced_multi_detection'))
+        
+        file = request.files['image']
+        if file.filename == '':
+            flash('Dosya seçilmedi.', 'error')
+            return redirect(url_for('detection.advanced_multi_detection'))
+        
+        if file and allowed_file(file.filename):
+            # Save uploaded file
+            filename = save_uploaded_file(file, app.config['UPLOAD_FOLDER'])
+            if not filename:
+                flash('Dosya yüklenirken hata oluştu.', 'error')
+                return redirect(url_for('detection.advanced_multi_detection'))
+            
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            
+            # Get form parameters
+            confidence = float(request.form.get('confidence', 25)) / 100
+            detection_mode = request.form.get('detection_mode', 'all')
+            project_id = request.form.get('project_id')
+            
+            # Advanced fruit detection using uploaded algorithms
+            if detection_mode == 'custom':
+                selected_fruits = request.form.getlist('fruits')
+                fruit_type = ','.join(selected_fruits) if selected_fruits else 'mixed'
+            else:
+                fruit_type = detection_mode
+            
+            # Use advanced YOLO detection
+            detection_result = detect_fruits_yolo(
+                image_path, 
+                confidence=confidence, 
+                fruit_type=fruit_type
+            )
+            
+            if detection_result:
+                # Save to database
+                result = DetectionResult(
+                    image_path=image_path,
+                    detection_type='advanced_multi_fruit',
+                    fruit_type=fruit_type,
+                    count=detection_result['total_count'],
+                    total_weight=detection_result['total_weight'],
+                    confidence=detection_result['confidence'],
+                    processing_time=detection_result['processing_time'],
+                    user_id=current_user.id,
+                    project_id=int(project_id) if project_id else None
+                )
+                
+                db.session.add(result)
+                db.session.commit()
+                
+                flash(f'{detection_result["total_count"]} adet meyve tespit edildi!', 'success')
+                return redirect(url_for('detection.advanced_multi_result', result_id=result.id))
+            else:
+                flash('Tespit işlemi başarısız oldu.', 'error')
+                return redirect(url_for('detection.advanced_multi_detection'))
+        else:
+            flash('Geçersiz dosya formatı.', 'error')
+            return redirect(url_for('detection.advanced_multi_detection'))
+            
+    except Exception as e:
+        flash(f'Hata: {str(e)}', 'error')
+        return redirect(url_for('detection.advanced_multi_detection'))

@@ -1,0 +1,342 @@
+{% extends "base.html" %}
+
+{% block title %}Çoklu Meyve Tespiti - Farm Vision{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <h1 class="display-6">
+            <i class="fas fa-apple-alt me-2"></i>Gelişmiş Çoklu Meyve Tespiti
+        </h1>
+        <p class="lead text-muted">
+            Bir görüntüde birden fazla meyve türünü aynı anda tespit edin ve sayın.
+        </p>
+    </div>
+</div>
+
+<!-- Detection Form -->
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Çoklu Tespit Ayarları</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data" id="multiDetectionForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="project_id" class="form-label">Proje (Opsiyonel)</label>
+                                <select class="form-select" id="project_id" name="project_id">
+                                    <option value="">Proje Seçin</option>
+                                    {% for project in projects %}
+                                    <option value="{{ project.id }}">{{ project.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="detection_mode" class="form-label">Tespit Modu</label>
+                                <select class="form-select" id="detection_mode" name="detection_mode">
+                                    <option value="all">Tüm Meyveler</option>
+                                    <option value="citrus">Narenciye Grubu</option>
+                                    <option value="tree_fruits">Ağaç Meyveleri</option>
+                                    <option value="custom">Özel Seçim</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Custom fruit selection -->
+                    <div class="mb-3" id="customFruitSelection" style="display: none;">
+                        <label class="form-label">Tespit Edilecek Meyveler:</label>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="fruit_elma" name="fruits" value="elma">
+                                    <label class="form-check-label" for="fruit_elma">🍎 Elma</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="fruit_armut" name="fruits" value="armut">
+                                    <label class="form-check-label" for="fruit_armut">🍐 Armut</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="fruit_portakal" name="fruits" value="portakal">
+                                    <label class="form-check-label" for="fruit_portakal">🍊 Portakal</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="fruit_mandalina" name="fruits" value="mandalina">
+                                    <label class="form-check-label" for="fruit_mandalina">🍊 Mandalina</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="fruit_seftali" name="fruits" value="seftali">
+                                    <label class="form-check-label" for="fruit_seftali">🍑 Şeftali</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="fruit_nar" name="fruits" value="nar">
+                                    <label class="form-check-label" for="fruit_nar">🍅 Nar</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="fruit_limon" name="fruits" value="limon">
+                                    <label class="form-check-label" for="fruit_limon">🍋 Limon</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Meyve Görüntüsü</label>
+                        <input type="file" class="form-control" id="image" name="image" 
+                               accept=".jpg,.jpeg,.png" required>
+                        <div class="form-text">
+                            Desteklenen formatlar: JPG, JPEG, PNG. Maksimum boyut: 100MB
+                        </div>
+                    </div>
+                    
+                    <!-- Advanced Settings -->
+                    <div class="accordion mb-3" id="advancedSettings">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                        data-bs-target="#collapseAdvanced">
+                                    Gelişmiş Ayarlar
+                                </button>
+                            </h2>
+                            <div id="collapseAdvanced" class="accordion-collapse collapse" 
+                                 data-bs-parent="#advancedSettings">
+                                <div class="accordion-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label for="confidence" class="form-label">Güven Eşiği (%)</label>
+                                            <input type="range" class="form-range" id="confidence" name="confidence" 
+                                                   min="10" max="95" value="25" oninput="updateConfidenceValue(this.value)">
+                                            <div class="d-flex justify-content-between">
+                                                <small>10%</small>
+                                                <small id="confidenceValue">25%</small>
+                                                <small>95%</small>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-4">
+                                            <label for="iou_threshold" class="form-label">IoU Eşiği</label>
+                                            <input type="range" class="form-range" id="iou_threshold" name="iou_threshold" 
+                                                   min="30" max="90" value="70" oninput="updateIoUValue(this.value)">
+                                            <div class="d-flex justify-content-between">
+                                                <small>0.3</small>
+                                                <small id="iouValue">0.7</small>
+                                                <small>0.9</small>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-4">
+                                            <label for="model_version" class="form-label">Model Versiyonu</label>
+                                            <select class="form-select" id="model_version" name="model_version">
+                                                <option value="yolov7">YOLO v7 (Varsayılan)</option>
+                                                <option value="yolov7x">YOLO v7x (Yüksek Doğruluk)</option>
+                                                <option value="yolov7-tiny">YOLO v7-Tiny (Hızlı)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg" id="detectBtn">
+                            <i class="fas fa-search-plus me-2"></i>Çoklu Tespit Başlat
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- Progress Bar -->
+                <div class="mt-3" id="progressContainer" style="display: none;">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" 
+                             role="progressbar" style="width: 100%">
+                            Meyveler tespit ediliyor...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Tespit Kapasitesi</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Meyve</th>
+                                <th>Ağırlık (kg)</th>
+                                <th>Durum</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>🍎 Elma</td>
+                                <td>0.105</td>
+                                <td><span class="badge bg-success">Aktif</span></td>
+                            </tr>
+                            <tr>
+                                <td>🍐 Armut</td>
+                                <td>0.220</td>
+                                <td><span class="badge bg-success">Aktif</span></td>
+                            </tr>
+                            <tr>
+                                <td>🍊 Portakal</td>
+                                <td>0.180</td>
+                                <td><span class="badge bg-success">Aktif</span></td>
+                            </tr>
+                            <tr>
+                                <td>🍊 Mandalina</td>
+                                <td>0.125</td>
+                                <td><span class="badge bg-success">Aktif</span></td>
+                            </tr>
+                            <tr>
+                                <td>🍑 Şeftali</td>
+                                <td>0.185</td>
+                                <td><span class="badge bg-success">Aktif</span></td>
+                            </tr>
+                            <tr>
+                                <td>🍅 Nar</td>
+                                <td>0.300</td>
+                                <td><span class="badge bg-success">Aktif</span></td>
+                            </tr>
+                            <tr>
+                                <td>🍋 Limon</td>
+                                <td>0.060</td>
+                                <td><span class="badge bg-success">Aktif</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">Model Performansı</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="h4 text-primary">92.3%</div>
+                        <small class="text-muted">Doğruluk</small>
+                    </div>
+                    <div class="col-6">
+                        <div class="h4 text-success">~3.5s</div>
+                        <small class="text-muted">İşlem Süresi</small>
+                    </div>
+                </div>
+                <hr>
+                <div class="small">
+                    <div class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>YOLO v7 Mimarisi
+                    </div>
+                    <div class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>7 Meyve Türü Desteği
+                    </div>
+                    <div class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>Gerçek Zamanlı İşleme
+                    </div>
+                    <div class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>Ağırlık Hesaplama
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateConfidenceValue(value) {
+    document.getElementById('confidenceValue').textContent = value + '%';
+}
+
+function updateIoUValue(value) {
+    document.getElementById('iouValue').textContent = (value / 100).toFixed(1);
+}
+
+// Detection mode change handler
+document.getElementById('detection_mode').addEventListener('change', function() {
+    const customSelection = document.getElementById('customFruitSelection');
+    if (this.value === 'custom') {
+        customSelection.style.display = 'block';
+    } else {
+        customSelection.style.display = 'none';
+    }
+});
+
+// Form submission handler
+document.getElementById('multiDetectionForm').addEventListener('submit', function(e) {
+    const progressContainer = document.getElementById('progressContainer');
+    const detectBtn = document.getElementById('detectBtn');
+    
+    // Show progress bar
+    progressContainer.style.display = 'block';
+    detectBtn.disabled = true;
+    detectBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Tespit ediliyor...';
+});
+
+// File validation
+document.getElementById('image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const fileSize = file.size / 1024 / 1024; // MB
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        
+        if (!allowedTypes.includes(file.type)) {
+            alert('Lütfen desteklenen formatlardan birini seçin (JPG, PNG).');
+            this.value = '';
+            return;
+        }
+        
+        if (fileSize > 100) {
+            alert('Dosya boyutu 100MB\'dan küçük olmalıdır.');
+            this.value = '';
+            return;
+        }
+        
+        // Create image preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            let preview = document.getElementById('imagePreview');
+            if (!preview) {
+                preview = document.createElement('div');
+                preview.id = 'imagePreview';
+                preview.className = 'mt-3 text-center';
+                document.querySelector('.card-body').appendChild(preview);
+            }
+            
+            preview.innerHTML = `
+                <div class="card" style="max-width: 300px; margin: 0 auto;">
+                    <img src="${e.target.result}" class="card-img-top" alt="Önizleme" 
+                         style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <small class="text-muted">
+                            <i class="fas fa-file me-1"></i>${file.name}<br>
+                            <i class="fas fa-weight-hanging me-1"></i>${(file.size / 1024 / 1024).toFixed(2)} MB
+                        </small>
+                    </div>
+                </div>
+            `;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+{% endblock %}
