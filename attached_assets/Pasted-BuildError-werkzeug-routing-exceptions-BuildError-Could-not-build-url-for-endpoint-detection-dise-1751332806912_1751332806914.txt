@@ -1,0 +1,50 @@
+BuildError
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'detection.disease_detection'. Did you mean 'detection.leaf_detection' instead?
+
+Traceback (most recent call last)
+File "C:\Users\altug\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1536, in __call__
+return self.wsgi_app(environ, start_response)
+File "C:\Users\altug\AppData\Local\Programs\Python\Python310\lib\site-packages\werkzeug\middleware\proxy_fix.py", line 183, in __call__
+return self.app(environ, start_response)
+File "C:\Users\altug\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1514, in wsgi_app
+response = self.handle_exception(e)
+File "C:\Users\altug\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1511, in wsgi_app
+response = self.full_dispatch_request()
+File "C:\Users\altug\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+rv = self.handle_user_exception(e)
+File "C:\Users\altug\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+rv = self.dispatch_request()
+File "C:\Users\altug\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 902, in dispatch_request
+return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+File "C:\Users\altug\AppData\Local\Programs\Python\Python310\lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+return current_app.ensure_sync(func)(*args, **kwargs)
+File "C:\Users\altug\Downloads\FarmVision\FarmVision\routes\main.py", line 97, in ai_status
+return render_template('ai_system_status.html', ai_info=ai_info)
+File "C:\Users\altug\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\templating.py", line 150, in render_template
+return _render(app, template, context)
+File "C:\Users\altug\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\templating.py", line 131, in _render
+rv = template.render(context)
+File "C:\Users\altug\AppData\Local\Programs\Python\Python310\lib\site-packages\jinja2\environment.py", line 1295, in render
+self.environment.handle_exception()
+File "C:\Users\altug\AppData\Local\Programs\Python\Python310\lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+raise rewrite_traceback_stack(source=source)
+File "C:\Users\altug\Downloads\FarmVision\FarmVision\templates\ai_system_status.html", line 1, in top-level template code
+{% extends "base.html" %}
+File "C:\Users\altug\Downloads\FarmVision\FarmVision\templates\base.html", line 146, in top-level template code
+{% block content %}{% endblock %}
+File "C:\Users\altug\Downloads\FarmVision\FarmVision\templates\ai_system_status.html", line 206, in block 'content'
+<a href="{{ url_for('detection.disease_detection') }}" class="btn btn-warning">
+File "C:\Users\altug\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1121, in url_for
+return self.handle_url_build_error(error, endpoint, values)
+File "C:\Users\altug\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1110, in url_for
+rv = url_adapter.build(  # type: ignore[union-attr]
+File "C:\Users\altug\AppData\Local\Programs\Python\Python310\lib\site-packages\werkzeug\routing\map.py", line 924, in build
+raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'detection.disease_detection'. Did you mean 'detection.leaf_detection' instead?
+The debugger caught an exception in your WSGI application. You can now look at the traceback which led to the error.
+To switch between the interactive traceback and the plaintext one, you can click on the "Traceback" headline. From the text traceback you can also create a paste of it. For code execution mouse-over the frame you want to debug and click on the console icon on the right side.
+
+You can execute arbitrary Python code in the stack frames and there are some extra helpers available for introspection:
+
+dump() shows all variables in the frame
+dump(obj) dumps all that's known about the object
