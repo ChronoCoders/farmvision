@@ -28,6 +28,7 @@ FRUIT_WEIGHTS = {
     'armut': 0.220,
     'seftali': 0.185,
     'nar': 0.300,
+    'hurma': 0.010,  # Türkiye hurması: 8-12 gram ortalama
     'portakal': 0.180,
     'limon': 0.060
 }
@@ -53,11 +54,15 @@ def detect_fruits_yolo(image_path, confidence=0.25, fruit_type='mixed'):
         
         # Multi-fruit detection simulation based on uploaded algorithms
         if fruit_type == 'mixed':
-            fruits_in_image = ['elma', 'armut', 'mandalina', 'seftali']
+            fruits_in_image = ['elma', 'armut', 'mandalina', 'seftali', 'hurma']
             base_count = np.random.randint(3, 8)
         else:
             fruits_in_image = [fruit_type]
-            base_count = np.random.randint(5, 15)
+            # Hurma has typically more fruits per tree
+            if fruit_type == 'hurma':
+                base_count = np.random.randint(15, 30)
+            else:
+                base_count = np.random.randint(5, 15)
             
         for i, fruit in enumerate(fruits_in_image):
             count = base_count + np.random.randint(0, 5)

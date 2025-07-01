@@ -113,7 +113,8 @@ class YOLOModelConfig:
             3: 'mandalina',
             4: 'seftali',
             5: 'nar',
-            6: 'limon'
+            6: 'limon',
+            7: 'hurma'
         }
         
         self.disease_classes = {
@@ -132,7 +133,7 @@ class YOLOModelConfig:
         return self.model_configs.get(model_name, self.model_configs['yolov7'])
     
     def get_fruit_weight(self, fruit_class):
-        """Get fruit weight coefficient"""
+        """Get fruit weight coefficient (kg)"""
         weights = {
             'elma': 0.105,
             'armut': 0.220,
@@ -140,7 +141,8 @@ class YOLOModelConfig:
             'mandalina': 0.125,
             'seftali': 0.185,
             'nar': 0.300,
-            'limon': 0.060
+            'limon': 0.060,
+            'hurma': 0.010  # Türkiye hurması: 8-12 gram ortalama
         }
         return weights.get(fruit_class, 0.1)
 
