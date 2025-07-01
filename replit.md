@@ -93,7 +93,8 @@ Changelog:
   * Django components adapted to Flask (forms, models, views)
   * 15+ vegetation analysis algorithms from uploaded files
   * Corn disease detection with Turkish recommendations
-  * Multi-fruit detection with weight coefficients
+  * Multi-fruit detection with weight coefficients (8 fruit types)
+  * Added Turkish date/palm fruit detection (8-12 gram average)
   * Advanced colormap processing (RdYlGn_lut)
   * GeoTIFF processing with histogram analysis
   * All uploaded algorithms now functional in Flask app
