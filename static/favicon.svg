@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <rect width="32" height="32" fill="#2d5016" rx="4"/>
+  <g fill="#ffffff">
+    <!-- Tractor body -->
+    <rect x="6" y="16" width="14" height="6" rx="1"/>
+    <!-- Cab -->
+    <rect x="14" y="10" width="8" height="6" rx="1"/>
+    <!-- Small wheel -->
+    <circle cx="9" cy="24" r="2.5" stroke="#2d5016" stroke-width="1" fill="none"/>
+    <!-- Large wheel -->
+    <circle cx="22" cy="24" r="3" stroke="#2d5016" stroke-width="1" fill="none"/>
+    <!-- Exhaust -->
+    <rect x="16" y="8" width="2" height="4" rx="1"/>
+    <!-- Front attachment -->
+    <rect x="3" y="18" width="3" height="2" rx="1"/>
+  </g>
+</svg>
