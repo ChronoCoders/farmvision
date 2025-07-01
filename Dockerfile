@@ -1,6 +1,6 @@
 FROM python:3.10-slim
 
-# Sistemde ihtiyaç duyulan bağımlılıkları yükle
+# Sistem bağımlılıkları
 RUN apt-get update && apt-get install -y \
     build-essential \
     python3-dev \
@@ -14,23 +14,23 @@ RUN apt-get update && apt-get install -y \
     curl \
     && apt-get clean
 
-# GDAL ortam değişkeni ayarı
+# GDAL ortam değişkenleri
 ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
 ENV C_INCLUDE_PATH=/usr/include/gdal
 
-# Çalışma klasörü
+# Çalışma dizini
 WORKDIR /app
 
-# Gereksinimleri kopyala ve yükle
+# Gereksinimleri yükle
 COPY requirements.txt .
 RUN pip install --upgrade pip setuptools wheel
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --root-user-action=ignore --no-cache-dir -r requirements.txt
 
-# Proje dosyalarını kopyala
+# Uygulama dosyalarını kopyala
 COPY . .
 
-# Railway veya benzeri platformlar için port ayarı
+# Port ayarı
 ENV PORT=8000
 
-# Başlatma komutu (gerekirse değiştirin)
+# Başlatma komutu (Django için uyarlayabilirsiniz)
 CMD ["gunicorn", "main:app", "--bind", "0.0.0.0:8000"]
