@@ -190,7 +190,7 @@ def detect_leaf_disease_corn(image_path, confidence=0.25):
             'disease': 'Corn maize healthy',
             'confidence': 0.50,
             'recommendations': 'Model yüklenirken hata oluştu. Lütfen tekrar deneyin.',
-            'processing_time': round(time.time() - start_time if 'start_time' in locals() else 0.0, 2),
+            'processing_time': 0.0,
             'severity': 'Bilinmiyor',
             'algorithm': 'YOLO v7 Disease Detection (Model Loading...)',
             'error': str(e)
