@@ -1,6 +1,6 @@
 FROM python:3.10-slim
 
-# Sistem bağımlılıkları
+# Sistem bağımlılıklarını yükle
 RUN apt-get update && apt-get install -y \
     build-essential \
     python3-dev \
@@ -11,8 +11,7 @@ RUN apt-get update && apt-get install -y \
     libgl1 \
     libglib2.0-0 \
     git \
-    curl \
-    && apt-get clean
+    curl
 
 # GDAL ortam değişkenleri
 ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
@@ -23,14 +22,17 @@ WORKDIR /app
 
 # Gereksinimleri yükle
 COPY requirements.txt .
-RUN pip install --upgrade pip setuptools wheel
-RUN pip install --root-user-action=ignore --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install --root-user-action=ignore --no-cache-dir -r requirements.txt && \
+    apt-get remove -y build-essential python3-dev && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/* /root/.cache /root/.npm /tmp/*
 
-# Uygulama dosyalarını kopyala
+# Proje dosyalarını kopyala
 COPY . .
 
 # Port ayarı
 ENV PORT=8000
 
-# Başlatma komutu (Django için uyarlayabilirsiniz)
+# Başlatma komutu (gerekirse değiştirin: Django -> wsgi:application vs.)
 CMD ["gunicorn", "main:app", "--bind", "0.0.0.0:8000"]
