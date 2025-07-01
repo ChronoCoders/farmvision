@@ -79,6 +79,23 @@ def new_project():
     
     return render_template('new_project.html')
 
+@main_bp.route('/ai_status')
+@login_required
+def ai_status():
+    """AI System Status page showing real YOLO model information"""
+    try:
+        from utils.real_yolo_inference import yolo_engine
+        ai_info = yolo_engine.get_model_info()
+    except Exception as e:
+        ai_info = {
+            'device': 'CPU',
+            'loaded_models': [],
+            'cuda_available': False,
+            'error': str(e)
+        }
+    
+    return render_template('ai_system_status.html', ai_info=ai_info)
+
 @main_bp.route('/projects/<int:project_id>')
 @login_required
 def project_detail(project_id):

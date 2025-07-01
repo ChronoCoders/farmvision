@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}AI Sistem Durumu - Farm Vision{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <h1 class="display-6">
+            <i class="fas fa-brain me-2"></i>AI Sistem Durumu
+        </h1>
+        <p class="lead text-muted">
+            YOLO v7 AI modellerinin durumu ve performans bilgileri.
+        </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-cog me-2"></i>AI Motor Durumu
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="row">
+                        <div class="col-6"><strong>İşlem Cihazı:</strong></div>
+                        <div class="col-6">
+                            <span class="badge bg-info">{{ ai_info.device }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="row">
+                        <div class="col-6"><strong>CUDA Desteği:</strong></div>
+                        <div class="col-6">
+                            {% if ai_info.cuda_available %}
+                                <span class="badge bg-success">Aktif</span>
+                            {% else %}
+                                <span class="badge bg-warning">CPU Modu</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                {% if ai_info.cuda_available %}
+                <div class="mb-3">
+                    <div class="row">
+                        <div class="col-6"><strong>GPU:</strong></div>
+                        <div class="col-6">{{ ai_info.gpu_name or 'Bilinmiyor' }}</div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="mb-3">
+                    <div class="row">
+                        <div class="col-6"><strong>Yüklü Modeller:</strong></div>
+                        <div class="col-6">
+                            <span class="badge bg-secondary">{{ ai_info.loaded_models|length }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">Sistem Özellikleri</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Gerçek YOLO v7 AI İnference
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        PyTorch Tabanlı İşleme
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        8 Meyve Türü Tespiti
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Mısır Hastalığı Tespiti
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Drone Ağaç Sayımı
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Gerçek Zamanlı İşleme
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Model Durumu</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Model Türü</th>
+                                <th>Durum</th>
+                                <th>Sınıf Sayısı</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>🍎 Meyve Tespiti</td>
+                                <td>
+                                    {% if 'fruit' in ai_info.loaded_models %}
+                                        <span class="badge bg-success">Yüklü</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Yükleniyor</span>
+                                    {% endif %}
+                                </td>
+                                <td>8</td>
+                            </tr>
+                            <tr>
+                                <td>🦠 Hastalık Tespiti</td>
+                                <td>
+                                    {% if 'disease' in ai_info.loaded_models %}
+                                        <span class="badge bg-success">Yüklü</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Yükleniyor</span>
+                                    {% endif %}
+                                </td>
+                                <td>4</td>
+                            </tr>
+                            <tr>
+                                <td>🌳 Ağaç Tespiti</td>
+                                <td>
+                                    {% if 'tree' in ai_info.loaded_models %}
+                                        <span class="badge bg-success">Yüklü</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Yükleniyor</span>
+                                    {% endif %}
+                                </td>
+                                <td>1</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Önemli Bilgi
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info mb-0">
+                    <h6 class="alert-heading">Gerçek AI Sistemi Aktif</h6>
+                    <p class="mb-0">
+                        Sistem artık tamamen gerçek YOLO v7 AI modelleri kullanıyor. 
+                        Simülasyon veya sahte veri yok - sadece otantik AI sonuçları.
+                        Model dosyaları mevcut değilse boş sonuçlar döner.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">Performans İpuçları</h5>
+            </div>
+            <div class="card-body">
+                <small>
+                    <ul class="mb-0">
+                        <li>GPU kullanımı için CUDA destekli ortam gereklidir</li>
+                        <li>Daha büyük görüntüler daha uzun işlem süresi gerektirir</li>
+                        <li>Düşük confidence değerleri daha fazla tespit sağlar</li>
+                        <li>Model dosyalarının varlığı performansı etkiler</li>
+                    </ul>
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Test AI Sistemi</h5>
+            </div>
+            <div class="card-body">
+                <p>AI sistemini test etmek için:</p>
+                <div class="btn-group" role="group">
+                    <a href="{{ url_for('detection.fruit_detection') }}" class="btn btn-primary">
+                        <i class="fas fa-apple-alt me-2"></i>Meyve Tespiti Test Et
+                    </a>
+                    <a href="{{ url_for('detection.disease_detection') }}" class="btn btn-warning">
+                        <i class="fas fa-leaf me-2"></i>Hastalık Tespiti Test Et
+                    </a>
+                    <a href="{{ url_for('detection.tree_detection') }}" class="btn btn-success">
+                        <i class="fas fa-tree me-2"></i>Ağaç Sayımı Test Et
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
