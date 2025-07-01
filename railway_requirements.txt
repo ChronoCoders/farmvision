@@ -1,0 +1,42 @@
+# Farm Vision - Railway.app Requirements
+# Copy this content to requirements.txt for Railway deployment
+
+# Core Flask Framework
+Flask==3.1.1
+Flask-SQLAlchemy==3.1.1
+Flask-Login==0.6.3
+Flask-WTF==1.2.2
+WTForms==3.2.1
+Werkzeug==3.1.3
+SQLAlchemy==2.0.41
+email-validator==2.2.0
+
+# Production Web Server
+gunicorn==23.0.0
+
+# Database Support
+psycopg2-binary==2.9.10
+
+# AI/ML Core Stack
+torch==2.7.1
+torchvision==0.22.1
+numpy==2.3.1
+
+# Computer Vision
+opencv-python==4.11.0.86
+Pillow==11.2.1
+
+# Data Science
+pandas==2.3.0
+scipy==1.16.0
+matplotlib==3.10.3
+
+# Geospatial Processing
+rasterio==1.4.3
+
+# Installation Notes for Railway:
+# 1. Create requirements.txt file in project root
+# 2. Copy above dependencies
+# 3. Railway will auto-install during deployment
+# 4. Total build time: 5-10 minutes (PyTorch compilation)
+# 5. Memory usage: ~500MB after deployment
