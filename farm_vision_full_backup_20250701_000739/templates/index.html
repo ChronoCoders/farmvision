@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-section bg-success text-white py-5 mb-5 rounded">
+    <div class="container text-center">
+        <h1 class="display-4 mb-3">
+            <i class="fas fa-seedling me-3"></i>Farm Vision'a Hoş Geldiniz
+        </h1>
+        <p class="lead mb-4">
+            Yapay zeka destekli tarımsal çözümlerle çiftçilik deneyiminizi dönüştürün
+        </p>
+        {% if not current_user.is_authenticated %}
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg">
+                <i class="fas fa-user-plus me-2"></i>Hemen Başlayın
+            </a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-sign-in-alt me-2"></i>Giriş Yapın
+            </a>
+        </div>
+        {% else %}
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-light btn-lg">
+            <i class="fas fa-tachometer-alt me-2"></i>Dashboard'a Git
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+{% if current_user.is_authenticated %}
+<!-- User Dashboard Summary -->
+<div class="row mb-5">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">Toplam Proje</h5>
+                        <h2>{{ total_projects or 0 }}</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-folder fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">Tespit Sayısı</h5>
+                        <h2>{{ total_detections or 0 }}</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-search fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">Bu Ay</h5>
+                        <h2>{{ recent_projects|length or 0 }}</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-calendar fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">Aktif</h5>
+                        <h2>Online</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-wifi fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Projects -->
+{% if recent_projects %}
+<div class="row mb-5">
+    <div class="col-12">
+        <h3 class="mb-4"><i class="fas fa-clock me-2"></i>Son Projeler</h3>
+        <div class="row">
+            {% for project in recent_projects %}
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ project.title }}</h5>
+                        <p class="card-text">{{ project.description[:100] }}...</p>
+                        <p class="text-muted">
+                            <i class="fas fa-map-marker-alt me-1"></i>{{ project.location or 'Konum belirtilmemiş' }}
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i>{{ project.updated_at.strftime('%d.%m.%Y') }}
+                        </small>
+                        <a href="{{ url_for('main.project_detail', project_id=project.id) }}" class="btn btn-sm btn-outline-primary float-end">
+                            Detay
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endif %}
+
+<!-- Features Section -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h2 class="text-center mb-5">
+            <i class="fas fa-star me-2"></i>Platform Özellikleri
+        </h2>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <div class="feature-icon mb-3">
+                    <i class="fas fa-apple-alt fa-3x text-success"></i>
+                </div>
+                <h5 class="card-title">YOLO v7 Meyve Tespiti</h5>
+                <p class="card-text">
+                    7 farklı meyve türü için özel eğitilmiş AI modelleri ile hassas tespit. 
+                    Meyve sayısı ve ağırlık hesaplama.
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <div class="feature-icon mb-3">
+                    <i class="fas fa-map fa-3x text-primary"></i>
+                </div>
+                <h5 class="card-title">Drone Haritalama</h5>
+                <p class="card-text">
+                    15+ spektral analiz algoritması (NDVI, GLI, VARI) ile bitki örtüsü analizi. 
+                    Interactive haritalar ve GeoTIFF desteği.
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <div class="feature-icon mb-3">
+                    <i class="fas fa-leaf fa-3x text-warning"></i>
+                </div>
+                <h5 class="card-title">Hastalık Tespiti</h5>
+                <p class="card-text">
+                    Yaprak hastalık tespiti ve tedavi önerileri. 
+                    Mısır hastalıkları için özel eğitilmiş modeller.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Technologies Section -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card bg-light">
+            <div class="card-body text-center">
+                <h3 class="mb-4">
+                    <i class="fas fa-cogs me-2"></i>Kullanılan Teknolojiler
+                </h3>
+                <div class="row align-items-center">
+                    <div class="col-md-2 mb-3">
+                        <i class="fab fa-python fa-3x text-primary"></i>
+                        <p class="mt-2 mb-0">Python</p>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <i class="fas fa-brain fa-3x text-success"></i>
+                        <p class="mt-2 mb-0">YOLO v7</p>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <i class="fas fa-satellite fa-3x text-info"></i>
+                        <p class="mt-2 mb-0">GDAL</p>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <i class="fas fa-map-marked-alt fa-3x text-warning"></i>
+                        <p class="mt-2 mb-0">Leaflet</p>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <i class="fab fa-bootstrap fa-3x text-purple"></i>
+                        <p class="mt-2 mb-0">Bootstrap</p>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <i class="fas fa-chart-line fa-3x text-danger"></i>
+                        <p class="mt-2 mb-0">Chart.js</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

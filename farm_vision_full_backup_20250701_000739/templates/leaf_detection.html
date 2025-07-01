@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}Yaprak Hastalık Tespiti - Farm Vision{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-leaf me-2"></i>Yaprak Hastalık Tespiti
+        </h1>
+        
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Yaprak Görüntüsü Yükleme</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" enctype="multipart/form-data" id="leafDetectionForm">
+                            <div class="mb-3">
+                                <label for="project_id" class="form-label">Proje (Opsiyonel)</label>
+                                <select class="form-select" id="project_id" name="project_id">
+                                    <option value="">Proje Seçin</option>
+                                    {% for project in projects %}
+                                    <option value="{{ project.id }}">{{ project.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="image" class="form-label">Yaprak Görüntüsü</label>
+                                <input type="file" class="form-control" id="image" name="image" 
+                                       accept=".jpg,.jpeg,.png" required>
+                                <div class="form-text">
+                                    Desteklenen formatlar: JPG, JPEG, PNG. Maksimum boyut: 100MB
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-info mb-3" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>İpucu:</strong> En iyi sonuçlar için yaprak görüntüsünün net, iyi aydınlatılmış 
+                                ve yaprağın tam görünür olduğu fotoğraflar kullanın.
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-warning btn-lg" id="detectBtn">
+                                    <i class="fas fa-microscope me-2"></i>Hastalık Tespiti Başlat
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <!-- Progress Bar -->
+                        <div class="mt-3" id="progressContainer" style="display: none;">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" 
+                                     role="progressbar" style="width: 100%">
+                                    Hastalık analizi yapılıyor...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Desteklenen Hastalıklar</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item px-0 border-0">
+                                <h6 class="text-success mb-1">Mısır Sağlıklı</h6>
+                                <p class="text-muted small mb-0">Hastalık belirtisi bulunmayan sağlıklı yapraklar</p>
+                            </div>
+                            
+                            <div class="list-group-item px-0 border-0">
+                                <h6 class="text-warning mb-1">Cercospora Leaf Spot</h6>
+                                <p class="text-muted small mb-0">Gri yaprak lekesi hastalığı - ciddi fungal hastalık</p>
+                            </div>
+                            
+                            <div class="list-group-item px-0 border-0">
+                                <h6 class="text-danger mb-1">Northern Leaf Blight</h6>
+                                <p class="text-muted small mb-0">Kuzey yaprak yanıklığı - yaygın fungal hastalık</p>
+                            </div>
+                            
+                            <div class="list-group-item px-0 border-0">
+                                <h6 class="text-orange mb-1">Common Rust</h6>
+                                <p class="text-muted small mb-0">Yaygın pas hastalığı - turuncu-kahverengi lekeler</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">AI Model Bilgisi</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                YOLO v7 AI Modeli
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Mısır Hastalıkları Özelleştirilmiş
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Otomatik Tanı
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Tedavi Önerileri
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Güven Skoru
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">Çekim İpuçları</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="small">
+                            <div class="mb-2">
+                                <i class="fas fa-camera text-primary me-2"></i>
+                                <strong>Net Fotoğraf:</strong> Bulanık olmayan, odaklı çekim
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-sun text-warning me-2"></i>
+                                <strong>İyi Işık:</strong> Doğal ışık altında çekim
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-crop text-success me-2"></i>
+                                <strong>Yakın Plan:</strong> Yaprağın tamamı görünür olmalı
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-palette text-info me-2"></i>
+                                <strong>Doğal Renk:</strong> Flash kullanmadan çekim
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('leafDetectionForm').addEventListener('submit', function(e) {
+    const progressContainer = document.getElementById('progressContainer');
+    const detectBtn = document.getElementById('detectBtn');
+    
+    // Show progress bar
+    progressContainer.style.display = 'block';
+    detectBtn.disabled = true;
+    detectBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Analiz yapılıyor...';
+});
+
+// File validation
+document.getElementById('image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const fileSize = file.size / 1024 / 1024; // MB
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        
+        if (!allowedTypes.includes(file.type)) {
+            alert('Lütfen JPG, JPEG veya PNG formatında dosya seçin.');
+            this.value = '';
+            return;
+        }
+        
+        if (fileSize > 100) {
+            alert('Dosya boyutu 100MB\'dan küçük olmalıdır.');
+            this.value = '';
+            return;
+        }
+        
+        // Preview image
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // Create preview if doesn't exist
+            let preview = document.getElementById('imagePreview');
+            if (!preview) {
+                preview = document.createElement('div');
+                preview.id = 'imagePreview';
+                preview.className = 'mt-3 text-center';
+                document.querySelector('.card-body').appendChild(preview);
+            }
+            
+            preview.innerHTML = `
+                <p class="text-muted small">Önizleme:</p>
+                <img src="${e.target.result}" class="img-fluid rounded shadow" 
+                     style="max-height: 200px; max-width: 100%;" alt="Önizleme">
+            `;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+{% endblock %}

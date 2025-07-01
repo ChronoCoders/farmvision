@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+
+{% block title %}Ağaç Tespiti - Farm Vision{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-tree me-2"></i>Ağaç Tespiti ve Sayımı
+        </h1>
+        
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Drone/Hava Görüntüsü Yükleme</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" enctype="multipart/form-data" id="treeDetectionForm">
+                            <div class="mb-3">
+                                <label for="project_id" class="form-label">Proje (Opsiyonel)</label>
+                                <select class="form-select" id="project_id" name="project_id">
+                                    <option value="">Proje Seçin</option>
+                                    {% for project in projects %}
+                                    <option value="{{ project.id }}">{{ project.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="image" class="form-label">Hava Görüntüsü</label>
+                                <input type="file" class="form-control" id="image" name="image" 
+                                       accept=".jpg,.jpeg,.png,.tif,.tiff" required>
+                                <div class="form-text">
+                                    Desteklenen formatlar: JPG, JPEG, PNG, TIFF. Maksimum boyut: 100MB
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="confidence" class="form-label">Güven Eşiği (%)</label>
+                                    <input type="range" class="form-range" id="confidence" name="confidence" 
+                                           min="10" max="95" value="25" oninput="updateConfidenceValue(this.value)">
+                                    <div class="d-flex justify-content-between">
+                                        <small>10%</small>
+                                        <small id="confidenceValue">25%</small>
+                                        <small>95%</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="iou_threshold" class="form-label">IoU Eşiği</label>
+                                    <input type="range" class="form-range" id="iou_threshold" name="iou_threshold" 
+                                           min="30" max="90" value="70" oninput="updateIoUValue(this.value)">
+                                    <div class="d-flex justify-content-between">
+                                        <small>0.3</small>
+                                        <small id="iouValue">0.7</small>
+                                        <small>0.9</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-info mb-3" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>İpucu:</strong> En iyi sonuçlar için drone görüntüsünün yüksek çözünürlüklü, 
+                                açık hava koşullarında çekilmiş ve ağaçların net görünebildiği fotoğraflar kullanın.
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg" id="detectBtn">
+                                    <i class="fas fa-search-plus me-2"></i>Ağaç Tespiti Başlat
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <!-- Progress Bar -->
+                        <div class="mt-3" id="progressContainer" style="display: none;">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" 
+                                     role="progressbar" style="width: 100%">
+                                    Ağaçlar tespit ediliyor...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Tespit Özellikleri</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                YOLO v7 AI Modeli
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Otomatik Ağaç Sayımı
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Konum Belirleme
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Alan Hesaplama
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Yoğunluk Analizi
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Batch İşleme Desteği
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">Kullanım Alanları</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="small">
+                            <div class="mb-2">
+                                <i class="fas fa-seedling text-success me-2"></i>
+                                <strong>Tarla Planlama:</strong> Ağaç dağılımı analizi
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-chart-line text-primary me-2"></i>
+                                <strong>Verim Tahmini:</strong> Ağaç sayısına dayalı tahmin
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-clipboard-list text-warning me-2"></i>
+                                <strong>Envanter:</strong> Meyve ağacı sayımı
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-heartbeat text-danger me-2"></i>
+                                <strong>Sağlık Takibi:</strong> Ağaç sağlığı izleme
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-map text-info me-2"></i>
+                                <strong>Haritalama:</strong> Bahçe haritası oluşturma
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">Teknik Bilgiler</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="small">
+                            <div class="row mb-2">
+                                <div class="col-6"><strong>Model:</strong></div>
+                                <div class="col-6">YOLO v7</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6"><strong>Giriş Boyutu:</strong></div>
+                                <div class="col-6">640x640</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6"><strong>mAP@0.5:</strong></div>
+                                <div class="col-6">87.3%</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6"><strong>İşlem Hızı:</strong></div>
+                                <div class="col-6">~2-5 saniye</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6"><strong>Min. Güven:</strong></div>
+                                <div class="col-6">10%</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6"><strong>Max. Boyut:</strong></div>
+                                <div class="col-6">100MB</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateConfidenceValue(value) {
+    document.getElementById('confidenceValue').textContent = value + '%';
+}
+
+function updateIoUValue(value) {
+    document.getElementById('iouValue').textContent = (value / 100).toFixed(1);
+}
+
+document.getElementById('treeDetectionForm').addEventListener('submit', function(e) {
+    const progressContainer = document.getElementById('progressContainer');
+    const detectBtn = document.getElementById('detectBtn');
+    
+    // Show progress bar
+    progressContainer.style.display = 'block';
+    detectBtn.disabled = true;
+    detectBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Tespit ediliyor...';
+});
+
+// File validation
+document.getElementById('image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const fileSize = file.size / 1024 / 1024; // MB
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/tiff'];
+        
+        if (!allowedTypes.includes(file.type)) {
+            alert('Lütfen desteklenen formatlardan birini seçin (JPG, PNG, TIFF).');
+            this.value = '';
+            return;
+        }
+        
+        if (fileSize > 100) {
+            alert('Dosya boyutu 100MB\'dan küçük olmalıdır.');
+            this.value = '';
+            return;
+        }
+        
+        // Create image preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            let preview = document.getElementById('imagePreview');
+            if (!preview) {
+                preview = document.createElement('div');
+                preview.id = 'imagePreview';
+                preview.className = 'mt-3 text-center';
+                document.querySelector('.card-body').appendChild(preview);
+            }
+            
+            preview.innerHTML = `
+                <div class="card" style="max-width: 300px; margin: 0 auto;">
+                    <img src="${e.target.result}" class="card-img-top" alt="Önizleme" 
+                         style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <small class="text-muted">
+                            <i class="fas fa-file me-1"></i>${file.name}<br>
+                            <i class="fas fa-weight-hanging me-1"></i>${(file.size / 1024 / 1024).toFixed(2)} MB
+                        </small>
+                    </div>
+                </div>
+            `;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+{% endblock %}

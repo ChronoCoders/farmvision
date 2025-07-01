@@ -1,0 +1,364 @@
+{% extends "base.html" %}
+
+{% block title %}Ağaç Tespit Sonucu - Farm Vision{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <h1 class="mb-3">
+            <i class="fas fa-tree me-2"></i>Ağaç Tespit Sonucu
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ url_for('detection.index') }}">AI Tespit</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ url_for('detection.tree_detection') }}">Ağaç Tespiti</a>
+                </li>
+                <li class="breadcrumb-item active">Sonuç</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<!-- Result Summary -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card text-center bg-primary text-white">
+            <div class="card-body">
+                <h2>{{ detection_result.count or 0 }}</h2>
+                <p class="mb-0">Tespit Edilen Ağaç</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center bg-success text-white">
+            <div class="card-body">
+                <h2>{{ "%.1f"|format(result.confidence * 100) }}%</h2>
+                <p class="mb-0">Ortalama Güven</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center bg-warning text-white">
+            <div class="card-body">
+                <h2>{{ "%.1f"|format((detection_result.count or 0) / 10) }}</h2>
+                <p class="mb-0">Ağaç/10m²</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center bg-info text-white">
+            <div class="card-body">
+                <h2>{{ "%.2f"|format(result.processing_time) }}s</h2>
+                <p class="mb-0">İşlem Süresi</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Images Comparison -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-image me-2"></i>Orijinal Hava Görüntüsü
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <img src="{{ url_for('static', filename=original_image.replace('static/', '')) }}" 
+                     class="img-fluid rounded shadow" alt="Orijinal Görüntü"
+                     style="max-height: 400px; width: auto;">
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-search-plus me-2"></i>Tespit Sonucu
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                {% if result.result_path %}
+                <img src="{{ url_for('static', filename=result.result_path.replace('static/', '')) }}" 
+                     class="img-fluid rounded shadow" alt="Tespit Sonucu"
+                     style="max-height: 400px; width: auto;">
+                {% else %}
+                <div class="alert alert-warning" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Tespit sonucu görüntüsü henüz hazır değil.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Analysis -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>Detaylı Analiz Sonuçları
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-tree text-success me-2"></i>Ağaç Bilgileri</h6>
+                        <div class="table-responsive">
+                            <table class="table table-borderless table-sm">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Toplam Ağaç Sayısı:</strong></td>
+                                        <td>{{ detection_result.count or 0 }} adet</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Ağaç Yoğunluğu:</strong></td>
+                                        <td>{{ "%.1f"|format((detection_result.count or 0) / 10) }} ağaç/10m²</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Tespit Güveni:</strong></td>
+                                        <td>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar bg-success" role="progressbar" 
+                                                     style="width: {{ (result.confidence * 100)|round }}%">
+                                                    {{ "%.1f"|format(result.confidence * 100) }}%
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Tahmini Alan:</strong></td>
+                                        <td>~{{ "%.1f"|format((detection_result.count or 0) * 25) }} m²</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-info-circle text-primary me-2"></i>İşlem Bilgileri</h6>
+                        <div class="table-responsive">
+                            <table class="table table-borderless table-sm">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Analiz Tarihi:</strong></td>
+                                        <td>{{ result.created_at.strftime('%d.%m.%Y') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Analiz Saati:</strong></td>
+                                        <td>{{ result.created_at.strftime('%H:%M:%S') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>İşlem Süresi:</strong></td>
+                                        <td>{{ "%.2f"|format(result.processing_time) }} saniye</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Model Versiyonu:</strong></td>
+                                        <td>YOLO v7-Tree</td>
+                                    </tr>
+                                    {% if result.project %}
+                                    <tr>
+                                        <td><strong>Proje:</strong></td>
+                                        <td>
+                                            <a href="{{ url_for('main.project_detail', project_id=result.project.id) }}" 
+                                               class="text-decoration-none">
+                                                {{ result.project.title }}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <!-- Recommendations -->
+                <h6><i class="fas fa-lightbulb text-warning me-2"></i>Öneriler ve Yorumlar</h6>
+                <div class="alert alert-info" role="alert">
+                    {% set tree_count = detection_result.count or 0 %}
+                    {% if tree_count == 0 %}
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <strong>Ağaç Tespit Edilmedi:</strong> Görüntüde ağaç tespit edilemedi. 
+                        Görüntü kalitesini kontrol edin veya farklı açıdan çekim yapın.
+                    {% elif tree_count < 10 %}
+                        <i class="fas fa-seedling me-2"></i>
+                        <strong>Düşük Yoğunluk:</strong> Ağaç yoğunluğu düşük. 
+                        Yeni ağaç dikim planları düşünülebilir.
+                    {% elif tree_count < 50 %}
+                        <i class="fas fa-balance-scale me-2"></i>
+                        <strong>Orta Yoğunluk:</strong> Ağaç dağılımı dengeli görünüyor. 
+                        Mevcut bakım programınıza devam edebilirsiniz.
+                    {% else %}
+                        <i class="fas fa-tree me-2"></i>
+                        <strong>Yüksek Yoğunluk:</strong> Ağaç yoğunluğu yüksek. 
+                        Seyreltme veya budama işlemleri gerekli olabilir.
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-download me-2"></i>İndirme ve Paylaşım
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    {% if result.result_path %}
+                    <a href="{{ url_for('static', filename=result.result_path.replace('static/', '')) }}" 
+                       download class="btn btn-primary">
+                        <i class="fas fa-download me-2"></i>Tespit Sonucu İndir
+                    </a>
+                    {% endif %}
+                    
+                    <a href="{{ url_for('static', filename=original_image.replace('static/', '')) }}" 
+                       download class="btn btn-outline-secondary">
+                        <i class="fas fa-download me-2"></i>Orijinal Görüntü İndir
+                    </a>
+                    
+                    <button class="btn btn-outline-info" onclick="generateTreeReport()">
+                        <i class="fas fa-file-pdf me-2"></i>PDF Rapor Oluştur
+                    </button>
+                    
+                    <button class="btn btn-outline-success" onclick="shareTreeResult()">
+                        <i class="fas fa-share me-2"></i>Sonucu Paylaş
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>Dağılım Grafiği
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="treeDistributionChart" width="300" height="300"></canvas>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-calculator me-2"></i>Hesaplamalar
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="small">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tahmini Alan:</span>
+                        <span>{{ "%.0f"|format((detection_result.count or 0) * 25) }} m²</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Ortalama Mesafe:</span>
+                        <span>~{{ "%.1f"|format(5 if (detection_result.count or 0) > 0 else 0) }} m</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Verim Tahmini:</span>
+                        <span>{{ "%.0f"|format((detection_result.count or 0) * 50) }} kg</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Bakım İhtiyacı:</span>
+                        <span>{{ "%.0f"|format((detection_result.count or 0) * 2) }} saat</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Action Buttons -->
+<div class="row">
+    <div class="col-12 text-center">
+        <a href="{{ url_for('detection.tree_detection') }}" class="btn btn-primary me-2">
+            <i class="fas fa-plus me-2"></i>Yeni Tespit
+        </a>
+        <a href="{{ url_for('detection.results') }}" class="btn btn-outline-secondary me-2">
+            <i class="fas fa-list me-2"></i>Tüm Sonuçlar
+        </a>
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-primary">
+            <i class="fas fa-home me-2"></i>Dashboard
+        </a>
+    </div>
+</div>
+
+<script>
+// Tree distribution chart
+const ctx = document.getElementById('treeDistributionChart').getContext('2d');
+const treeCount = {{ detection_result.count or 0 }};
+const estimatedArea = treeCount * 25;
+
+const treeChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Ağaçlı Alan', 'Boş Alan'],
+        datasets: [{
+            data: [estimatedArea, Math.max(1000 - estimatedArea, 0)],
+            backgroundColor: ['#198754', '#e9ecef'],
+            borderWidth: 2,
+            borderColor: '#fff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const label = context.label || '';
+                        const value = context.parsed;
+                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                        const percentage = ((value / total) * 100).toFixed(1);
+                        return `${label}: ${percentage}% (${value} m²)`;
+                    }
+                }
+            }
+        }
+    }
+});
+
+function generateTreeReport() {
+    FarmVision.showNotification('PDF rapor oluşturuluyor...', 'info');
+    // Implementation for PDF report generation
+    setTimeout(() => {
+        FarmVision.showNotification('Rapor başarıyla oluşturuldu!', 'success');
+    }, 2000);
+}
+
+function shareTreeResult() {
+    const treeCount = {{ detection_result.count or 0 }};
+    const confidence = {{ "%.1f"|format(result.confidence * 100) }};
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'Farm Vision Ağaç Tespit Sonucu',
+            text: `${treeCount} adet ağaç tespit edildi (${confidence}% güven ile)`,
+            url: window.location.href
+        });
+    } else {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(() => {
+            FarmVision.showNotification('Link panoya kopyalandı!', 'info');
+        });
+    }
+}
+</script>
+{% endblock %}

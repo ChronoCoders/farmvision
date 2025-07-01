@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}AI Tespit - Farm Vision{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-search me-2"></i>AI Tespit Sistemleri
+        </h1>
+        
+        <div class="row mb-5">
+            <!-- Fruit Detection -->
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-apple-alt fa-4x text-success"></i>
+                        </div>
+                        <h5 class="card-title">Meyve Tespiti</h5>
+                        <p class="card-text">
+                            7 farklı meyve türü için YOLO v7 tabanlı AI tespit sistemi. 
+                            Meyve sayısı ve toplam ağırlık hesaplama.
+                        </p>
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                Desteklenen Meyveler: Elma, Armut, Mandalina, Şeftali, Portakal, Nar, Hurma
+                            </small>
+                        </div>
+                        <a href="{{ url_for('detection.fruit_detection') }}" class="btn btn-success">
+                            <i class="fas fa-camera me-2"></i>Meyve Tespiti Başlat
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Leaf Disease Detection -->
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-leaf fa-4x text-warning"></i>
+                        </div>
+                        <h5 class="card-title">Yaprak Hastalık Tespiti</h5>
+                        <p class="card-text">
+                            Mısır yaprak hastalıklarını tespit edin ve tedavi önerilerini alın. 
+                            AI destekli tanı ve çözüm önerileri.
+                        </p>
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                Desteklenen Hastalıklar: Cercospora, Northern Leaf Blight, Common Rust
+                            </small>
+                        </div>
+                        <a href="{{ url_for('detection.leaf_detection') }}" class="btn btn-warning">
+                            <i class="fas fa-microscope me-2"></i>Hastalık Tespiti Başlat
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tree Detection -->
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-tree fa-4x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Ağaç Tespiti</h5>
+                        <p class="card-text">
+                            Drone görüntülerinde ağaç sayımı ve analizi. 
+                            Tarla planlama ve verim tahmininde kullanılır.
+                        </p>
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                Özellikler: Ağaç sayısı, konum analizi, alan hesaplama
+                            </small>
+                        </div>
+                        <a href="{{ url_for('detection.tree_detection') }}" class="btn btn-primary">
+                            <i class="fas fa-search-plus me-2"></i>Ağaç Tespiti Başlat
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Detections -->
+        {% if recent_detections %}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-history me-2"></i>Son Tespitler
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Tarih</th>
+                                <th>Tespit Türü</th>
+                                <th>Sonuç</th>
+                                <th>Güven Skoru</th>
+                                <th>İşlem Süresi</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for detection in recent_detections %}
+                            <tr>
+                                <td>{{ detection.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                                <td>
+                                    {% if detection.detection_type == 'fruit' %}
+                                        <span class="badge bg-success">Meyve Tespiti</span>
+                                    {% elif detection.detection_type == 'leaf_disease' %}
+                                        <span class="badge bg-warning">Hastalık Tespiti</span>
+                                    {% elif detection.detection_type == 'tree' %}
+                                        <span class="badge bg-primary">Ağaç Tespiti</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if detection.detection_type == 'fruit' %}
+                                        {{ detection.count }} adet {{ detection.fruit_type }}
+                                        <br><small class="text-muted">{{ "%.2f"|format(detection.total_weight) }} kg</small>
+                                    {% else %}
+                                        {{ detection.fruit_type }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if detection.confidence %}
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar" role="progressbar" 
+                                                 style="width: {{ (detection.confidence * 100)|round }}%">
+                                                {{ "%.1f"|format(detection.confidence * 100) }}%
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if detection.processing_time %}
+                                        {{ "%.2f"|format(detection.processing_time) }}s
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="#" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

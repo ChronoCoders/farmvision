@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}GeoTIFF İşleme - Farm Vision{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <h1 class="display-6">
+            <i class="fas fa-map me-2"></i>GeoTIFF İşleme ve Histogram Analizi
+        </h1>
+        <p class="lead text-muted">
+            GeoTIFF dosyalarını yükleyip gelişmiş histogram analizi, RGB çıkarma ve vegetation analizi yapın.
+        </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">GeoTIFF Dosyası Yükleme</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data" id="geotiffForm">
+                    <div class="mb-3">
+                        <label for="geotiff_file" class="form-label">GeoTIFF Dosyası</label>
+                        <input type="file" class="form-control" id="geotiff_file" name="geotiff_file" 
+                               accept=".tif,.tiff" required>
+                        <div class="form-text">
+                            Desteklenen formatlar: TIF, TIFF. Maksimum boyut: 100MB
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="process_type" class="form-label">İşlem Türü</label>
+                        <select class="form-select" id="process_type" name="process_type">
+                            <option value="histogram">Histogram Analizi</option>
+                            <option value="rgb_extract">RGB Çıkarma</option>
+                            <option value="vegetation">Vegetation Analizi</option>
+                            <option value="statistics">İstatistiksel Analiz</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3" id="binsContainer">
+                        <label for="bins" class="form-label">Histogram Bin Sayısı</label>
+                        <input type="number" class="form-control" id="bins" name="bins" 
+                               min="16" max="1024" value="256">
+                    </div>
+                    
+                    <div class="mb-3" id="algorithmContainer" style="display: none;">
+                        <label for="algorithm" class="form-label">Vegetation Algoritması</label>
+                        <select class="form-select" id="algorithm" name="algorithm">
+                            <option value="ndvi">NDVI</option>
+                            <option value="gli">GLI</option>
+                            <option value="vari">VARI</option>
+                            <option value="ndwi">NDWI</option>
+                            <option value="savi">SAVI</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="project_id" class="form-label">Proje (Opsiyonel)</label>
+                        <select class="form-select" id="project_id" name="project_id">
+                            <option value="">Proje Seçin</option>
+                            {% for project in projects %}
+                            <option value="{{ project.id }}">{{ project.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-cogs me-2"></i>İşlemeyi Başlat
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">İşlem Türleri</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">Histogram Analizi</div>
+                            Pixel değer dağılımını analiz eder
+                        </div>
+                        <span class="badge bg-primary rounded-pill">256 bin</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">RGB Çıkarma</div>
+                            Multispektral veriden RGB görüntü oluşturur
+                        </div>
+                        <span class="badge bg-success rounded-pill">PNG</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">Vegetation Analizi</div>
+                            NDVI, GLI, VARI ve diğer indeksler
+                        </div>
+                        <span class="badge bg-warning rounded-pill">15+</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">İstatistiksel Analiz</div>
+                            Min, max, ortalama, standart sapma
+                        </div>
+                        <span class="badge bg-info rounded-pill">Stats</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">Desteklenen Özellikler</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        GDAL/Rasterio Tabanlı İşleme
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Çoklu Band Desteği
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        CRS ve Projeksiyon Koruma
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Gelişmiş Renk Haritaları
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        İstatistiksel Hesaplamalar
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('process_type').addEventListener('change', function() {
+    const processType = this.value;
+    const binsContainer = document.getElementById('binsContainer');
+    const algorithmContainer = document.getElementById('algorithmContainer');
+    
+    if (processType === 'histogram') {
+        binsContainer.style.display = 'block';
+        algorithmContainer.style.display = 'none';
+    } else if (processType === 'vegetation') {
+        binsContainer.style.display = 'none';
+        algorithmContainer.style.display = 'block';
+    } else {
+        binsContainer.style.display = 'none';
+        algorithmContainer.style.display = 'none';
+    }
+});
+
+document.getElementById('geotiff_file').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const fileSize = file.size / 1024 / 1024; // MB
+        const allowedTypes = ['image/tiff', 'image/tif'];
+        
+        if (!file.name.toLowerCase().endsWith('.tif') && !file.name.toLowerCase().endsWith('.tiff')) {
+            alert('Lütfen bir GeoTIFF dosyası seçin (.tif veya .tiff).');
+            this.value = '';
+            return;
+        }
+        
+        if (fileSize > 100) {
+            alert('Dosya boyutu 100MB\'dan küçük olmalıdır.');
+            this.value = '';
+            return;
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}Drone Haritalama - Farm Vision{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-map me-2"></i>Drone Haritalama ve Bitki Örtüsü Analizi
+        </h1>
+        
+        <div class="row mb-5">
+            <!-- Vegetation Analysis -->
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-chart-area fa-4x text-success"></i>
+                        </div>
+                        <h5 class="card-title">Bitki Örtüsü Analizi</h5>
+                        <p class="card-text">
+                            15+ spektral analiz algoritması (NDVI, GLI, VARI, ENDVI, MPRI, EXG, TGI, BAI) 
+                            ile bitki sağlığı ve verim analizi.
+                        </p>
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                Algoritma Sayısı: 15+ | Renk Haritası: 10+ Seçenek | GeoTIFF Desteği
+                            </small>
+                        </div>
+                        <a href="{{ url_for('mapping.vegetation_analysis') }}" class="btn btn-success">
+                            <i class="fas fa-leaf me-2"></i>Analiz Başlat
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Interactive Map -->
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-globe fa-4x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">İnteraktif Harita</h5>
+                        <p class="card-text">
+                            Leaflet.js tabanlı interactive haritalar. GeoTIFF overlay, 
+                            vegetation analiz sonuçları ve proje verilerini görselleştirin.
+                        </p>
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                Özellikler: Multi-layer, Zoom, Measurement, Export
+                            </small>
+                        </div>
+                        <a href="{{ url_for('mapping.interactive_map') }}" class="btn btn-primary">
+                            <i class="fas fa-map-marked-alt me-2"></i>Haritayı Aç
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Vegetation Algorithms -->
+        <div class="card mb-5">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>Desteklenen Bitki Örtüsü Algoritmaları
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <span class="badge bg-success fs-6 px-3 py-2">NDVI</span>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-1">Normalized Difference Vegetation Index</h6>
+                                <p class="mb-0 text-muted">Yeşil bitki örtüsü miktarını gösterir</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <span class="badge bg-info fs-6 px-3 py-2">GLI</span>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-1">Green Leaf Index</h6>
+                                <p class="mb-0 text-muted">Yeşil yaprak ve gövdeleri gösterir</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <span class="badge bg-warning fs-6 px-3 py-2">VARI</span>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-1">Visual Atmospheric Resistance Index</h6>
+                                <p class="mb-0 text-muted">Bitki örtüsü alanlarını gösterir</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <span class="badge bg-primary fs-6 px-3 py-2">ENDVI</span>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-1">Enhanced NDVI</h6>
+                                <p class="mb-0 text-muted">Gelişmiş bitki sağlığı analizi</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <span class="badge bg-danger fs-6 px-3 py-2">NDWI</span>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-1">Normalized Difference Water Index</h6>
+                                <p class="mb-0 text-muted">Su içeriği ve su kütleleri</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <span class="badge bg-secondary fs-6 px-3 py-2">+10</span>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-1">Daha Fazla Algoritma</h6>
+                                <p class="mb-0 text-muted">EXG, TGI, BAI, SAVI, MPRI ve daha fazlası</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Analyses -->
+        {% if recent_analyses %}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-history me-2"></i>Son Analizler
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Tarih</th>
+                                <th>Algoritma</th>
+                                <th>Renk Haritası</th>
+                                <th>Aralık</th>
+                                <th>Proje</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for analysis in recent_analyses %}
+                            <tr>
+                                <td>{{ analysis.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                                <td>
+                                    <span class="badge bg-success">{{ analysis.algorithm.upper() }}</span>
+                                </td>
+                                <td>{{ analysis.colormap }}</td>
+                                <td>
+                                    {% if analysis.min_range is not none and analysis.max_range is not none %}
+                                        {{ "%.2f"|format(analysis.min_range) }} - {{ "%.2f"|format(analysis.max_range) }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if analysis.project %}
+                                        <a href="{{ url_for('main.project_detail', project_id=analysis.project.id) }}" 
+                                           class="text-decoration-none">
+                                            {{ analysis.project.title }}
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">Proje yok</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="#" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-sm btn-outline-success">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

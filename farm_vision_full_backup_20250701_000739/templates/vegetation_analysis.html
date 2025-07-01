@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}Bitki Örtüsü Analizi - Farm Vision{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-chart-area me-2"></i>Bitki Örtüsü Spektral Analizi
+        </h1>
+        
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">GeoTIFF Analizi</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" enctype="multipart/form-data" id="vegetationForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="algorithm" class="form-label">Analiz Algoritması</label>
+                                    <select class="form-select" id="algorithm" name="algorithm" required>
+                                        {% for key, value in algorithms.items() %}
+                                        <option value="{{ key }}" 
+                                                {% if key == 'ndvi' %}selected{% endif %}>
+                                            {{ value }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="colormap" class="form-label">Renk Haritası</label>
+                                    <select class="form-select" id="colormap" name="colormap">
+                                        {% for key, value in colormaps.items() %}
+                                        <option value="{{ key }}"
+                                                {% if key == 'rdylgn' %}selected{% endif %}>
+                                            {{ value }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="min_range" class="form-label">Minimum Değer</label>
+                                    <input type="number" class="form-control" id="min_range" name="min_range" 
+                                           value="-1.0" step="0.1" required>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="max_range" class="form-label">Maksimum Değer</label>
+                                    <input type="number" class="form-control" id="max_range" name="max_range" 
+                                           value="1.0" step="0.1" required>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="project_id" class="form-label">Proje (Opsiyonel)</label>
+                                <select class="form-select" id="project_id" name="project_id">
+                                    <option value="">Proje Seçin</option>
+                                    {% for project in projects %}
+                                    <option value="{{ project.id }}">{{ project.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="image" class="form-label">GeoTIFF Dosyası</label>
+                                <input type="file" class="form-control" id="image" name="image" 
+                                       accept=".tif,.tiff" required>
+                                <div class="form-text">
+                                    Desteklenen formatlar: GeoTIFF (.tif, .tiff). Maksimum boyut: 100MB
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-success btn-lg" id="analyzeBtn">
+                                    <i class="fas fa-chart-line me-2"></i>Analizi Başlat
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <!-- Progress Bar -->
+                        <div class="mt-3" id="progressContainer" style="display: none;">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" 
+                                     role="progressbar" style="width: 100%">
+                                    Analiz ediliyor...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">Algoritma Açıklamaları</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="algorithmInfo">
+                            <h6>NDVI - Normalized Difference Vegetation Index</h6>
+                            <p class="small text-muted">
+                                Yeşil bitki örtüsü miktarını ölçer. Sağlıklı bitkiler yüksek NDVI değerine sahiptir.
+                                Değer aralığı: -1 ile +1 arası.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">Desteklenen Algoritmalar</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="small">
+                            <div class="mb-2">
+                                <span class="badge bg-success me-2">NDVI</span>Vegetation Index
+                            </div>
+                            <div class="mb-2">
+                                <span class="badge bg-info me-2">GLI</span>Green Leaf Index
+                            </div>
+                            <div class="mb-2">
+                                <span class="badge bg-warning me-2">VARI</span>Atmospheric Resistance
+                            </div>
+                            <div class="mb-2">
+                                <span class="badge bg-primary me-2">ENDVI</span>Enhanced NDVI
+                            </div>
+                            <div class="mb-2">
+                                <span class="badge bg-danger me-2">NDWI</span>Water Index
+                            </div>
+                            <div class="mb-2">
+                                <span class="badge bg-secondary me-2">+10</span>Daha fazla...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Renk Haritaları</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="small">
+                            <div class="mb-1">🟢 RdYlGn - Kırmızı-Sarı-Yeşil</div>
+                            <div class="mb-1">🌈 Spectral - Spektral</div>
+                            <div class="mb-1">🟣 Viridis - Viridis</div>
+                            <div class="mb-1">🔥 Inferno - Inferno</div>
+                            <div class="mb-1">⚡ Plasma - Plasma</div>
+                            <div class="mb-1">🌍 Terrain - Arazi</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const algorithmDescriptions = {
+    'ndvi': {
+        title: 'NDVI - Normalized Difference Vegetation Index',
+        description: 'Yeşil bitki örtüsü miktarını ölçer. Sağlıklı bitkiler yüksek NDVI değerine sahiptir. Değer aralığı: -1 ile +1 arası.'
+    },
+    'gli': {
+        title: 'GLI - Green Leaf Index',
+        description: 'Yeşil yaprak ve gövdeleri vurgular. Bitki yoğunluğunun belirlenmesinde kullanılır.'
+    },
+    'vari': {
+        title: 'VARI - Visual Atmospheric Resistance Index',
+        description: 'Bitki örtüsü alanlarını atmosferik etkilerden bağımsız olarak gösterir.'
+    },
+    'endvi': {
+        title: 'ENDVI - Enhanced NDVI',
+        description: 'NDVI\'nin geliştirilmiş versiyonu. Mavi ve yeşil bantları kullanarak bitki sağlığını analiz eder.'
+    },
+    'ndwi': {
+        title: 'NDWI - Normalized Difference Water Index',
+        description: 'Su kütlelerindeki su içeriği miktarını gösterir. Su stresi tespitinde kullanılır.'
+    }
+};
+
+document.getElementById('algorithm').addEventListener('change', function() {
+    const algorithm = this.value;
+    const infoDiv = document.getElementById('algorithmInfo');
+    
+    if (algorithmDescriptions[algorithm]) {
+        const info = algorithmDescriptions[algorithm];
+        infoDiv.innerHTML = `
+            <h6>${info.title}</h6>
+            <p class="small text-muted">${info.description}</p>
+        `;
+    }
+});
+
+document.getElementById('vegetationForm').addEventListener('submit', function(e) {
+    const progressContainer = document.getElementById('progressContainer');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    
+    // Show progress bar
+    progressContainer.style.display = 'block';
+    analyzeBtn.disabled = true;
+    analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Analiz ediliyor...';
+});
+</script>
+{% endblock %}

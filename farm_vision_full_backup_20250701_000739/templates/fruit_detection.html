@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Meyve Tespiti - Farm Vision{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-apple-alt me-2"></i>YOLO v7 Meyve Tespiti
+        </h1>
+        
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Görüntü Yükleme ve Tespit</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" enctype="multipart/form-data" id="fruitDetectionForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fruit_type" class="form-label">Meyve Türü</label>
+                                    <select class="form-select" id="fruit_type" name="fruit_type" required>
+                                        <option value="elma">🍎 Elma (0.105kg)</option>
+                                        <option value="armut">🍐 Armut (0.220kg)</option>
+                                        <option value="mandalina">🍊 Mandalina (0.125kg)</option>
+                                        <option value="seftali">🍑 Şeftali (0.185kg)</option>
+                                        <option value="portakal">🍊 Portakal (0.150kg)</option>
+                                        <option value="nar">🍎 Nar (0.300kg)</option>
+                                        <option value="hurma">🍅 Hurma (0.200kg)</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="project_id" class="form-label">Proje (Opsiyonel)</label>
+                                    <select class="form-select" id="project_id" name="project_id">
+                                        <option value="">Proje Seçin</option>
+                                        {% for project in projects %}
+                                        <option value="{{ project.id }}">{{ project.title }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="image" class="form-label">Görüntü Dosyası</label>
+                                <input type="file" class="form-control" id="image" name="image" 
+                                       accept=".jpg,.jpeg,.png" required>
+                                <div class="form-text">
+                                    Desteklenen formatlar: JPG, JPEG, PNG. Maksimum boyut: 100MB
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-success btn-lg" id="detectBtn">
+                                    <i class="fas fa-search me-2"></i>Tespit Başlat
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <!-- Progress Bar -->
+                        <div class="mt-3" id="progressContainer" style="display: none;">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                     role="progressbar" style="width: 100%">
+                                    İşleniyor...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Meyve Ağırlıkları</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Meyve</th>
+                                        <th>Ağırlık (kg)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>🍎 Elma</td>
+                                        <td>0.105</td>
+                                    </tr>
+                                    <tr>
+                                        <td>🍐 Armut</td>
+                                        <td>0.220</td>
+                                    </tr>
+                                    <tr>
+                                        <td>🍊 Mandalina</td>
+                                        <td>0.125</td>
+                                    </tr>
+                                    <tr>
+                                        <td>🍑 Şeftali</td>
+                                        <td>0.185</td>
+                                    </tr>
+                                    <tr>
+                                        <td>🍊 Portakal</td>
+                                        <td>0.150</td>
+                                    </tr>
+                                    <tr>
+                                        <td>🍎 Nar</td>
+                                        <td>0.300</td>
+                                    </tr>
+                                    <tr>
+                                        <td>🍅 Hurma</td>
+                                        <td>0.200</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">Özellikler</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                YOLO v7 AI Modeli
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Otomatik Sayma
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Ağırlık Hesaplama
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Güven Skoru
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Görsel Analiz
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('fruitDetectionForm').addEventListener('submit', function(e) {
+    const progressContainer = document.getElementById('progressContainer');
+    const detectBtn = document.getElementById('detectBtn');
+    
+    // Show progress bar
+    progressContainer.style.display = 'block';
+    detectBtn.disabled = true;
+    detectBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>İşleniyor...';
+});
+</script>
+{% endblock %}
