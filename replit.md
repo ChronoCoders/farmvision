@@ -1,112 +1,115 @@
-# Farm Vision AI Application
+# Farm Vision - AI-Powered Agricultural Analysis Platform
 
 ## Overview
 
-This is a Flask-based web application that provides AI-powered computer vision capabilities for agricultural analysis. The system combines YOLOv7 object detection models with agricultural image processing to detect and count fruits, identify leaf diseases, and provide vegetation analysis through various indices. The application includes user management, project organization, and real-time processing capabilities.
+Farm Vision is a comprehensive web application that combines AI-powered computer vision with agricultural mapping and analysis. The platform enables farmers and agricultural professionals to analyze crops, detect diseases, count fruits, and visualize farm data through interactive maps and vegetation indices.
 
 ## System Architecture
 
-The application follows a traditional Flask MVC architecture with the following key components:
-
 ### Backend Architecture
 - **Framework**: Flask with SQLAlchemy ORM
-- **Database**: SQLite (default) with PostgreSQL support via environment variables
-- **Authentication**: Flask-Login for session management
+- **Database**: SQLite (configurable to PostgreSQL via environment variables)
+- **Authentication**: Flask-Login for user session management
 - **File Handling**: Local file storage with configurable upload directories
-- **AI/ML Integration**: YOLOv7 models with PyTorch backend for object detection
+- **AI Processing**: YOLO models integrated for object detection and disease recognition
 
 ### Frontend Architecture
-- **Templates**: Jinja2 templating with modular component structure
-- **Static Assets**: CSS, JavaScript, and image files served from static directory
-- **Interactive Maps**: Leaflet.js integration for geospatial visualization
+- **Template Engine**: Jinja2 with responsive HTML templates
+- **Styling**: Bootstrap framework with custom CSS
+- **Interactive Maps**: Leaflet.js for GeoTIFF visualization and mapping
 - **Charts**: Chart.js for data visualization
+- **Language**: Turkish interface throughout the application
 
 ## Key Components
 
-### Models (models.py)
-- **User Model**: Handles user authentication and profile management
-- **Project Model**: Organizes agricultural projects by farm, field, and location
-- **DetectionResult Model**: Stores AI detection results with metadata
+### 1. User Management System
+- User registration and authentication
+- Profile management with personal information
+- Session-based access control
+- Password reset functionality
 
-### Detection Engine
-- **YOLOv7 Integration**: Custom detection scripts for fruit counting and disease identification
-- **Multi-detection Support**: Batch processing capabilities for multiple images
-- **Vegetation Indices**: NDVI, GLI, VARI and other agricultural indices calculation
+### 2. Project Management
+- Create and manage farm projects
+- Associate projects with specific farms and fields
+- Track project metadata (location, creation dates, etc.)
+- Link projects to detection results and analyses
 
-### File Management
-- **Upload System**: Handles image uploads with 100MB size limit
-- **Result Storage**: Organized directory structure for processed images
-- **Static Serving**: Efficient serving of detection results and visualizations
+### 3. AI Detection System
+- **Fruit Detection**: YOLO-based counting and classification
+- **Disease Detection**: Leaf disease identification with recommendations
+- **Multi-object Detection**: Batch processing capabilities
+- **Model Ensemble**: Multiple AI models for improved accuracy
+
+### 4. Geospatial Analysis
+- **GeoTIFF Processing**: Handle large agricultural imagery
+- **Vegetation Indices**: NDVI, EVI, SAVI and other agricultural indices
+- **Interactive Mapping**: Real-time visualization of processed data
+- **Histogram Analysis**: Statistical analysis of vegetation data
+
+### 5. Data Storage
+- **User Data**: Personal information and authentication
+- **Project Data**: Farm and field information
+- **Detection Results**: AI analysis results with metadata
+- **File Management**: Organized storage for uploads and results
 
 ## Data Flow
 
-1. **User Authentication**: Users log in through Flask-Login system
-2. **Project Creation**: Users create projects with farm/field metadata
-3. **Image Upload**: Agricultural images are uploaded and stored
-4. **AI Processing**: YOLOv7 models process images for detection/classification
-5. **Result Storage**: Detection results are saved with coordinates and counts
-6. **Visualization**: Results are displayed through web interface with maps and charts
+1. **User Registration/Login**: Authentication through Flask-Login
+2. **Project Creation**: Users create farm projects with metadata
+3. **Image Upload**: Agricultural images uploaded to configured directories
+4. **AI Processing**: YOLO models process images for detection/classification
+5. **Result Storage**: Analysis results saved to database with file references
+6. **Visualization**: Results displayed through charts, maps, and reports
+7. **Export**: Processed data available for download and further analysis
 
 ## External Dependencies
 
-### Core Dependencies
-- **Flask Ecosystem**: Flask, Flask-SQLAlchemy, Flask-Login
-- **AI/ML Stack**: PyTorch, YOLOv7, OpenCV, PIL
-- **Geospatial**: GDAL, Rasterio, Leaflet.js
-- **Data Processing**: NumPy, Pandas, SciPy
+### Core Framework Dependencies
+- Flask and extensions (SQLAlchemy, Login)
+- PyTorch for AI model inference
+- OpenCV for image processing
+- NumPy/SciPy for numerical computations
 
-### Frontend Libraries
-- **Mapping**: Leaflet.js with georaster support
-- **Charts**: Chart.js for statistical visualization
-- **UI Framework**: Custom CSS with responsive design
+### Geospatial Dependencies
+- Rasterio for GeoTIFF handling
+- GDAL for geospatial operations
+- Rio-tiler for raster processing
+- Proj4 for coordinate transformations
+
+### Frontend Dependencies
+- Leaflet.js for interactive mapping
+- Chart.js for data visualization
+- Bootstrap for responsive design
+- Font Awesome for icons
+
+### AI Model Dependencies
+- YOLO models for object detection
+- Ultralytics for model management
+- Custom trained models for agricultural applications
 
 ## Deployment Strategy
 
-The application is configured for flexible deployment:
-
-### Development Setup
-- SQLite database for local development
-- Debug mode enabled through main.py
-- Local file storage in static directories
+### Development Environment
+- Flask development server with debug mode
+- SQLite database for rapid prototyping
+- Local file storage for uploads and results
+- Environment variables for configuration
 
 ### Production Considerations
-- Environment variable configuration for database URL
-- ProxyFix middleware for reverse proxy deployment
-- Configurable session secrets and upload limits
-- Pool connection management for database reliability
+- Gunicorn WSGI server recommended
+- PostgreSQL database for scalability
+- Cloud storage integration capability
+- SSL/TLS encryption for secure access
+- Load balancing for high availability
 
-### File Structure
-```
-static/
-├── uploads/     # User uploaded images
-├── results/     # AI processing results
-└── detected/    # Detection visualization outputs
-```
+### Configuration Management
+- Environment-based configuration
+- Separate settings for development/production
+- Configurable file upload limits and directories
+- Database connection string management
 
 ## Changelog
-```
-Changelog:
-- June 30, 2025. Initial setup
-- June 30, 2025. Completed full integration of uploaded files:
-  * YOLO v7 model configurations (.yaml files) integrated
-  * Advanced GDAL/rasterio histogram processing implemented  
-  * Django components adapted to Flask (forms, models, views)
-  * 15+ vegetation analysis algorithms from uploaded files
-  * Corn disease detection with Turkish recommendations
-  * Multi-fruit detection with weight coefficients (8 fruit types)
-  * Added Turkish date/palm fruit detection (8-12 gram average)
-  * Advanced colormap processing (RdYlGn_lut)
-  * GeoTIFF processing with histogram analysis
-  * All uploaded algorithms now functional in Flask app
-- July 1, 2025. COMPLETE REAL AI SYSTEM TRANSITION:
-  * Eliminated all mock/simulation data - now 100% authentic AI
-  * Real YOLO v7 inference engine with PyTorch backend
-  * Authentic fruit detection (no fake results)
-  * Real corn disease detection with trained models
-  * Genuine tree counting from drone imagery  
-  * AI system status monitoring page added
-  * Model loading system with fallback error handling
-```
+- July 03, 2025. Initial setup
 
 ## User Preferences
 
