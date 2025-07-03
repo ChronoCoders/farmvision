@@ -1,0 +1,28 @@
+# Farm Vision - Robots.txt
+# Tarımsal AI Çözümleri için Robot Yönergeleri
+
+User-agent: *
+Allow: /
+
+# Public pages - SEO friendly
+Allow: /static/
+Allow: /favicon.ico
+Allow: /robots.txt
+
+# Restrict sensitive areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /auth/logout
+Disallow: /static/uploads/
+Disallow: /static/results/
+Disallow: /static/detected/
+
+# Allow detection demo pages for SEO
+Allow: /detection/
+Allow: /mapping/
+
+# Crawl delay
+Crawl-delay: 1
+
+# Sitemap location (when available)
+# Sitemap: https://farmvision.com/sitemap.xml

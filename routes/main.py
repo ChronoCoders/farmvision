@@ -96,6 +96,12 @@ def ai_status():
     
     return render_template('ai_system_status.html', ai_info=ai_info)
 
+@main_bp.route('/robots.txt')
+def robots_txt():
+    """Serve robots.txt for SEO"""
+    from flask import send_from_directory
+    return send_from_directory('static', 'robots.txt', mimetype='text/plain')
+
 @main_bp.route('/projects/<int:project_id>')
 @login_required
 def project_detail(project_id):
