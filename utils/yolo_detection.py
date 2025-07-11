@@ -108,17 +108,8 @@ def detect_fruits_yolo(image_path, confidence=0.25, fruit_type='mixed'):
             
         except Exception as e:
             logging.error(f"Real YOLO inference failed: {e}")
-            # Return empty result for real system - no fake data
-            result = {
-                'detections': [],
-                'total_count': 0,
-                'total_weight': 0.0,
-                'processing_time': round(time.time() - start_time, 2),
-                'confidence': confidence,
-                'algorithm': 'YOLO v7 Real AI (Model Loading...)',
-                'error': str(e)
-            }
-            return result
+            # No fallback data - raise error for authentic system
+            raise Exception(f"YOLO model not available: {e}")
         
         return result
         
