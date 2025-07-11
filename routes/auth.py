@@ -81,11 +81,16 @@ def register():
             phone=phone
         )
         
-        db.session.add(user)
-        db.session.commit()
-        
-        flash('Kayıt başarılı! Şimdi giriş yapabilirsiniz.', 'success')
-        return redirect(url_for('auth.login'))
+        try:
+            db.session.add(user)
+            db.session.commit()
+            flash('Kayıt başarılı! Şimdi giriş yapabilirsiniz.', 'success')
+            return redirect(url_for('auth.login'))
+        except Exception as e:
+            db.session.rollback()
+            flash('Kayıt sırasında hata oluştu. Lütfen tekrar deneyin.', 'error')
+            app.logger.error(f"Registration error: {str(e)}")
+            return render_template('register.html')
     
     return render_template('register.html')
 
@@ -102,14 +107,17 @@ def profile():
     if request.method == 'POST':
         current_user.first_name = request.form.get('first_name', current_user.first_name)
         current_user.last_name = request.form.get('last_name', current_user.last_name)
-        current_user.email = request.form.get('email', current_user.email)
+        new_email = request.form.get('email', current_user.email)
         current_user.phone = request.form.get('phone', current_user.phone)
         
-        # Check if email is already used by another user
-        existing_user = User.query.filter_by(email=current_user.email).first()
-        if existing_user and existing_user.id != current_user.id:
-            flash('Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor.', 'error')
-            return render_template('profile.html')
+        # Fix: Check the NEW email, not current user's email
+        if new_email != current_user.email:
+            existing_user = User.query.filter_by(email=new_email).first()
+            if existing_user and existing_user.id != current_user.id:
+                flash('Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor.', 'error')
+                return render_template('profile.html')
+        
+        current_user.email = new_email
         
         # Password change
         current_password = request.form.get('current_password')
@@ -131,7 +139,12 @@ def profile():
             
             current_user.password_hash = generate_password_hash(new_password)
         
-        db.session.commit()
-        flash('Profil bilgileriniz güncellendi.', 'success')
+        try:
+            db.session.commit()
+            flash('Profil bilgileriniz güncellendi.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash('Profil güncellenirken hata oluştu.', 'error')
+            app.logger.error(f"Profile update error: {str(e)}")
     
     return render_template('profile.html')

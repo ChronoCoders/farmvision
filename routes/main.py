@@ -1,7 +1,9 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user
 from models import Project, DetectionResult, VegetationAnalysis
-from app import db
+from app import db, app
+import time
+import os
 
 main_bp = Blueprint('main', __name__)
 
@@ -113,3 +115,29 @@ def project_detail(project_id):
     
     return render_template('project_detail.html', project=project,
                          detections=detections, vegetation_analyses=vegetation_analyses)
+
+@main_bp.route('/health')
+def health_check():
+    """Application health check"""
+    try:
+        # Check database connection
+        db.session.execute('SELECT 1')
+        
+        # Check required directories
+        required_dirs = [app.config['UPLOAD_FOLDER'], app.config['RESULTS_FOLDER']]
+        for directory in required_dirs:
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+        
+        return jsonify({
+            'status': 'healthy',
+            'timestamp': time.time(),
+            'database': 'connected',
+            'version': '1.0.0'
+        }), 200
+    except Exception as e:
+        return jsonify({
+            'status': 'unhealthy',
+            'error': str(e),
+            'timestamp': time.time()
+        }), 503

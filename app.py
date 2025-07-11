@@ -53,6 +53,11 @@ os.makedirs('static/convertor', exist_ok=True)
 with app.app_context():
     # Import models and routes
     import models
+    from utils.error_handlers import setup_logging, validate_app_config
+    
+    # Setup logging and validate configuration
+    setup_logging()
+    validate_app_config()
     from routes.main import main_bp
     from routes.detection import detection_bp
     from routes.mapping import mapping_bp

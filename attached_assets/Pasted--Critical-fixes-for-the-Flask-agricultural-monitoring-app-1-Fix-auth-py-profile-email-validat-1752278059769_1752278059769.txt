@@ -1,0 +1,209 @@
+# Critical fixes for the Flask agricultural monitoring app
+
+# 1. Fix auth.py profile email validation (Line ~107)
+@auth_bp.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    if request.method == 'POST':
+        new_email = request.form.get('email', current_user.email)
+        
+        # Fix: Check the NEW email, not current user's email
+        if new_email != current_user.email:
+            existing_user = User.query.filter_by(email=new_email).first()
+            if existing_user and existing_user.id != current_user.id:
+                flash('Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor.', 'error')
+                return render_template('profile.html')
+        
+        current_user.email = new_email
+        # ... rest of function
+
+# 2. Add proper error handling for database operations
+def safe_db_commit():
+    """Safe database commit with rollback on error"""
+    try:
+        db.session.commit()
+        return True
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Database error: {str(e)}")
+        return False
+
+# 3. Fix file upload handling in detection.py
+@detection_bp.route('/advanced_multi_detection', methods=['POST'])
+@login_required 
+def process_advanced_multi_detection():
+    try:
+        if 'image' not in request.files:
+            flash('Lütfen bir görüntü dosyası seçin.', 'error')
+            return redirect(url_for('detection.advanced_multi_detection'))
+        
+        file = request.files['image']
+        if file.filename == '':
+            flash('Dosya seçilmedi.', 'error')
+            return redirect(url_for('detection.advanced_multi_detection'))
+        
+        if file and allowed_file(file.filename):
+            # Fix: Proper file saving
+            filename = secure_filename(file.filename)
+            file_path = save_uploaded_file(file, filename)
+            
+            # Check if file was actually saved
+            if not file_path or not os.path.exists(file_path):
+                flash('Dosya yüklenirken hata oluştu.', 'error')
+                return redirect(url_for('detection.advanced_multi_detection'))
+            
+            try:
+                # Process detection with cleanup
+                detection_result = detect_fruits_yolo(
+                    file_path, 
+                    confidence=float(request.form.get('confidence', 25)) / 100,
+                    fruit_type=request.form.get('detection_mode', 'all')
+                )
+                
+                if detection_result:
+                    result = DetectionResult(
+                        image_path=file_path,
+                        detection_type='advanced_multi_fruit',
+                        fruit_type=request.form.get('detection_mode', 'all'),
+                        count=detection_result['total_count'],
+                        total_weight=detection_result['total_weight'],
+                        confidence=detection_result['confidence'],
+                        processing_time=detection_result['processing_time'],
+                        user_id=current_user.id,
+                        project_id=int(request.form.get('project_id')) if request.form.get('project_id') else None
+                    )
+                    
+                    db.session.add(result)
+                    if safe_db_commit():
+                        flash(f'{detection_result["total_count"]} adet meyve tespit edildi!', 'success')
+                        return redirect(url_for('detection.advanced_multi_result', result_id=result.id))
+                    else:
+                        flash('Veritabanı hatası oluştu.', 'error')
+                else:
+                    flash('Tespit işlemi başarısız oldu.', 'error')
+                    
+            finally:
+                # Cleanup temporary files if needed
+                if os.path.exists(file_path) and file_path.startswith('/tmp/'):
+                    try:
+                        os.remove(file_path)
+                    except:
+                        pass
+        else:
+            flash('Geçersiz dosya formatı.', 'error')
+            
+    except Exception as e:
+        app.logger.error(f'Detection error: {str(e)}')
+        flash(f'İşlem sırasında hata oluştu: {str(e)}', 'error')
+    
+    return redirect(url_for('detection.advanced_multi_detection'))
+
+# 4. Add input validation helper
+def validate_form_inputs(required_fields, form_data):
+    """Validate required form fields"""
+    missing_fields = []
+    for field in required_fields:
+        if not form_data.get(field) or form_data.get(field).strip() == '':
+            missing_fields.append(field)
+    return missing_fields
+
+# 5. Add file cleanup utility
+def cleanup_temp_files(file_paths):
+    """Clean up temporary files"""
+    for path in file_paths:
+        try:
+            if os.path.exists(path) and '/temp/' in path:
+                os.remove(path)
+        except Exception as e:
+            app.logger.warning(f"Could not remove temp file {path}: {e}")
+
+# 6. Add comprehensive error handling decorator
+from functools import wraps
+
+def handle_errors(f):
+    """Decorator for comprehensive error handling"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except FileNotFoundError as e:
+            flash('Dosya bulunamadı.', 'error')
+            app.logger.error(f"File not found: {e}")
+            return redirect(request.url)
+        except ValueError as e:
+            flash('Geçersiz veri girişi.', 'error')
+            app.logger.error(f"Value error: {e}")
+            return redirect(request.url)
+        except Exception as e:
+            flash('Beklenmeyen bir hata oluştu.', 'error')
+            app.logger.error(f"Unexpected error in {f.__name__}: {e}")
+            return redirect(url_for('main.dashboard'))
+    return decorated_function
+
+# Usage example:
+@detection_bp.route('/fruit', methods=['GET', 'POST'])
+@login_required
+@handle_errors
+def fruit_detection():
+    # Function implementation with automatic error handling
+    pass
+
+# 7. Add configuration validation
+def validate_app_config():
+    """Validate required configuration settings"""
+    required_configs = [
+        'UPLOAD_FOLDER',
+        'RESULTS_FOLDER',
+        'SECRET_KEY',
+        'DATABASE_URL'
+    ]
+    
+    missing_configs = []
+    for config in required_configs:
+        if not app.config.get(config):
+            missing_configs.append(config)
+    
+    if missing_configs:
+        raise ValueError(f"Missing required configurations: {missing_configs}")
+
+# 8. Add proper logging configuration
+import logging
+from logging.handlers import RotatingFileHandler
+
+def setup_logging():
+    """Setup application logging"""
+    if not app.debug:
+        file_handler = RotatingFileHandler('logs/agricultural_app.log', maxBytes=10240, backupCount=10)
+        file_handler.setFormatter(logging.Formatter(
+            '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+        ))
+        file_handler.setLevel(logging.INFO)
+        app.logger.addHandler(file_handler)
+        app.logger.setLevel(logging.INFO)
+        app.logger.info('Agricultural monitoring app startup')
+
+# 9. Add health check endpoint
+@main_bp.route('/health')
+def health_check():
+    """Application health check"""
+    try:
+        # Check database connection
+        db.session.execute('SELECT 1')
+        
+        # Check required directories
+        required_dirs = [app.config['UPLOAD_FOLDER'], app.config['RESULTS_FOLDER']]
+        for directory in required_dirs:
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+        
+        return jsonify({
+            'status': 'healthy',
+            'timestamp': time.time(),
+            'database': 'connected'
+        }), 200
+    except Exception as e:
+        return jsonify({
+            'status': 'unhealthy',
+            'error': str(e),
+            'timestamp': time.time()
+        }), 503
