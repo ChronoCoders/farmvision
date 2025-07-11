@@ -1,0 +1,325 @@
+{% extends "base.html" %}
+
+{% block title %}AI Tespit Sonuçları - Farm Vision{% endblock %}
+
+{% block extra_css %}
+<style>
+    .result-card {
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: box-shadow 0.3s ease;
+        margin-bottom: 20px;
+    }
+    
+    .result-card:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    .result-image {
+        max-width: 100%;
+        height: 250px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+    
+    .detection-badge {
+        background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+        color: white;
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    
+    .fruit-badge {
+        background: var(--orange);
+        color: white;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        margin-left: 8px;
+    }
+    
+    .stats-container {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 15px;
+    }
+    
+    .stat-item {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--primary-green);
+    }
+    
+    .stat-label {
+        font-size: 0.85rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .confidence-bar {
+        background: #e9ecef;
+        border-radius: 10px;
+        height: 8px;
+        overflow: hidden;
+        margin-top: 5px;
+    }
+    
+    .confidence-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary-green), var(--forest-green));
+        border-radius: 10px;
+        transition: width 0.3s ease;
+    }
+    
+    .download-btn {
+        background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+        border: none;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 0.85rem;
+        transition: transform 0.2s ease;
+    }
+    
+    .download-btn:hover {
+        transform: translateY(-2px);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .processing-time {
+        color: #6c757d;
+        font-size: 0.8rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-search-plus text-success me-2"></i>AI Tespit Sonuçları</h2>
+                <a href="{{ url_for('detection.index') }}" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>Yeni Tespit
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% if results.items %}
+        <div class="row">
+            {% for result in results.items %}
+            <div class="col-lg-6 col-xl-4 mb-4">
+                <div class="card result-card h-100">
+                    <div class="card-header bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">
+                                <i class="fas fa-robot text-success me-2"></i>
+                                Tespit #{{ result.id }}
+                            </h6>
+                            <div>
+                                <span class="detection-badge">{{ result.detection_type }}</span>
+                                {% if result.fruit_type %}
+                                <span class="fruit-badge">{{ result.fruit_type.title() }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if result.result_path %}
+                    <div class="card-body text-center">
+                        <img src="{{ url_for('static', filename='uploads/' + result.result_path.split('/')[-1]) }}" 
+                             alt="Tespit Sonucu" class="result-image mb-3" onclick="showImageModal(this.src)">
+                    </div>
+                    {% endif %}
+                    
+                    <div class="card-body pt-0">
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar me-1"></i>
+                                {{ result.created_at.strftime('%d.%m.%Y %H:%M') }}
+                            </small>
+                            {% if result.processing_time %}
+                            <div class="processing-time mt-1">
+                                <i class="fas fa-clock me-1"></i>
+                                İşlem Süresi: {{ "%.2f"|format(result.processing_time) }}s
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="stats-container">
+                            <div class="row">
+                                {% if result.count is not none and result.count > 0 %}
+                                <div class="col-6">
+                                    <div class="stat-item">
+                                        <div class="stat-value">{{ result.count }}</div>
+                                        <div class="stat-label">{{ 'Meyve' if result.detection_type == 'fruit' else 'Nesne' }}</div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if result.total_weight and result.total_weight > 0 %}
+                                <div class="col-6">
+                                    <div class="stat-item">
+                                        <div class="stat-value">{{ "%.1f"|format(result.total_weight) }}</div>
+                                        <div class="stat-label">KG</div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if result.confidence %}
+                                <div class="col-12 mt-2">
+                                    <div class="stat-label mb-1">Güven Oranı</div>
+                                    <div class="confidence-bar">
+                                        <div class="confidence-fill" style="width: {{ (result.confidence * 100)|round(1) }}%"></div>
+                                    </div>
+                                    <small class="text-muted">{{ (result.confidence * 100)|round(1) }}%</small>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if result.result_path %}
+                        <div class="mt-3 text-center">
+                            <a href="{{ url_for('static', filename='uploads/' + result.result_path.split('/')[-1]) }}" 
+                               download class="download-btn">
+                                <i class="fas fa-download me-2"></i>İndir
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    {% if result.project %}
+                    <div class="card-footer bg-light">
+                        <small class="text-muted">
+                            <i class="fas fa-folder me-1"></i>
+                            {{ result.project.title }}
+                        </small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if results.pages > 1 %}
+        <div class="row mt-4">
+            <div class="col-12">
+                <nav aria-label="Sayfa navigasyonu">
+                    <ul class="pagination justify-content-center">
+                        {% if results.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('detection.results', page=results.prev_num) }}" aria-label="Önceki">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for page_num in results.iter_pages() %}
+                            {% if page_num %}
+                                {% if page_num != results.page %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('detection.results', page=page_num) }}">{{ page_num }}</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                                {% endif %}
+                            {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if results.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('detection.results', page=results.next_num) }}" aria-label="Sonraki">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        {% endif %}
+        
+    {% else %}
+        <!-- Boş Durum -->
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-search-plus text-muted" style="font-size: 4rem;"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">Henüz AI Tespit Sonucu Yok</h4>
+                    <p class="text-muted mb-4">
+                        İlk AI tespitinizi başlatmak için meyve, hastalık veya ağaç tespiti yapın.
+                    </p>
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <a href="{{ url_for('detection.fruit_detection') }}" class="btn btn-success">
+                            <i class="fas fa-apple-alt me-2"></i>Meyve Tespiti
+                        </a>
+                        <a href="{{ url_for('detection.leaf_detection') }}" class="btn btn-warning">
+                            <i class="fas fa-leaf me-2"></i>Hastalık Tespiti
+                        </a>
+                        <a href="{{ url_for('detection.tree_detection') }}" class="btn btn-info">
+                            <i class="fas fa-tree me-2"></i>Ağaç Tespiti
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Modal for Image Preview -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Tespit Sonucu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" alt="Tespit Sonucu" style="max-width: 100%; height: auto;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showImageModal(imageSrc) {
+    const modalImage = document.getElementById('modalImage');
+    const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+    
+    modalImage.src = imageSrc;
+    imageModal.show();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Add cursor pointer to result images
+    const resultImages = document.querySelectorAll('.result-image');
+    resultImages.forEach(img => {
+        img.style.cursor = 'pointer';
+    });
+});
+</script>
+{% endblock %}

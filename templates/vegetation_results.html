@@ -81,9 +81,9 @@
         </div>
     </div>
 
-    {% if results %}
+    {% if results.items %}
         <div class="row">
-            {% for result in results %}
+            {% for result in results.items %}
             <div class="col-lg-6 col-xl-4 mb-4">
                 <div class="card result-card h-100">
                     <div class="card-header bg-light">
@@ -162,7 +162,7 @@
         </div>
         
         <!-- Pagination -->
-        {% if results|length >= 12 %}
+        {% if results.items|length >= 12 %}
         <div class="row mt-4">
             <div class="col-12 text-center">
                 <nav aria-label="Sayfa navigasyonu">
