@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}Bitki Örtüsü Analiz Sonuçları - Farm Vision{% endblock %}
+
+{% block extra_css %}
+<style>
+    .result-card {
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: box-shadow 0.3s ease;
+        margin-bottom: 20px;
+    }
+    
+    .result-card:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    .result-image {
+        max-width: 100%;
+        height: 300px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+    
+    .stats-badge {
+        background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: bold;
+        margin: 5px;
+        display: inline-block;
+    }
+    
+    .algorithm-badge {
+        background: var(--primary-blue);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+    
+    .histogram-container {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 15px;
+    }
+    
+    .download-btn {
+        background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        text-decoration: none;
+        display: inline-block;
+        transition: transform 0.2s ease;
+    }
+    
+    .download-btn:hover {
+        transform: translateY(-2px);
+        color: white;
+        text-decoration: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-chart-area text-success me-2"></i>Bitki Örtüsü Analiz Sonuçları</h2>
+                <a href="{{ url_for('mapping.vegetation_analysis') }}" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>Yeni Analiz
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% if results %}
+        <div class="row">
+            {% for result in results %}
+            <div class="col-lg-6 col-xl-4 mb-4">
+                <div class="card result-card h-100">
+                    <div class="card-header bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">
+                                <i class="fas fa-leaf text-success me-2"></i>
+                                Analiz #{{ result.id }}
+                            </h6>
+                            <span class="algorithm-badge">{{ result.algorithm.upper() }}</span>
+                        </div>
+                    </div>
+                    
+                    {% if result.result_path %}
+                    <div class="card-body text-center">
+                        <img src="{{ url_for('static', filename='uploads/' + result.result_path.split('/')[-1]) }}" 
+                             alt="Bitki Örtüsü Analizi" class="result-image mb-3">
+                    </div>
+                    {% endif %}
+                    
+                    <div class="card-body pt-0">
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar me-1"></i>
+                                {{ result.created_at.strftime('%d.%m.%Y %H:%M') }}
+                            </small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="stats-badge">
+                                <i class="fas fa-palette me-1"></i>
+                                {{ result.colormap.title() if result.colormap else 'Viridis' }}
+                            </div>
+                        </div>
+                        
+                        {% if result.min_range is not none and result.max_range is not none %}
+                        <div class="histogram-container">
+                            <h6><i class="fas fa-chart-bar me-2"></i>İstatistikler</h6>
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div class="text-primary">
+                                        <strong>{{ "%.3f"|format(result.min_range) }}</strong>
+                                        <br><small>Min Değer</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-success">
+                                        <strong>{{ "%.3f"|format(result.max_range) }}</strong>
+                                        <br><small>Max Değer</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.result_path %}
+                        <div class="mt-3 text-center">
+                            <a href="{{ url_for('static', filename='uploads/' + result.result_path.split('/')[-1]) }}" 
+                               download class="download-btn">
+                                <i class="fas fa-download me-2"></i>İndir
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    {% if result.project %}
+                    <div class="card-footer bg-light">
+                        <small class="text-muted">
+                            <i class="fas fa-folder me-1"></i>
+                            {{ result.project.title }}
+                        </small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if results|length >= 12 %}
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <nav aria-label="Sayfa navigasyonu">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item">
+                            <a class="page-link" href="#" aria-label="Önceki">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#" aria-label="Sonraki">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        {% endif %}
+        
+    {% else %}
+        <!-- Boş Durum -->
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-chart-area text-muted" style="font-size: 4rem;"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">Henüz Bitki Örtüsü Analizi Yok</h4>
+                    <p class="text-muted mb-4">
+                        İlk bitki örtüsü analizinizi başlatmak için tarımsal görüntülerinizi yükleyin.
+                    </p>
+                    <a href="{{ url_for('mapping.vegetation_analysis') }}" class="btn btn-success btn-lg">
+                        <i class="fas fa-plus me-2"></i>İlk Analizi Başlat
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Modal for Image Preview -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Bitki Örtüsü Analizi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" alt="Analiz Sonucu" style="max-width: 100%; height: auto;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Image click handling for modal
+    const resultImages = document.querySelectorAll('.result-image');
+    const modalImage = document.getElementById('modalImage');
+    const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+    
+    resultImages.forEach(img => {
+        img.addEventListener('click', function() {
+            modalImage.src = this.src;
+            imageModal.show();
+        });
+        
+        // Add cursor pointer
+        img.style.cursor = 'pointer';
+    });
+});
+</script>
+{% endblock %}
