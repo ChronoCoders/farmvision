@@ -60,19 +60,21 @@ def detect_fruits_yolo(image_path, confidence=0.25, fruit_type='mixed'):
             # Use real YOLO detection
             result = yolo_engine.detect_fruits(image_path, 'fruit', confidence)
             
-            # Filter by fruit type if specified
-            if fruit_type != 'mixed' and 'detections' in result:
-                filtered_detections = []
-                total_weight = 0.0
-                
-                for detection in result['detections']:
-                    if detection.get('class_name') == fruit_type:
-                        formatted_detection = {
-                            'fruit': detection.get('class_name', 'unknown'),
-                            'confidence': detection.get('confidence', 0.0),
-                            'bbox': detection.get('bbox', [0, 0, 100, 100]),
-                            'weight': detection.get('weight', FRUIT_WEIGHTS.get(fruit_type, 0.1))
-                        }
+            # Check if we got valid results
+            if result and 'detections' in result and len(result['detections']) > 0:
+                # Filter by fruit type if specified
+                if fruit_type != 'mixed':
+                    filtered_detections = []
+                    total_weight = 0.0
+                    
+                    for detection in result['detections']:
+                        if detection.get('class_name') == fruit_type:
+                            formatted_detection = {
+                                'fruit': detection.get('class_name', 'unknown'),
+                                'confidence': detection.get('confidence', 0.0),
+                                'bbox': detection.get('bbox', [0, 0, 100, 100]),
+                                'weight': detection.get('weight', FRUIT_WEIGHTS.get(fruit_type, 0.1))
+                            }
                         filtered_detections.append(formatted_detection)
                         total_weight += formatted_detection['weight']
                 

@@ -152,7 +152,17 @@ class YOLOInference:
                         if self.load_model(base_path, model_type):
                             break
                     else:
-                        raise ValueError(f"No {model_type} model available")
+                        # Model not available - return empty result for real system
+                        logging.warning(f"No {model_type} model available - returning empty result")
+                        return {
+                            'detections': [],
+                            'total_count': 0,
+                            'total_weight': 0.0,
+                            'processing_time': round(time.time() - start_time, 2),
+                            'confidence': conf_threshold,
+                            'algorithm': 'YOLO v7 Real (Model Not Found)',
+                            'device': str(self.device)
+                        }
             
             # Preprocess image
             tensor, scale, orig_size = self.preprocess_image(image_path)
