@@ -162,48 +162,53 @@
         </div>
         
         <!-- Pagination -->
-        {% if results.pages > 1 %}
-        <div class="row mt-4">
-            <div class="col-12">
-                <nav aria-label="Sayfa navigasyonu">
-                    <ul class="pagination justify-content-center">
-                        {% if results.has_prev %}
-                        <li class="page-item">
-                            <a class="page-link" href="{{ url_for('mapping.results', page=results.prev_num) }}" aria-label="Önceki">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        </li>
-                        {% endif %}
-                        
-                        {% for page_num in results.iter_pages() %}
-                            {% if page_num %}
-                                {% if page_num != results.page %}
-                                <li class="page-item">
-                                    <a class="page-link" href="{{ url_for('mapping.results', page=page_num) }}">{{ page_num }}</a>
-                                </li>
-                                {% else %}
-                                <li class="page-item active">
-                                    <span class="page-link">{{ page_num }}</span>
-                                </li>
-                                {% endif %}
-                            {% else %}
-                            <li class="page-item disabled">
-                                <span class="page-link">...</span>
+        {% if results %}
+            {% set total_pages = results.pages if results.pages else 0 %}
+            {% if total_pages > 1 %}
+            <div class="row mt-4">
+                <div class="col-12">
+                    <nav aria-label="Sayfa navigasyonu">
+                        <ul class="pagination justify-content-center">
+                            {% if results.has_prev %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('mapping.results', page=results.prev_num) }}" aria-label="Önceki">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
                             </li>
                             {% endif %}
-                        {% endfor %}
-                        
-                        {% if results.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="{{ url_for('mapping.results', page=results.next_num) }}" aria-label="Sonraki">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </nav>
+                            
+                            {% if results.iter_pages %}
+                                {% for page_num in results.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                                    {% if page_num %}
+                                        {% if page_num != results.page %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ url_for('mapping.results', page=page_num) }}">{{ page_num }}</a>
+                                        </li>
+                                        {% else %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ page_num }}</span>
+                                        </li>
+                                        {% endif %}
+                                    {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">...</span>
+                                    </li>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                            
+                            {% if results.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('mapping.results', page=results.next_num) }}" aria-label="Sonraki">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
             </div>
-        </div>
+            {% endif %}
         {% endif %}
         
     {% else %}
