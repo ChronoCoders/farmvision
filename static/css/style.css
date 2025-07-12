@@ -51,6 +51,29 @@ html {
     font-size: 1.5rem;
 }
 
+/* Navigation Menu Spacing */
+.navbar-nav.me-auto {
+    flex: 1;
+    justify-content: space-evenly;
+}
+
+.navbar-nav.me-auto .nav-item {
+    margin: 0 0.5rem;
+}
+
+@media (min-width: 992px) {
+    .navbar-nav.me-auto {
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+    }
+    
+    .navbar-nav.me-auto .nav-item {
+        flex: 1;
+        text-align: center;
+    }
+}
+
 .hero-section {
     background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
     border-radius: 15px;
