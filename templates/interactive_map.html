@@ -350,32 +350,6 @@ function initializeInteractiveMap() {
     drawnItems = new L.FeatureGroup();
     map.addLayer(drawnItems);
     
-    // Add draw control
-    const drawControl = new L.Control.Draw({
-        edit: {
-            featureGroup: drawnItems
-        },
-        draw: {
-            polygon: true,
-            polyline: true,
-            rectangle: true,
-            circle: true,
-            marker: true
-        }
-    });
-    map.addControl(drawControl);
-    
-    // Handle draw events
-    map.on(L.Draw.Event.CREATED, function(e) {
-        const layer = e.layer;
-        drawnItems.addLayer(layer);
-        
-        if (e.layerType === 'polygon' || e.layerType === 'rectangle') {
-            const area = L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]);
-            layer.bindPopup(`Alan: ${(area / 10000).toFixed(2)} hektar`);
-        }
-    });
-    
     // Add layer control
     L.control.layers(baseLayers).addTo(map);
     
@@ -473,27 +447,37 @@ function setupLayerControls() {
             if (!map.hasLayer(window.mapLayers.base)) {
                 window.mapLayers.base.addTo(map);
             }
+            console.log('Temel harita katmanı aktif edildi');
         } else {
             if (map.hasLayer(window.mapLayers.base)) {
                 map.removeLayer(window.mapLayers.base);
             }
+            console.log('Temel harita katmanı kapatıldı');
         }
     });
     
     document.getElementById('satelliteSwitch').addEventListener('change', function() {
         if (this.checked) {
             // Remove other base layers first
-            map.removeLayer(window.mapLayers.openstreetmap);
-            map.removeLayer(window.mapLayers.topo);
+            if (map.hasLayer(window.mapLayers.openstreetmap)) {
+                map.removeLayer(window.mapLayers.openstreetmap);
+            }
+            if (map.hasLayer(window.mapLayers.topo)) {
+                map.removeLayer(window.mapLayers.topo);
+            }
             // Add satellite layer
             window.mapLayers.satellite.addTo(map);
             window.mapLayers.base = window.mapLayers.satellite;
+            console.log('Uydu görüntüsü aktif edildi');
         } else {
             // Remove satellite layer
-            map.removeLayer(window.mapLayers.satellite);
+            if (map.hasLayer(window.mapLayers.satellite)) {
+                map.removeLayer(window.mapLayers.satellite);
+            }
             // Add back OpenStreetMap
             window.mapLayers.openstreetmap.addTo(map);
             window.mapLayers.base = window.mapLayers.openstreetmap;
+            console.log('Temel harita aktif edildi');
         }
     });
     
@@ -509,6 +493,7 @@ function setupLayerControls() {
                 }
             }
         });
+        console.log('Bitki örtüsü katmanı:', this.checked ? 'aktif edildi' : 'kapatıldı');
     });
     
     document.getElementById('projectMarkersSwitch').addEventListener('change', function() {
@@ -523,6 +508,7 @@ function setupLayerControls() {
                 }
             }
         });
+        console.log('Proje işaretleri:', this.checked ? 'aktif edildi' : 'kapatıldı');
     });
 }
 
