@@ -22,7 +22,8 @@
                 <h5 class="mb-0">Çoklu Tespit Ayarları</h5>
             </div>
             <div class="card-body">
-                <form method="POST" enctype="multipart/form-data" id="multiDetectionForm">
+                <form method="POST" enctype="multipart/form-data" id="multiDetectionForm" role="form" aria-label="Çoklu meyve tespiti formu">
+                    {{ csrf_token() if csrf_token else '' }}
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -93,12 +94,7 @@
                                     <label class="form-check-label" for="fruit_limon">🍋 Limon</label>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="fruit_limon" name="fruits" value="limon">
-                                    <label class="form-check-label" for="fruit_limon">🍋 Limon</label>
-                                </div>
-                            </div>
+
                         </div>
                     </div>
                     

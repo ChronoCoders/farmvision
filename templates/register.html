@@ -13,7 +13,8 @@
                     <p class="text-muted">Yeni hesap oluşturun</p>
                 </div>
                 
-                <form method="POST" id="registerForm">
+                <form method="POST" id="registerForm" role="form" aria-label="Kayıt formu">
+                    {{ csrf_token() if csrf_token else '' }}
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="first_name" class="form-label">Ad</label>

@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Farm Vision - Tarımsal AI Çözümleri{% endblock %}</title>
     
+    <!-- Security Headers -->
+    <meta name="csrf-token" content="{{ csrf_token() if csrf_token else '' }}">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://code.jquery.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com;">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
@@ -178,6 +185,128 @@
     
     <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <!-- Enhanced Security and Validation JavaScript -->
+    <script>
+    // Enhanced file upload validation
+    function validateFile(file, maxSize = 50, allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/tiff', 'image/tif']) {
+        const fileSizeMB = file.size / 1024 / 1024;
+        if (fileSizeMB > maxSize) {
+            alert(`Dosya boyutu ${maxSize}MB'dan küçük olmalıdır. (Mevcut: ${fileSizeMB.toFixed(2)}MB)`);
+            return false;
+        }
+        
+        if (!allowedTypes.includes(file.type)) {
+            alert(`Desteklenmeyen dosya türü: ${file.type}`);
+            return false;
+        }
+        
+        const fileName = file.name;
+        if (fileName.length > 255) {
+            alert('Dosya adı çok uzun.');
+            return false;
+        }
+        
+        const suspiciousPatterns = ['.php', '.exe', '.bat', '.cmd', '.scr', '.js', '.html'];
+        if (suspiciousPatterns.some(pattern => fileName.toLowerCase().includes(pattern))) {
+            alert('Güvenlik nedeniyle bu dosya türü kabul edilmiyor.');
+            return false;
+        }
+        
+        return true;
+    }
+
+    // Enhanced form validation
+    function validateForm(formElement) {
+        const requiredFields = formElement.querySelectorAll('[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        const emailFields = formElement.querySelectorAll('input[type="email"]');
+        emailFields.forEach(field => {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (field.value && !emailRegex.test(field.value)) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            }
+        });
+        
+        const password = formElement.querySelector('input[name="password"]');
+        const confirmPassword = formElement.querySelector('input[name="confirm_password"]');
+        if (password && confirmPassword && password.value !== confirmPassword.value) {
+            confirmPassword.classList.add('is-invalid');
+            isValid = false;
+        }
+        
+        return isValid;
+    }
+
+    // Safe AJAX call wrapper
+    function safeAjaxCall(url, data, successCallback, errorCallback) {
+        try {
+            const csrfToken = document.querySelector('meta[name=csrf-token]');
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken ? csrfToken.getAttribute('content') : ''
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (successCallback) successCallback(data);
+            })
+            .catch(error => {
+                console.error('AJAX Error:', error);
+                if (errorCallback) {
+                    errorCallback(error);
+                } else {
+                    alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+                }
+            });
+        } catch (error) {
+            console.error('Request setup error:', error);
+            alert('İstek gönderilemedi. Sayfa yenilenerek tekrar deneyin.');
+        }
+    }
+
+    // Initialize security enhancements
+    document.addEventListener('DOMContentLoaded', function() {
+        // Apply file validation to all file inputs
+        document.querySelectorAll('input[type="file"]').forEach(input => {
+            input.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file && !validateFile(file)) {
+                    this.value = '';
+                }
+            });
+        });
+
+        // Apply form validation to all forms
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                if (!validateForm(this)) {
+                    e.preventDefault();
+                    alert('Lütfen tüm gerekli alanları doğru şekilde doldurun.');
+                }
+            });
+        });
+    });
+    </script>
     
     {% block extra_js %}{% endblock %}
 </body>

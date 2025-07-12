@@ -1,0 +1,322 @@
+<!-- Critical fixes for HTML templates -->
+
+<!-- 1. Fix base.html - Add CSRF protection and XSS prevention -->
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://code.jquery.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com;">
+
+<!-- 2. Fix form submissions - Add CSRF tokens to all forms -->
+<!-- In login.html, register.html, profile.html, etc. -->
+<form method="POST">
+    {{ csrf_token() }}
+    <!-- OR if using Flask-WTF -->
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <!-- rest of form -->
+</form>
+
+<!-- 3. Fix XSS vulnerabilities - Proper escaping -->
+<!-- WRONG: -->
+<h1>{{ project.title }}</h1>
+
+<!-- CORRECT: -->
+<h1>{{ project.title|e }}</h1>
+
+<!-- For user input that should never contain HTML: -->
+<p>{{ user_description|e|nl2br }}</p>
+
+<!-- 4. Fix advanced_multi_detection.html - Duplicate fruit selection -->
+<!-- REMOVE this duplicate block around line 60-65: -->
+<!--
+<div class="col-md-3">
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="fruit_limon" name="fruits" value="limon">
+        <label class="form-check-label" for="fruit_limon">🍋 Limon</label>
+    </div>
+</div>
+-->
+
+<!-- 5. Fix JavaScript injection vulnerabilities -->
+<!-- WRONG: -->
+<script>
+function focusProject({{ project.id }}) {
+    // Direct interpolation is dangerous
+}
+</script>
+
+<!-- CORRECT: -->
+<script>
+function focusProject(projectId) {
+    // Use data attributes or JSON encoding
+}
+// Pass data safely:
+const projectData = {{ projects|tojson }};
+</script>
+
+<!-- 6. Fix file upload validation in multiple templates -->
+<!-- Enhanced file validation in detection forms -->
+<script>
+function validateFile(file, maxSize = 100, allowedTypes = ['image/jpeg', 'image/jpg', 'image/png']) {
+    // Size validation
+    const fileSizeMB = file.size / 1024 / 1024;
+    if (fileSizeMB > maxSize) {
+        alert(`Dosya boyutu ${maxSize}MB'dan küçük olmalıdır. (Mevcut: ${fileSizeMB.toFixed(2)}MB)`);
+        return false;
+    }
+    
+    // Type validation
+    if (!allowedTypes.includes(file.type)) {
+        alert(`Desteklenmeyen dosya türü: ${file.type}`);
+        return false;
+    }
+    
+    // Name validation
+    const fileName = file.name;
+    if (fileName.length > 255) {
+        alert('Dosya adı çok uzun.');
+        return false;
+    }
+    
+    // Check for suspicious file names
+    const suspiciousPatterns = ['.php', '.exe', '.bat', '.cmd', '.scr'];
+    if (suspiciousPatterns.some(pattern => fileName.toLowerCase().includes(pattern))) {
+        alert('Güvenlik nedeniyle bu dosya türü kabul edilmiyor.');
+        return false;
+    }
+    
+    return true;
+}
+
+// Apply to all file inputs
+document.querySelectorAll('input[type="file"]').forEach(input => {
+    input.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file && !validateFile(file)) {
+            this.value = '';
+        }
+    });
+});
+</script>
+
+<!-- 7. Fix detection_results.html - Broken image paths -->
+<!-- WRONG: -->
+<img src="{{ url_for('static', filename='uploads/' + result.result_path.split('/')[-1]) }}" 
+
+<!-- CORRECT - Add error handling: -->
+<img src="{{ url_for('static', filename=result.result_path.replace('static/', '') if result.result_path else 'images/placeholder.png') }}" 
+     onerror="this.src='{{ url_for('static', filename='images/placeholder.png') }}'"
+     alt="Tespit Sonucu">
+
+<!-- 8. Fix interactive_map.html - Potential XSS in map data -->
+<!-- WRONG: -->
+<script>
+{% for project in projects %}
+const marker = L.marker([{{ lat }}, {{ lng }}]).addTo(map);
+marker.bindPopup(`
+    <h6>{{ project.title }}</h6>
+    <p><small>{{ project.description[:50] }}...</small></p>
+`);
+{% endfor %}
+</script>
+
+<!-- CORRECT: -->
+<script>
+const projectsData = {{ projects|tojson }};
+projectsData.forEach(function(project) {
+    // Escape HTML content
+    const title = document.createElement('div');
+    title.textContent = project.title;
+    const description = document.createElement('div');
+    description.textContent = project.description ? project.description.substring(0, 50) + '...' : '';
+    
+    const marker = L.marker([project.lat || 39.9, project.lng || 32.8]).addTo(map);
+    marker.bindPopup(`
+        <div class="popup-content">
+            <h6>${title.innerHTML}</h6>
+            <p><small>${description.innerHTML}</small></p>
+        </div>
+    `);
+});
+</script>
+
+<!-- 9. Fix form validation issues -->
+<!-- Enhanced client-side validation for all forms -->
+<script>
+function validateForm(formElement) {
+    const requiredFields = formElement.querySelectorAll('[required]');
+    let isValid = true;
+    
+    requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+            field.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            field.classList.remove('is-invalid');
+        }
+    });
+    
+    // Email validation
+    const emailFields = formElement.querySelectorAll('input[type="email"]');
+    emailFields.forEach(field => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (field.value && !emailRegex.test(field.value)) {
+            field.classList.add('is-invalid');
+            isValid = false;
+        }
+    });
+    
+    // Password confirmation
+    const password = formElement.querySelector('input[name="password"]');
+    const confirmPassword = formElement.querySelector('input[name="confirm_password"]');
+    if (password && confirmPassword && password.value !== confirmPassword.value) {
+        confirmPassword.classList.add('is-invalid');
+        isValid = false;
+    }
+    
+    return isValid;
+}
+
+// Apply to all forms
+document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        if (!validateForm(this)) {
+            e.preventDefault();
+            alert('Lütfen tüm gerekli alanları doğru şekilde doldurun.');
+        }
+    });
+});
+</script>
+
+<!-- 10. Fix dashboard.html - Chart.js injection -->
+<!-- WRONG: -->
+<script>
+const activityChart = new Chart(ctx, {
+    data: {
+        datasets: [{
+            data: [{{ activity_data }}], // Potential injection
+        }]
+    }
+});
+</script>
+
+<!-- CORRECT: -->
+<script>
+// Safely pass data
+const activityData = {{ activity_data|tojson|safe }};
+const activityChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['6 gün önce', '5 gün önce', '4 gün önce', '3 gün önce', '2 gün önce', 'Dün', 'Bugün'],
+        datasets: [{
+            label: 'Tespit Sayısı',
+            data: Array.isArray(activityData) ? activityData : [2, 5, 3, 8, 4, 6, 7],
+            borderColor: '#198754',
+            backgroundColor: 'rgba(25, 135, 84, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top'
+            }
+        }
+    }
+});
+</script>
+
+<!-- 11. Fix accessibility issues across templates -->
+<!-- Add proper ARIA labels and semantic HTML -->
+<form method="POST" role="form" aria-label="Giriş formu">
+    <div class="mb-3">
+        <label for="username" class="form-label">Kullanıcı Adı</label>
+        <input type="text" 
+               class="form-control" 
+               id="username" 
+               name="username" 
+               aria-describedby="username-help"
+               required>
+        <div id="username-help" class="form-text">Kullanıcı adınızı girin</div>
+    </div>
+</form>
+
+<!-- 12. Fix responsive image issues -->
+<!-- Add proper responsive image handling -->
+<img src="{{ url_for('static', filename=image_path) }}" 
+     class="img-fluid rounded shadow" 
+     alt="{{ image_description|e }}"
+     loading="lazy"
+     style="max-height: 400px; max-width: 100%; object-fit: contain;">
+
+<!-- 13. Fix progress bar and loading states -->
+<!-- Enhanced progress indicators -->
+<div class="mt-3" id="progressContainer" style="display: none;" role="status" aria-live="polite">
+    <div class="progress" style="height: 25px;">
+        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+             role="progressbar" 
+             style="width: 100%"
+             aria-valuenow="100" 
+             aria-valuemin="0" 
+             aria-valuemax="100">
+            <span class="sr-only">İşleniyor...</span>
+            İşleniyor...
+        </div>
+    </div>
+</div>
+
+<!-- 14. Fix error handling in JavaScript -->
+<script>
+// Wrap all AJAX calls and DOM manipulation in try-catch
+function safeAjaxCall(url, data, successCallback, errorCallback) {
+    try {
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (successCallback) successCallback(data);
+        })
+        .catch(error => {
+            console.error('AJAX Error:', error);
+            if (errorCallback) {
+                errorCallback(error);
+            } else {
+                alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+            }
+        });
+    } catch (error) {
+        console.error('Request setup error:', error);
+        alert('İstek gönderilemedi. Sayfa yenilenerek tekrar deneyin.');
+    }
+}
+</script>
+
+<!-- 15. Fix detection_result.html - Missing error checks -->
+<!-- Add null checks for all data -->
+{% if result and result.result_path %}
+    <img src="{{ url_for('static', filename=result.result_path.replace('static/', '')) }}" 
+         class="img-fluid rounded shadow" 
+         alt="Tespit Sonucu"
+         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+         style="max-height: 400px; width: auto;">
+    <div style="display: none;" class="alert alert-warning">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        Görüntü yüklenemedi.
+    </div>
+{% else %}
+    <div class="alert alert-warning" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        Tespit sonucu görüntüsü henüz hazır değil.
+    </div>
+{% endif %}

@@ -16,7 +16,8 @@
                         <h5 class="mb-0">GeoTIFF Analizi</h5>
                     </div>
                     <div class="card-body">
-                        <form method="POST" enctype="multipart/form-data" id="vegetationForm">
+                        <form method="POST" enctype="multipart/form-data" id="vegetationForm" role="form" aria-label="Bitki örtüsü analizi formu">
+                            {{ csrf_token() if csrf_token else '' }}
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="algorithm" class="form-label">Analiz Algoritması</label>

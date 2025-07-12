@@ -175,10 +175,10 @@
                     <div class="project-layer" data-project-id="{{ project.id }}" onclick="focusProject({{ project.id }})">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <strong>{{ project.title }}</strong>
+                                <strong>{{ project.title|e }}</strong>
                                 <br>
                                 <small class="text-muted">
-                                    <i class="fas fa-map-marker-alt me-1"></i>{{ project.location or 'Konum yok' }}
+                                    <i class="fas fa-map-marker-alt me-1"></i>{{ project.location|e or 'Konum yok' }}
                                 </small>
                             </div>
                             <div class="text-end">
@@ -309,8 +309,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeInteractiveMap() {
-    // Initialize map
+    // Initialize map with secure data handling
     map = L.map('map').setView([39.9334, 32.8597], 6);
+    
+    // Pass project data safely
+    const projectsData = {{ projects|tojson|safe }};
+    const analysesData = {{ analyses|tojson|safe }};
     
     // Base layers
     const baseLayers = {

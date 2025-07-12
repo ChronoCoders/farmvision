@@ -9,7 +9,7 @@
             <i class="fas fa-tachometer-alt me-2"></i>Dashboard
         </h1>
         <p class="lead text-muted">
-            Hoş geldiniz, {{ current_user.first_name or current_user.username }}! 
+            Hoş geldiniz, {{ current_user.first_name|e or current_user.username|e }}! 
             Farm Vision sistemine genel bakış.
         </p>
     </div>
@@ -222,14 +222,14 @@
                             <h6 class="mb-1">
                                 <a href="{{ url_for('main.project_detail', project_id=project.id) }}" 
                                    class="text-decoration-none">
-                                    {{ project.title }}
+                                    {{ project.title|e }}
                                 </a>
                             </h6>
                             <small class="text-muted">{{ project.updated_at.strftime('%d.%m') }}</small>
                         </div>
-                        <p class="mb-1 text-muted small">{{ project.description[:50] }}...</p>
+                        <p class="mb-1 text-muted small">{{ project.description[:50]|e }}...</p>
                         <small class="text-muted">
-                            <i class="fas fa-map-marker-alt me-1"></i>{{ project.location or 'Konum yok' }}
+                            <i class="fas fa-map-marker-alt me-1"></i>{{ project.location|e or 'Konum yok' }}
                         </small>
                     </div>
                     {% endfor %}
@@ -267,13 +267,15 @@
 <script>
 // Activity Chart
 const ctx = document.getElementById('activityChart').getContext('2d');
+// Safely pass data using JSON encoding to prevent XSS
+const activityData = {{ activity_data|tojson|safe }};
 const activityChart = new Chart(ctx, {
     type: 'line',
     data: {
         labels: ['6 gün önce', '5 gün önce', '4 gün önce', '3 gün önce', '2 gün önce', 'Dün', 'Bugün'],
         datasets: [{
             label: 'Tespit Sayısı',
-            data: [2, 5, 3, 8, 4, 6, 7],
+            data: Array.isArray(activityData) ? activityData.slice(0, 7) : [2, 5, 3, 8, 4, 6, 7],
             borderColor: '#198754',
             backgroundColor: 'rgba(25, 135, 84, 0.1)',
             tension: 0.4,
