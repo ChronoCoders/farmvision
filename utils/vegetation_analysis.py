@@ -87,16 +87,54 @@ class VegetationAnalyzer:
                 return np.zeros((100, 100), dtype=np.float64)
     
     def calculate_gli(self):
-        """Calculate GLI (Green Leaf Index)"""
-        b, g, r = cv2.split(self.image.astype(np.float32))
-        gli = ((g * 2) - r - b) / ((g * 2) + r + b + 1e-8)
-        return np.clip(gli, -1, 1)
+        """Calculate GLI (Green Leaf Index) with enhanced error handling"""
+        try:
+            if self.image is None:
+                raise ValueError("No image loaded")
+                
+            # Convert to float to prevent overflow
+            image_float = self.image.astype(np.float64)
+            b, g, r = cv2.split(image_float)
+            
+            # Use epsilon to prevent division by zero
+            epsilon = 1e-10
+            denominator = (g * 2) + r + b + epsilon
+            
+            # Calculate GLI
+            gli = ((g * 2) - r - b) / denominator
+            
+            # Handle NaN/inf values
+            gli = np.where(np.isfinite(gli), gli, 0)
+            return np.clip(gli, -1, 1)
+            
+        except Exception as e:
+            logging.error(f"GLI calculation error: {e}")
+            return np.zeros(self.image.shape[:2], dtype=np.float64)
     
     def calculate_vari(self):
-        """Calculate VARI (Visual Atmospheric Resistance Index)"""
-        b, g, r = cv2.split(self.image.astype(np.float32))
-        vari = (g - r) / (g + r - b + 1e-8)
-        return np.clip(vari, -1, 1)
+        """Calculate VARI (Visual Atmospheric Resistance Index) with enhanced error handling"""
+        try:
+            if self.image is None:
+                raise ValueError("No image loaded")
+                
+            # Convert to float to prevent overflow
+            image_float = self.image.astype(np.float64)
+            b, g, r = cv2.split(image_float)
+            
+            # Use epsilon to prevent division by zero
+            epsilon = 1e-10
+            denominator = g + r - b + epsilon
+            
+            # Calculate VARI
+            vari = (g - r) / denominator
+            
+            # Handle NaN/inf values
+            vari = np.where(np.isfinite(vari), vari, 0)
+            return np.clip(vari, -1, 1)
+            
+        except Exception as e:
+            logging.error(f"VARI calculation error: {e}")
+            return np.zeros(self.image.shape[:2], dtype=np.float64)
     
     def calculate_ndyi(self):
         """Calculate NDYI (Normalized Difference Yellowness Index)"""

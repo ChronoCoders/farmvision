@@ -1,0 +1,25 @@
+Metadata-Version: 2.4
+Name: farm-vision
+Version: 1.0.0
+Summary: Farm Vision - AI-Powered Agricultural Analysis Platform
+Requires-Python: >=3.11
+Requires-Dist: email-validator>=2.2.0
+Requires-Dist: flask-login>=0.6.3
+Requires-Dist: flask>=3.1.1
+Requires-Dist: flask-sqlalchemy>=3.1.1
+Requires-Dist: gunicorn>=23.0.0
+Requires-Dist: psycopg2-binary>=2.9.10
+Requires-Dist: scipy>=1.16.0
+Requires-Dist: sqlalchemy>=2.0.41
+Requires-Dist: werkzeug>=3.1.3
+Requires-Dist: pandas>=2.3.0
+Requires-Dist: opencv-python>=4.11.0.86
+Requires-Dist: pillow>=11.2.1
+Requires-Dist: numpy>=2.3.1
+Requires-Dist: matplotlib>=3.10.3
+Requires-Dist: torch>=2.7.1
+Requires-Dist: torchvision>=0.22.1
+Requires-Dist: rasterio>=1.4.3
+Requires-Dist: flask-wtf>=1.2.2
+Requires-Dist: wtforms>=3.2.1
+Requires-Dist: psutil>=7.0.0

@@ -1,0 +1,6 @@
+pyproject.toml
+farm_vision.egg-info/PKG-INFO
+farm_vision.egg-info/SOURCES.txt
+farm_vision.egg-info/dependency_links.txt
+farm_vision.egg-info/requires.txt
+farm_vision.egg-info/top_level.txt
