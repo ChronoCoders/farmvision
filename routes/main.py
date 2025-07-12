@@ -4,6 +4,7 @@ from models import Project, DetectionResult, VegetationAnalysis
 from app import db, app
 import time
 import os
+from datetime import datetime, timedelta
 
 main_bp = Blueprint('main', __name__)
 
@@ -40,8 +41,19 @@ def dashboard():
                                            .order_by(DetectionResult.created_at.desc())\
                                            .limit(10).all()
     
+    # Activity data for chart - only authentic data
+    activity_data = []
+    for i in range(7):
+        date = datetime.now() - timedelta(days=6-i)
+        day_detections = DetectionResult.query.filter_by(user_id=current_user.id)\
+                                            .filter(DetectionResult.created_at >= date.replace(hour=0, minute=0, second=0, microsecond=0))\
+                                            .filter(DetectionResult.created_at < date.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1))\
+                                            .count()
+        activity_data.append(day_detections)
+    
     return render_template('dashboard.html', stats=stats, 
-                         projects=projects, recent_detections=recent_detections)
+                         projects=projects, recent_detections=recent_detections,
+                         activity_data=activity_data)
 
 @main_bp.route('/projects')
 @login_required
