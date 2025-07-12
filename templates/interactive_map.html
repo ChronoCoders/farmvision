@@ -445,6 +445,11 @@ function loadVegetationOverlays() {
     
     analysisOverlays[{{ analysis.id }}] = overlay;
     overlay.addTo(map);
+            });
+        } catch(e) {
+            console.error('Analiz verisi yüklenemedi:', e);
+        }
+    {% endif %}
     {% endfor %}
 }
 
