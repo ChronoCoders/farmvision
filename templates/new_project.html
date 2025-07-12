@@ -13,7 +13,7 @@
             </div>
             <div class="card-body p-4">
                 <form method="POST" role="form" aria-label="Yeni proje oluşturma formu">
-                    {{ csrf_token() if csrf_token else '' }}
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <div class="mb-3">
                         <label for="title" class="form-label">Proje Başlığı *</label>
                         <div class="input-group">

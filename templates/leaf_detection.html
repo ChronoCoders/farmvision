@@ -17,7 +17,7 @@
                     </div>
                     <div class="card-body">
                         <form method="POST" enctype="multipart/form-data" id="leafDetectionForm" role="form" aria-label="Yaprak hastalık tespiti formu">
-                            {{ csrf_token() if csrf_token else '' }}
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                             <div class="mb-3">
                                 <label for="project_id" class="form-label">Proje (Opsiyonel)</label>
                                 <select class="form-select" id="project_id" name="project_id">

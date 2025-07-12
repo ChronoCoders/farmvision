@@ -28,7 +28,7 @@
                     
                     <div class="col-md-8">
                         <form method="POST" role="form" aria-label="Profil güncelleme formu">
-                            {{ csrf_token() if csrf_token else '' }}
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                             <h6 class="mb-3">Kişisel Bilgiler</h6>
                             
                             <div class="row">

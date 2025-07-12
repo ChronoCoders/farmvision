@@ -14,7 +14,7 @@
                 </div>
                 
                 <form method="POST" role="form" aria-label="Giriş formu">
-                    {{ csrf_token() if csrf_token else '' }}
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <div class="mb-3">
                         <label for="username" class="form-label">Kullanıcı Adı</label>
                         <div class="input-group">
