@@ -10,6 +10,9 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
+# Suppress rasterio boto3 warning
+logging.getLogger('rasterio.session').setLevel(logging.ERROR)
+
 class Base(DeclarativeBase):
     pass
 

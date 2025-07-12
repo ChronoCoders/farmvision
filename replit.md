@@ -166,7 +166,7 @@ Farm Vision is a comprehensive web application that combines AI-powered computer
   - Fixed interactive map layer control functionality with proper satellite view, base map, vegetation analysis, and project marker controls
   - Removed problematic Leaflet Draw control causing JavaScript errors and implemented working layer switching
   - Added console logging for layer control debugging and verified all toggle functions work correctly
-  - Addressed rasterio boto3 import warning (informational only, no action needed for local file processing)
+  - Suppressed rasterio boto3 import warning by setting logging level to ERROR for cleaner console output
 
 ## User Preferences
 
