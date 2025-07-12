@@ -65,12 +65,14 @@ with app.app_context():
     from routes.detection import detection_bp
     from routes.mapping import mapping_bp
     from routes.auth import auth_bp
+    from routes.api import api
     
     # Register blueprints
     app.register_blueprint(main_bp)
     app.register_blueprint(detection_bp, url_prefix='/detection')
     app.register_blueprint(mapping_bp, url_prefix='/mapping')
     app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(api)
     
     # Create all database tables
     db.create_all()

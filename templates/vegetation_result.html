@@ -71,7 +71,7 @@
                 <img src="{{ url_for('static', filename=original_image.replace('static/', '')) }}" 
                      class="img-fluid rounded shadow" alt="Orijinal GeoTIFF"
                      style="max-height: 400px; width: auto;"
-                     onerror="this.src='/static/images/placeholder.jpg'">
+                     onerror="this.src='{{ url_for('static', filename='images/no-image.svg') }}'">
                 <div class="mt-2">
                     <small class="text-muted">
                         <i class="fas fa-file me-1"></i>Ham Spektral Veri

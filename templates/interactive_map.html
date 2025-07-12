@@ -384,50 +384,56 @@ function initializeInteractiveMap() {
 
 function loadProjectMarkers() {
     {% for project in projects %}
-    // Mock coordinates for projects (in real app, these would come from database)
-    const lat = 39.9 + Math.random() * 0.2;
-    const lng = 32.8 + Math.random() * 0.2;
-    
-    const marker = L.marker([lat, lng]).addTo(map);
-    marker.bindPopup(`
-        <div class="popup-content">
-            <h6>{{ project.title }}</h6>
-            <p><small>{{ project.description[:50] }}...</small></p>
-            <div class="d-flex gap-1">
-                <span class="badge bg-primary">{{ project.detection_results|length }} tespit</span>
-                <span class="badge bg-success">{{ project.vegetation_analyses|length }} analiz</span>
-            </div>
-            <div class="mt-2">
-                <a href="{{ url_for('main.project_detail', project_id=project.id) }}" class="btn btn-sm btn-primary">
-                    Detay
-                </a>
-            </div>
-        </div>
-    `);
-    
-    projectMarkers[{{ project.id }}] = marker;
+    // Only show projects with actual coordinate data
+    {% if project.location %}
+    try {
+        // Parse real coordinates from project location data
+        const coordinates = parseProjectCoordinates('{{ project.location }}');
+        if (coordinates.lat && coordinates.lng) {
+            const marker = L.marker([coordinates.lat, coordinates.lng]).addTo(map);
+            marker.bindPopup(`
+                <div class="popup-content">
+                    <h6>{{ project.title }}</h6>
+                    <p><small>{{ project.description[:50] }}...</small></p>
+                    <div class="d-flex gap-1">
+                        <span class="badge bg-primary">{{ project.detection_results|length }} tespit</span>
+                        <span class="badge bg-success">{{ project.vegetation_analyses|length }} analiz</span>
+                    </div>
+                    <div class="mt-2">
+                        <a href="{{ url_for('main.project_detail', project_id=project.id) }}" class="btn btn-sm btn-primary">
+                            Detay
+                        </a>
+                    </div>
+                </div>
+            `);
+            
+            projectMarkers[{{ project.id }}] = marker;
+        }
+    } catch(e) {
+        console.error('Proje koordinatları yüklenemedi:', e);
+    }
+    {% endif %}
     {% endfor %}
 }
 
 function loadVegetationOverlays() {
     {% for analysis in analyses %}
-    // Mock bounds for vegetation analysis
-    const bounds = [
-        [39.8 + Math.random() * 0.1, 32.7 + Math.random() * 0.1],
-        [39.9 + Math.random() * 0.1, 32.9 + Math.random() * 0.1]
-    ];
-    
-    // Create mock overlay (in real app, this would be actual GeoTIFF)
-    const overlay = L.rectangle(bounds, {
-        color: '#198754',
-        fillColor: '{{ "#28a745" if analysis.algorithm == "ndvi" else "#17a2b8" }}',
-        fillOpacity: 0.3
-    });
-    
-    overlay.bindPopup(`
-        <div class="popup-content">
-            <h6>{{ analysis.algorithm.upper() }} Analizi</h6>
-            <p><small>{{ analysis.created_at.strftime('%d.%m.%Y %H:%M') }}</small></p>
+    // Only load overlays with actual GeoTIFF data
+    {% if analysis.result_path %}
+    try {
+        // Load real GeoTIFF bounds from analysis result
+        loadGeoTIFFBounds('{{ analysis.result_path }}').then(bounds => {
+            if (bounds && bounds.length === 2) {
+                const overlay = L.rectangle(bounds, {
+                    color: '#198754',
+                    fillColor: '{{ "#28a745" if analysis.algorithm == "ndvi" else "#17a2b8" }}',
+                    fillOpacity: 0.3
+                });
+                
+                overlay.bindPopup(`
+                    <div class="popup-content">
+                        <h6>{{ analysis.algorithm.upper() }} Analizi</h6>
+                        <p><small>{{ analysis.created_at.strftime('%d.%m.%Y %H:%M') }}</small></p>
             <p><small>Renk: {{ analysis.colormap }}</small></p>
             <div class="mt-2">
                 <button class="btn btn-sm btn-success" onclick="viewAnalysis({{ analysis.id }})">

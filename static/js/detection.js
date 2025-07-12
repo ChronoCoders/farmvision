@@ -227,50 +227,62 @@ function createDetectionModal() {
 function loadDetectionDetails(detectionId, modal) {
     const contentDiv = document.getElementById('detectionModalContent');
     
-    // Mock data for demonstration - in real app, this would fetch from server
-    const mockData = {
-        id: detectionId,
-        type: 'Meyve Tespiti',
-        result: '15 adet elma',
-        confidence: 85.7,
-        date: new Date().toLocaleDateString('tr-TR'),
-        image: '/static/uploads/sample.jpg'
-    };
-    
-    contentDiv.innerHTML = `
-        <div class="row">
-            <div class="col-md-6">
-                <img src="${mockData.image}" class="img-fluid rounded" alt="Tespit Sonucu" 
-                     onerror="this.src='/static/images/placeholder.jpg'">
-            </div>
-            <div class="col-md-6">
-                <table class="table table-borderless">
-                    <tr>
-                        <td><strong>Tespit ID:</strong></td>
-                        <td>${mockData.id}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Tür:</strong></td>
-                        <td>${mockData.type}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Sonuç:</strong></td>
-                        <td>${mockData.result}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Güven:</strong></td>
-                        <td>${mockData.confidence}%</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Tarih:</strong></td>
-                        <td>${mockData.date}</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-    `;
-    
-    modal.show();
+    // Fetch real detection data from server
+    fetch(`/api/detection/${detectionId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                contentDiv.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <img src="${data.image_path}" class="img-fluid rounded" alt="Tespit Sonucu" 
+                                 onerror="this.src='/static/images/no-image.jpg'">
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Tespit ID:</strong></td>
+                                    <td>${data.id}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tür:</strong></td>
+                                    <td>${data.detection_type}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Sonuç:</strong></td>
+                                    <td>${data.count} adet ${data.fruit_type || 'tespit'}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Güven:</strong></td>
+                                    <td>${data.confidence}%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tarih:</strong></td>
+                                    <td>${new Date(data.created_at).toLocaleDateString('tr-TR')}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                modal.show();
+            } else {
+                contentDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Tespit detayları yüklenemedi: ${data.error || 'Bilinmeyen hata'}
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Detection details load error:', error);
+            contentDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Tespit detayları yüklenirken hata oluştu.
+                </div>
+            `;
+        });
 }
 
 // Batch processing functionality
@@ -291,23 +303,40 @@ function processBatchImages() {
     let processed = 0;
     const total = files.length;
     
-    // Simulate batch processing
-    const interval = setInterval(() => {
-        processed++;
-        const percentage = (processed / total) * 100;
-        progressBar.style.width = percentage + '%';
-        progressBar.textContent = `${processed}/${total} işlendi`;
-        
-        if (processed >= total) {
-            clearInterval(interval);
-            FarmVision.showNotification(`${total} görüntü başarıyla işlendi.`, 'success');
+    // Process files through real API
+    const formData = new FormData();
+    Array.from(files).forEach(file => {
+        formData.append('images', file);
+    });
+    
+    fetch('/api/detection/batch', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            progressBar.style.width = '100%';
+            progressBar.textContent = `${data.processed_count}/${total} işlendi`;
+            FarmVision.showNotification(`${data.processed_count} görüntü başarıyla işlendi.`, 'success');
             
             setTimeout(() => {
                 batchProgress.style.display = 'none';
                 progressBar.style.width = '0%';
+                // Refresh results if needed
+                if (typeof loadDetectionResults === 'function') {
+                    loadDetectionResults();
+                }
             }, 2000);
+        } else {
+            throw new Error(data.error || 'Batch processing failed');
         }
-    }, 1000);
+    })
+    .catch(error => {
+        console.error('Batch processing error:', error);
+        FarmVision.showNotification('Toplu işleme sırasında hata oluştu.', 'error');
+        batchProgress.style.display = 'none';
+    });
 }
 
 // Export functions

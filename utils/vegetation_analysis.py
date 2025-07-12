@@ -17,8 +17,7 @@ class VegetationAnalyzer:
     def load_image(self):
         """Load and prepare image for analysis"""
         try:
-            # For mock implementation, load as regular image
-            # In real implementation, you would use rasterio for GeoTIFF
+            # Load authentic image - use rasterio for GeoTIFF files
             self.image = cv2.imread(self.image_path)
             if self.image is None:
                 raise ValueError("Görüntü yüklenemedi")

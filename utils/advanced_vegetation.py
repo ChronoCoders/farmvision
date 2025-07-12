@@ -280,21 +280,31 @@ def analyze_vegetation_comprehensive(image_bands, algorithm='ndvi', colormap='rd
         if algorithm not in VEGETATION_ALGORITHMS:
             raise ValueError(f"Desteklenmeyen algoritma: {algorithm}")
         
-        # Extract bands based on algorithm requirements
+        # Extract bands based on algorithm requirements - ONLY AUTHENTIC DATA
         if algorithm in ['ndvi', 'savi', 'msavi', 'osavi', 'rdvi', 'gndvi']:
             # Requires RED and NIR bands
-            red_band = image_bands.get('red', np.random.rand(100, 100))
-            nir_band = image_bands.get('nir', np.random.rand(100, 100))
+            red_band = image_bands.get('red')
+            nir_band = image_bands.get('nir')
+            
+            if red_band is None or nir_band is None:
+                raise ValueError(f"Algoritma {algorithm} için RED ve NIR bandları gereklidir")
+            
             result = VEGETATION_ALGORITHMS[algorithm](red_band, nir_band)
             
         elif algorithm in ['gli', 'vari', 'tgi', 'evi', 'arvi']:
             # Requires RGB bands
-            red_band = image_bands.get('red', np.random.rand(100, 100))
-            green_band = image_bands.get('green', np.random.rand(100, 100))
-            blue_band = image_bands.get('blue', np.random.rand(100, 100))
+            red_band = image_bands.get('red')
+            green_band = image_bands.get('green')
+            blue_band = image_bands.get('blue')
+            
+            if red_band is None or green_band is None or blue_band is None:
+                raise ValueError(f"Algoritma {algorithm} için RGB bandları gereklidir")
             
             if algorithm == 'evi' or algorithm == 'arvi':
-                nir_band = image_bands.get('nir', np.random.rand(100, 100))
+                nir_band = image_bands.get('nir')
+                if nir_band is None:
+                    raise ValueError(f"Algoritma {algorithm} için NIR bandı gereklidir")
+                    
                 if algorithm == 'evi':
                     result = VEGETATION_ALGORITHMS[algorithm](red_band, nir_band, blue_band)
                 else:  # arvi
@@ -303,19 +313,26 @@ def analyze_vegetation_comprehensive(image_bands, algorithm='ndvi', colormap='rd
                 result = VEGETATION_ALGORITHMS[algorithm](red_band, green_band, blue_band)
                 
         elif algorithm == 'ndwi':
-            green_band = image_bands.get('green', np.random.rand(100, 100))
-            nir_band = image_bands.get('nir', np.random.rand(100, 100))
+            green_band = image_bands.get('green')
+            nir_band = image_bands.get('nir')
+            
+            if green_band is None or nir_band is None:
+                raise ValueError(f"Algoritma {algorithm} için GREEN ve NIR bandları gereklidir")
+            
             result = VEGETATION_ALGORITHMS[algorithm](green_band, nir_band)
             
         elif algorithm in ['cvi', 'gci']:
-            red_band = image_bands.get('red', np.random.rand(100, 100))
-            green_band = image_bands.get('green', np.random.rand(100, 100))
-            nir_band = image_bands.get('nir', np.random.rand(100, 100))
+            red_band = image_bands.get('red')
+            green_band = image_bands.get('green')
+            nir_band = image_bands.get('nir')
+            
+            if red_band is None or green_band is None or nir_band is None:
+                raise ValueError(f"Algoritma {algorithm} için RED, GREEN ve NIR bandları gereklidir")
+            
             result = VEGETATION_ALGORITHMS[algorithm](red_band, green_band, nir_band)
             
         else:
-            # Default simulation
-            result = np.random.rand(100, 100) * 2 - 1  # Values between -1 and 1
+            raise ValueError(f"Desteklenmeyen algoritma: {algorithm}")
         
         # Apply colormap
         colored_result = apply_colormap(result, colormap)

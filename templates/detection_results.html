@@ -142,10 +142,10 @@
                     
                     {% if result.result_path %}
                     <div class="card-body text-center">
-                        <img src="{{ url_for('static', filename=result.result_path.replace('static/', '') if result.result_path else 'images/placeholder.png') }}" 
+                        <img src="{{ url_for('static', filename=result.result_path.replace('static/', '') if result.result_path else 'images/no-image.svg') }}" 
                              alt="Tespit Sonucu" class="result-image mb-3" 
                              onclick="showImageModal(this.src)"
-                             onerror="this.src='{{ url_for('static', filename='images/placeholder.png') }}'"
+                             onerror="this.src='{{ url_for('static', filename='images/no-image.svg') }}'"
                              loading="lazy"
                              style="max-height: 400px; max-width: 100%; object-fit: contain;">
                     </div>

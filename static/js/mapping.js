@@ -301,76 +301,87 @@ function createAnalysisModal() {
 function loadAnalysisDetails(analysisId, modal) {
     const contentDiv = document.getElementById('analysisModalContent');
     
-    // Mock data for demonstration
-    const mockData = {
-        id: analysisId,
-        algorithm: 'NDVI',
-        colormap: 'RdYlGn',
-        minRange: -1.0,
-        maxRange: 1.0,
-        date: new Date().toLocaleDateString('tr-TR'),
-        image: '/static/results/sample_ndvi.png'
-    };
-    
-    contentDiv.innerHTML = `
-        <div class="row">
-            <div class="col-md-8">
-                <div class="text-center">
-                    <img src="${mockData.image}" class="img-fluid rounded shadow" alt="Analiz Sonucu"
-                         onerror="this.src='/static/images/placeholder.jpg'" style="max-height: 500px;">
+    // Fetch real analysis data from server
+    fetch(`/api/analysis/${analysisId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                contentDiv.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="text-center">
+                                <img src="${data.result_path}" class="img-fluid rounded shadow" alt="Analiz Sonucu"
+                                     onerror="this.src='/static/images/no-image.jpg'" style="max-height: 500px;">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Analiz Bilgileri</h6>
+                            <table class="table table-borderless table-sm">
+                                <tr>
+                                    <td><strong>ID:</strong></td>
+                                    <td>${data.id}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Algoritma:</strong></td>
+                                    <td><span class="badge bg-success">${data.algorithm.toUpperCase()}</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Renk Haritası:</strong></td>
+                                    <td>${data.colormap}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Değer Aralığı:</strong></td>
+                                    <td>${data.min_range} - ${data.max_range}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tarih:</strong></td>
+                                    <td>${new Date(data.created_at).toLocaleDateString('tr-TR')}</td>
+                                </tr>
+                            </table>
+                            
+                            <hr>
+                            
+                            <h6>İstatistikler</h6>
+                            <div class="small">
+                                <div class="d-flex justify-content-between">
+                                    <span>Ortalama:</span>
+                                    <span>${data.statistics?.mean?.toFixed(3) || 'N/A'}</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Standart Sapma:</span>
+                                    <span>${data.statistics?.std?.toFixed(3) || 'N/A'}</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Minimum:</span>
+                                    <span>${data.statistics?.min?.toFixed(3) || 'N/A'}</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Maksimum:</span>
+                                    <span>${data.statistics?.max?.toFixed(3) || 'N/A'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                modal.show();
+            } else {
+                contentDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Analiz detayları yüklenemedi: ${data.error || 'Bilinmeyen hata'}
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Analysis details load error:', error);
+            contentDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Analiz detayları yüklenirken hata oluştu.
                 </div>
-            </div>
-            <div class="col-md-4">
-                <h6>Analiz Bilgileri</h6>
-                <table class="table table-borderless table-sm">
-                    <tr>
-                        <td><strong>ID:</strong></td>
-                        <td>${mockData.id}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Algoritma:</strong></td>
-                        <td><span class="badge bg-success">${mockData.algorithm}</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Renk Haritası:</strong></td>
-                        <td>${mockData.colormap}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Değer Aralığı:</strong></td>
-                        <td>${mockData.minRange} - ${mockData.maxRange}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Tarih:</strong></td>
-                        <td>${mockData.date}</td>
-                    </tr>
-                </table>
-                
-                <hr>
-                
-                <h6>İstatistikler</h6>
-                <div class="small">
-                    <div class="d-flex justify-content-between">
-                        <span>Ortalama:</span>
-                        <span>0.42</span>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <span>Standart Sapma:</span>
-                        <span>0.18</span>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <span>Minimum:</span>
-                        <span>-0.15</span>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <span>Maksimum:</span>
-                        <span>0.89</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    modal.show();
+            `;
+        });
 }
 
 // Export functions
