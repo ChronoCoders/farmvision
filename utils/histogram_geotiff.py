@@ -4,19 +4,29 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import cv2
 import os
+import logging
 from pathlib import Path
 
 def read_geotiff(filename):
     """
-    Read GeoTIFF file using rasterio
-    Enhanced version from uploaded files
+    Fixed GeoTIFF reading with proper error handling
     """
     try:
+        if not Path(filename).exists():
+            raise FileNotFoundError(f"GeoTIFF file not found: {filename}")
+            
         with rasterio.open(filename) as src:
-            # Read all bands
+            # Validate file format
+            if src.count == 0:
+                raise ValueError("Invalid GeoTIFF: No bands found")
+                
+            # Read data with memory management
             data = src.read()
             
-            # Get metadata
+            # Check for valid data
+            if data is None or data.size == 0:
+                raise ValueError("Invalid GeoTIFF: Empty data")
+            
             metadata = {
                 'crs': src.crs,
                 'transform': src.transform,
@@ -28,8 +38,11 @@ def read_geotiff(filename):
             }
             
             return data, metadata
+            
+    except ImportError:
+        raise ImportError("rasterio library not installed. Install with: pip install rasterio")
     except Exception as e:
-        print(f"GeoTIFF okuma hatası: {e}")
+        logging.error(f"GeoTIFF reading error: {e}")
         return None, None
 
 def write_geotiff(filename, data, metadata, compress='lzw'):

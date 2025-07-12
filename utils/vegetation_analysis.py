@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import cv2
+import logging
 from PIL import Image
 
 class VegetationAnalyzer:
@@ -51,14 +52,39 @@ class VegetationAnalyzer:
             raise Exception(f"Vegetation analizi hatası: {str(e)}")
     
     def calculate_ndvi(self):
-        """Calculate NDVI (Normalized Difference Vegetation Index)"""
-        # Mock NDVI calculation using RGB channels
-        # In real implementation, you would use NIR and Red bands
-        b, g, r = cv2.split(self.image.astype(np.float32))
-        
-        # Mock NDVI using green and red channels
-        ndvi = (g - r) / (g + r + 1e-8)
-        return np.clip(ndvi, -1, 1)
+        """Fixed NDVI calculation with proper error handling"""
+        try:
+            if self.image is None:
+                raise ValueError("No image loaded")
+                
+            # Convert to float to prevent integer overflow
+            image_float = self.image.astype(np.float64)
+            b, g, r = cv2.split(image_float)
+            
+            # Validate channels
+            if b.size == 0 or g.size == 0 or r.size == 0:
+                raise ValueError("Invalid image channels")
+            
+            # Use small epsilon to prevent division by zero
+            epsilon = 1e-10
+            denominator = g + r + epsilon
+            
+            # Calculate NDVI
+            ndvi = (g - r) / denominator
+            
+            # Handle potential NaN/inf values
+            ndvi = np.where(np.isfinite(ndvi), ndvi, 0)
+            ndvi = np.clip(ndvi, -1, 1)
+            
+            return ndvi
+            
+        except Exception as e:
+            logging.error(f"NDVI calculation error: {e}")
+            # Return zero array as fallback
+            if hasattr(self, 'image') and self.image is not None:
+                return np.zeros(self.image.shape[:2], dtype=np.float64)
+            else:
+                return np.zeros((100, 100), dtype=np.float64)
     
     def calculate_gli(self):
         """Calculate GLI (Green Leaf Index)"""

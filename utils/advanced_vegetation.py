@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import logging
 from PIL import Image
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
@@ -32,46 +33,85 @@ RdYlGn_lut = [
 
 def apply_colormap(data, colormap='rdylgn', min_val=None, max_val=None):
     """
-    Apply colormap to vegetation index data
+    Fixed colormap application with bounds checking
     """
-    if min_val is None:
-        min_val = np.nanmin(data)
-    if max_val is None:
-        max_val = np.nanmax(data)
-    
-    # Normalize data to 0-1 range
-    normalized = (data - min_val) / (max_val - min_val)
-    normalized = np.clip(normalized, 0, 1)
-    
-    if colormap == 'rdylgn':
-        # Use uploaded colormap
-        colormap_array = np.array(RdYlGn_lut) / 255.0
-        colored = np.zeros((*data.shape, 3))
+    try:
+        # Input validation
+        if data is None or data.size == 0:
+            raise ValueError("Invalid input data")
+            
+        # Handle NaN values
+        valid_mask = ~np.isnan(data)
+        if not np.any(valid_mask):
+            raise ValueError("All data values are NaN")
         
-        for i in range(data.shape[0]):
-            for j in range(data.shape[1]):
-                if not np.isnan(normalized[i, j]):
-                    idx = int(normalized[i, j] * (len(colormap_array) - 1))
-                    colored[i, j] = colormap_array[idx]
+        if min_val is None:
+            min_val = np.nanmin(data)
+        if max_val is None:
+            max_val = np.nanmax(data)
+        
+        # Prevent division by zero
+        if max_val == min_val:
+            max_val = min_val + 1e-6
+            
+        # Safe normalization
+        normalized = np.full_like(data, 0.0)
+        normalized[valid_mask] = (data[valid_mask] - min_val) / (max_val - min_val)
+        normalized = np.clip(normalized, 0, 1)
+        
+        if colormap == 'rdylgn':
+            colormap_array = np.array(RdYlGn_lut) / 255.0
+            colored = np.zeros((*data.shape, 3))
+            
+            # Vectorized colormap application
+            indices = (normalized * (len(colormap_array) - 1)).astype(int)
+            indices = np.clip(indices, 0, len(colormap_array) - 1)
+            
+            for i in range(3):  # RGB channels
+                colored[:, :, i] = colormap_array[indices, i]
                     
-        return colored
-    else:
-        # Use matplotlib colormaps
-        cmap = plt.cm.get_cmap(colormap)
-        return cmap(normalized)
+            return colored
+        else:
+            import matplotlib.pyplot as plt
+            cmap = plt.cm.get_cmap(colormap)
+            return cmap(normalized)
+            
+    except Exception as e:
+        logging.error(f"Colormap application error: {e}")
+        # Return grayscale fallback
+        gray = np.clip((data - np.nanmin(data)) / (np.nanmax(data) - np.nanmin(data)), 0, 1)
+        return np.stack([gray, gray, gray], axis=-1)
 
 def calculate_ndvi_advanced(red_band, nir_band):
     """
     Advanced NDVI calculation with error handling
     """
-    # Avoid division by zero
-    denominator = nir_band + red_band
-    denominator = np.where(denominator == 0, np.nan, denominator)
-    
-    ndvi = (nir_band - red_band) / denominator
-    
-    # Clip to valid NDVI range
-    ndvi = np.clip(ndvi, -1, 1)
+    try:
+        # Input validation
+        if red_band is None or nir_band is None:
+            raise ValueError("Invalid input bands")
+        
+        # Convert to float to prevent integer overflow
+        red_float = red_band.astype(np.float64)
+        nir_float = nir_band.astype(np.float64)
+        
+        # Use small epsilon to prevent division by zero
+        epsilon = 1e-10
+        denominator = nir_float + red_float + epsilon
+        
+        # Calculate NDVI
+        ndvi = (nir_float - red_float) / denominator
+        
+        # Handle potential NaN/inf values
+        ndvi = np.where(np.isfinite(ndvi), ndvi, 0)
+        ndvi = np.clip(ndvi, -1, 1)
+        
+        return ndvi
+        
+    except Exception as e:
+        logging.error(f"NDVI calculation error: {e}")
+        # Return zero array as fallback
+        return np.zeros_like(red_band, dtype=np.float64)
     
     return ndvi
 

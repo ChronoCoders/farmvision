@@ -12,6 +12,7 @@ class YOLOInference:
     def __init__(self):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.models = {}
+        self.max_batch_size = 1  # Limit batch size for memory
         self.class_names = {
             'fruit': ['elma', 'armut', 'portakal', 'mandalina', 'seftali', 'nar', 'limon', 'hurma'],
             'disease': ['Corn maize healthy', 'Cercospora Leaf Spot Gray Leaf Spot', 
@@ -41,18 +42,42 @@ class YOLOInference:
             return False
     
     def preprocess_image(self, image_path, img_size=640):
-        """Preprocess image for YOLO inference"""
+        """Fixed preprocessing with memory management"""
         try:
-            # Read image
+            # Check file exists and is readable
+            if not os.path.exists(image_path):
+                raise FileNotFoundError(f"Image file not found: {image_path}")
+                
+            # Read with error handling
             image = cv2.imread(image_path)
             if image is None:
-                raise ValueError(f"Could not read image: {image_path}")
+                # Try with PIL as fallback
+                try:
+                    pil_image = Image.open(image_path)
+                    image = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
+                except Exception:
+                    raise ValueError(f"Could not read image: {image_path}")
             
-            # Convert BGR to RGB
+            # Check image dimensions
+            if len(image.shape) != 3 or image.shape[2] != 3:
+                raise ValueError("Invalid image format - expected 3-channel image")
+            
+            h, w = image.shape[:2]
+            
+            # Validate image size
+            if h == 0 or w == 0:
+                raise ValueError("Invalid image dimensions")
+                
+            # Memory-efficient resizing
+            max_size = 2048  # Limit max image size
+            if max(h, w) > max_size:
+                scale = max_size / max(h, w)
+                new_h, new_w = int(h * scale), int(w * scale)
+                image = cv2.resize(image, (new_w, new_h))
+                h, w = new_h, new_w
+            
+            # Continue with original preprocessing...
             image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            
-            # Resize while maintaining aspect ratio
-            h, w = image_rgb.shape[:2]
             scale = img_size / max(h, w)
             new_h, new_w = int(h * scale), int(w * scale)
             
@@ -65,13 +90,24 @@ class YOLOInference:
             # Normalize
             normalized = padded.astype(np.float32) / 255.0
             
-            # Convert to tensor
-            tensor = torch.from_numpy(normalized).permute(2, 0, 1).unsqueeze(0)
+            # Convert to tensor with memory check
+            try:
+                tensor = torch.from_numpy(normalized).permute(2, 0, 1).unsqueeze(0)
+                tensor = tensor.to(self.device)
+            except RuntimeError as e:
+                if "out of memory" in str(e):
+                    # Clear GPU cache and retry on CPU
+                    if torch.cuda.is_available():
+                        torch.cuda.empty_cache()
+                    self.device = torch.device('cpu')
+                    tensor = tensor.to(self.device)
+                else:
+                    raise
             
-            return tensor.to(self.device), scale, (h, w)
+            return tensor, scale, (h, w)
             
         except Exception as e:
-            logging.error(f"Error preprocessing image: {e}")
+            logging.error(f"Image preprocessing error: {e}")
             return None, None, None
     
     def postprocess_detections(self, predictions, scale, orig_size, conf_threshold=0.25):

@@ -121,7 +121,8 @@ def health_check():
     """Application health check"""
     try:
         # Check database connection
-        db.session.execute('SELECT 1')
+        from sqlalchemy import text
+        db.session.execute(text('SELECT 1'))
         
         # Check required directories
         required_dirs = [app.config['UPLOAD_FOLDER'], app.config['RESULTS_FOLDER']]

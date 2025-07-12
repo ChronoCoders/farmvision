@@ -5,17 +5,19 @@ Error handling utilities for the Flask agricultural monitoring app
 import os
 import logging
 from functools import wraps
-from flask import flash, redirect, request, url_for, jsonify
-from app import app, db
+from flask import flash, redirect, request, url_for, jsonify, current_app
+from flask_sqlalchemy import SQLAlchemy
 
 def safe_db_commit():
     """Safe database commit with rollback on error"""
     try:
+        from app import db
         db.session.commit()
         return True
     except Exception as e:
+        from app import db
         db.session.rollback()
-        app.logger.error(f"Database error: {str(e)}")
+        current_app.logger.error(f"Database error: {str(e)}")
         return False
 
 def validate_form_inputs(required_fields, form_data):
@@ -33,7 +35,7 @@ def cleanup_temp_files(file_paths):
             if os.path.exists(path) and ('/temp/' in path or '/tmp/' in path):
                 os.remove(path)
         except Exception as e:
-            app.logger.warning(f"Could not remove temp file {path}: {e}")
+            current_app.logger.warning(f"Could not remove temp file {path}: {e}")
 
 def handle_errors(f):
     """Decorator for comprehensive error handling"""
@@ -43,24 +45,25 @@ def handle_errors(f):
             return f(*args, **kwargs)
         except FileNotFoundError as e:
             flash('Dosya bulunamadı.', 'error')
-            app.logger.error(f"File not found in {f.__name__}: {e}")
+            current_app.logger.error(f"File not found in {f.__name__}: {e}")
             return redirect(request.url)
         except ValueError as e:
             flash('Geçersiz veri girişi.', 'error')
-            app.logger.error(f"Value error in {f.__name__}: {e}")
+            current_app.logger.error(f"Value error in {f.__name__}: {e}")
             return redirect(request.url)
         except PermissionError as e:
             flash('Dosya erişim izni hatası.', 'error')
-            app.logger.error(f"Permission error in {f.__name__}: {e}")
+            current_app.logger.error(f"Permission error in {f.__name__}: {e}")
             return redirect(request.url)
         except Exception as e:
             flash('Beklenmeyen bir hata oluştu.', 'error')
-            app.logger.error(f"Unexpected error in {f.__name__}: {e}")
+            current_app.logger.error(f"Unexpected error in {f.__name__}: {e}")
             return redirect(url_for('main.dashboard'))
     return decorated_function
 
 def validate_app_config():
     """Validate required configuration settings"""
+    from app import app
     required_configs = [
         'UPLOAD_FOLDER',
         'RESULTS_FOLDER',
@@ -81,6 +84,7 @@ def validate_app_config():
 
 def setup_logging():
     """Setup application logging"""
+    from app import app
     if not app.debug:
         # Create logs directory if it doesn't exist
         os.makedirs('logs', exist_ok=True)

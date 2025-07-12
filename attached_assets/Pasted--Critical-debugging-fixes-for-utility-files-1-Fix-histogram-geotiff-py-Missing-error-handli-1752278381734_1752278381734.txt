@@ -1,0 +1,500 @@
+# Critical debugging fixes for utility files
+
+# 1. Fix histogram_geotiff.py - Missing error handling
+def read_geotiff_fixed(filename):
+    """
+    Fixed GeoTIFF reading with proper error handling
+    """
+    try:
+        import rasterio
+        if not Path(filename).exists():
+            raise FileNotFoundError(f"GeoTIFF file not found: {filename}")
+            
+        with rasterio.open(filename) as src:
+            # Validate file format
+            if src.count == 0:
+                raise ValueError("Invalid GeoTIFF: No bands found")
+                
+            # Read data with memory management
+            data = src.read()
+            
+            # Check for valid data
+            if data is None or data.size == 0:
+                raise ValueError("Invalid GeoTIFF: Empty data")
+            
+            metadata = {
+                'crs': src.crs,
+                'transform': src.transform,
+                'bounds': src.bounds,
+                'width': src.width,
+                'height': src.height,
+                'count': src.count,
+                'dtype': src.dtypes[0] if src.count > 0 else None
+            }
+            
+            return data, metadata
+            
+    except ImportError:
+        raise ImportError("rasterio library not installed. Install with: pip install rasterio")
+    except Exception as e:
+        logging.error(f"GeoTIFF reading error: {e}")
+        return None, None
+
+# 2. Fix advanced_vegetation.py - Array bounds checking
+def apply_colormap_fixed(data, colormap='rdylgn', min_val=None, max_val=None):
+    """
+    Fixed colormap application with bounds checking
+    """
+    try:
+        # Input validation
+        if data is None or data.size == 0:
+            raise ValueError("Invalid input data")
+            
+        # Handle NaN values
+        valid_mask = ~np.isnan(data)
+        if not np.any(valid_mask):
+            raise ValueError("All data values are NaN")
+        
+        if min_val is None:
+            min_val = np.nanmin(data)
+        if max_val is None:
+            max_val = np.nanmax(data)
+        
+        # Prevent division by zero
+        if max_val == min_val:
+            max_val = min_val + 1e-6
+            
+        # Safe normalization
+        normalized = np.full_like(data, 0.0)
+        normalized[valid_mask] = (data[valid_mask] - min_val) / (max_val - min_val)
+        normalized = np.clip(normalized, 0, 1)
+        
+        if colormap == 'rdylgn':
+            colormap_array = np.array(RdYlGn_lut) / 255.0
+            colored = np.zeros((*data.shape, 3))
+            
+            # Vectorized colormap application
+            indices = (normalized * (len(colormap_array) - 1)).astype(int)
+            indices = np.clip(indices, 0, len(colormap_array) - 1)
+            
+            for i in range(3):  # RGB channels
+                colored[:, :, i] = colormap_array[indices, i]
+                    
+            return colored
+        else:
+            import matplotlib.pyplot as plt
+            cmap = plt.cm.get_cmap(colormap)
+            return cmap(normalized)
+            
+    except Exception as e:
+        logging.error(f"Colormap application error: {e}")
+        # Return grayscale fallback
+        gray = np.clip((data - np.nanmin(data)) / (np.nanmax(data) - np.nanmin(data)), 0, 1)
+        return np.stack([gray, gray, gray], axis=-1)
+
+# 3. Fix real_yolo_inference.py - GPU memory management
+class YOLOInferenceFixed(YOLOInference):
+    """Fixed YOLO inference with proper memory management"""
+    
+    def __init__(self):
+        super().__init__()
+        self.max_batch_size = 1  # Limit batch size for memory
+        
+    def preprocess_image_fixed(self, image_path, img_size=640):
+        """Fixed preprocessing with memory management"""
+        try:
+            # Check file exists and is readable
+            if not os.path.exists(image_path):
+                raise FileNotFoundError(f"Image file not found: {image_path}")
+                
+            # Read with error handling
+            image = cv2.imread(image_path)
+            if image is None:
+                # Try with PIL as fallback
+                try:
+                    from PIL import Image as PILImage
+                    pil_image = PILImage.open(image_path)
+                    image = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
+                except Exception:
+                    raise ValueError(f"Could not read image: {image_path}")
+            
+            # Check image dimensions
+            if len(image.shape) != 3 or image.shape[2] != 3:
+                raise ValueError("Invalid image format - expected 3-channel image")
+            
+            h, w = image.shape[:2]
+            
+            # Validate image size
+            if h == 0 or w == 0:
+                raise ValueError("Invalid image dimensions")
+                
+            # Memory-efficient resizing
+            max_size = 2048  # Limit max image size
+            if max(h, w) > max_size:
+                scale = max_size / max(h, w)
+                new_h, new_w = int(h * scale), int(w * scale)
+                image = cv2.resize(image, (new_w, new_h))
+                h, w = new_h, new_w
+            
+            # Continue with original preprocessing...
+            image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            scale = img_size / max(h, w)
+            new_h, new_w = int(h * scale), int(w * scale)
+            
+            resized = cv2.resize(image_rgb, (new_w, new_h))
+            
+            # Pad to square
+            padded = np.zeros((img_size, img_size, 3), dtype=np.uint8)
+            padded[:new_h, :new_w] = resized
+            
+            # Normalize
+            normalized = padded.astype(np.float32) / 255.0
+            
+            # Convert to tensor with memory check
+            try:
+                tensor = torch.from_numpy(normalized).permute(2, 0, 1).unsqueeze(0)
+                tensor = tensor.to(self.device)
+            except RuntimeError as e:
+                if "out of memory" in str(e):
+                    # Clear GPU cache and retry on CPU
+                    if torch.cuda.is_available():
+                        torch.cuda.empty_cache()
+                    self.device = torch.device('cpu')
+                    tensor = tensor.to(self.device)
+                else:
+                    raise
+            
+            return tensor, scale, (h, w)
+            
+        except Exception as e:
+            logging.error(f"Image preprocessing error: {e}")
+            return None, None, None
+
+# 4. Fix helpers.py - File path validation
+def save_uploaded_file_fixed(file, filename):
+    """Fixed file saving with proper validation"""
+    try:
+        if not filename:
+            raise ValueError("Filename cannot be empty")
+            
+        # Validate file extension
+        if not allowed_file(filename):
+            raise ValueError(f"File type not allowed: {get_file_extension(filename)}")
+        
+        # Generate secure filename
+        secure_name = secure_filename(filename)
+        if not secure_name:
+            secure_name = f"upload_{uuid.uuid4().hex}.jpg"
+            
+        unique_filename = f"{uuid.uuid4().hex}_{secure_name}"
+        
+        # Validate upload directory
+        upload_dir = os.path.join('static', 'uploads')
+        if not os.path.exists(upload_dir):
+            os.makedirs(upload_dir, mode=0o755)
+            
+        file_path = os.path.join(upload_dir, unique_filename)
+        
+        # Check available disk space (at least 100MB)
+        import shutil
+        free_space = shutil.disk_usage(upload_dir).free
+        if free_space < 100 * 1024 * 1024:  # 100MB
+            raise OSError("Insufficient disk space")
+        
+        # Save file with size limit (10MB)
+        file.seek(0, 2)  # Seek to end
+        file_size = file.tell()
+        file.seek(0)  # Reset to beginning
+        
+        if file_size > 10 * 1024 * 1024:  # 10MB limit
+            raise ValueError("File too large (max 10MB)")
+        
+        file.save(file_path)
+        
+        # Verify file was saved correctly
+        if not os.path.exists(file_path) or os.path.getsize(file_path) == 0:
+            raise OSError("File save failed")
+            
+        return file_path
+        
+    except Exception as e:
+        logging.error(f"File save error: {e}")
+        raise
+
+# 5. Fix vegetation_analysis.py - Division by zero protection
+class VegetationAnalyzerFixed(VegetationAnalyzer):
+    """Fixed vegetation analyzer with robust calculations"""
+    
+    def calculate_ndvi_fixed(self):
+        """Fixed NDVI calculation with proper error handling"""
+        try:
+            if self.image is None:
+                raise ValueError("No image loaded")
+                
+            # Convert to float to prevent integer overflow
+            image_float = self.image.astype(np.float64)
+            b, g, r = cv2.split(image_float)
+            
+            # Validate channels
+            if b.size == 0 or g.size == 0 or r.size == 0:
+                raise ValueError("Invalid image channels")
+            
+            # Use small epsilon to prevent division by zero
+            epsilon = 1e-10
+            denominator = g + r + epsilon
+            
+            # Calculate NDVI
+            ndvi = (g - r) / denominator
+            
+            # Handle potential NaN/inf values
+            ndvi = np.where(np.isfinite(ndvi), ndvi, 0)
+            ndvi = np.clip(ndvi, -1, 1)
+            
+            return ndvi
+            
+        except Exception as e:
+            logging.error(f"NDVI calculation error: {e}")
+            # Return zero array as fallback
+            if hasattr(self, 'image') and self.image is not None:
+                return np.zeros(self.image.shape[:2], dtype=np.float64)
+            else:
+                return np.zeros((100, 100), dtype=np.float64)
+
+# 6. Fix image_processing.py - Memory management
+def resize_image_fixed(image_path, max_size=(1024, 1024), maintain_aspect=True):
+    """Fixed image resizing with memory management"""
+    try:
+        if not os.path.exists(image_path):
+            raise FileNotFoundError(f"Image not found: {image_path}")
+            
+        # Check file size before loading
+        file_size = os.path.getsize(image_path)
+        if file_size > 50 * 1024 * 1024:  # 50MB limit
+            raise ValueError("Image file too large")
+            
+        with Image.open(image_path) as img:
+            # Validate image
+            if img.size[0] == 0 or img.size[1] == 0:
+                raise ValueError("Invalid image dimensions")
+                
+            # Check if resize is needed
+            if img.size[0] <= max_size[0] and img.size[1] <= max_size[1]:
+                # No resize needed, just copy
+                return image_path
+                
+            original_size = img.size
+            
+            if maintain_aspect:
+                img.thumbnail(max_size, Image.Resampling.LANCZOS)
+            else:
+                img = img.resize(max_size, Image.Resampling.LANCZOS)
+            
+            # Create output path
+            output_dir = "static/processed"
+            os.makedirs(output_dir, exist_ok=True)
+            
+            resized_path = os.path.join(output_dir, f"resized_{uuid.uuid4().hex}.jpg")
+            
+            # Convert mode if necessary
+            if img.mode in ("RGBA", "P"):
+                # Create white background for transparency
+                background = Image.new('RGB', img.size, (255, 255, 255))
+                if img.mode == "RGBA":
+                    background.paste(img, mask=img.split()[-1])
+                else:
+                    background.paste(img)
+                img = background
+            elif img.mode != "RGB":
+                img = img.convert("RGB")
+            
+            # Save with quality control
+            img.save(resized_path, "JPEG", quality=90, optimize=True)
+            
+            # Verify output file
+            if not os.path.exists(resized_path):
+                raise OSError("Failed to save resized image")
+                
+            logging.info(f"Resized image from {original_size} to {img.size}")
+            return resized_path
+            
+    except Exception as e:
+        logging.error(f"Image resize error: {e}")
+        raise
+
+# 7. Fix yolo_detection.py - Model loading validation
+def detect_fruits_yolo_fixed(image_path, confidence=0.25, fruit_type='mixed'):
+    """Fixed YOLO detection with proper error handling"""
+    try:
+        start_time = time.time()
+        
+        # Validate inputs
+        if not os.path.exists(image_path):
+            raise FileNotFoundError(f"Image file not found: {image_path}")
+            
+        if not 0.1 <= confidence <= 1.0:
+            raise ValueError("Confidence must be between 0.1 and 1.0")
+            
+        # Load and validate image
+        image = cv2.imread(image_path)
+        if image is None:
+            raise ValueError("Could not load image - may be corrupted")
+            
+        height, width = image.shape[:2]
+        if height == 0 or width == 0:
+            raise ValueError("Invalid image dimensions")
+        
+        # Try real YOLO inference with fallback
+        try:
+            from utils.real_yolo_inference import yolo_engine
+            
+            # Check if models are loaded
+            if not hasattr(yolo_engine, 'models') or not yolo_engine.models:
+                logging.warning("No YOLO models loaded, attempting to load...")
+                # Could add model loading logic here
+            
+            result = yolo_engine.detect_fruits(image_path, 'fruit', confidence)
+            
+            if result and 'error' not in result:
+                # Process successful result
+                total_weight = 0.0
+                processed_detections = []
+                
+                for detection in result.get('detections', []):
+                    fruit_name = detection.get('class_name', 'unknown')
+                    weight = FRUIT_WEIGHTS.get(fruit_name, 0.1)
+                    
+                    processed_detection = {
+                        'fruit': fruit_name,
+                        'confidence': float(detection.get('confidence', 0.0)),
+                        'bbox': detection.get('bbox', [0, 0, 100, 100]),
+                        'weight': weight
+                    }
+                    processed_detections.append(processed_detection)
+                    total_weight += weight
+                
+                result.update({
+                    'detections': processed_detections,
+                    'total_count': len(processed_detections),
+                    'total_weight': round(total_weight, 3),
+                    'processing_time': round(time.time() - start_time, 2),
+                    'algorithm': 'YOLO v7 Real AI'
+                })
+                
+                return result
+            else:
+                # Model error, return empty result
+                return {
+                    'detections': [],
+                    'total_count': 0,
+                    'total_weight': 0.0,
+                    'processing_time': round(time.time() - start_time, 2),
+                    'confidence': confidence,
+                    'algorithm': 'YOLO v7 (Model Unavailable)',
+                    'error': result.get('error', 'Model loading failed')
+                }
+                
+        except ImportError:
+            logging.error("YOLO inference module not available")
+            return {
+                'detections': [],
+                'total_count': 0,
+                'total_weight': 0.0,
+                'processing_time': round(time.time() - start_time, 2),
+                'confidence': confidence,
+                'algorithm': 'YOLO v7 (Module Missing)',
+                'error': 'YOLO inference module not installed'
+            }
+        except Exception as e:
+            logging.error(f"YOLO inference error: {e}")
+            return {
+                'detections': [],
+                'total_count': 0,
+                'total_weight': 0.0,
+                'processing_time': round(time.time() - start_time, 2),
+                'confidence': confidence,
+                'algorithm': 'YOLO v7 (Error)',
+                'error': str(e)
+            }
+            
+    except Exception as e:
+        logging.error(f"Fruit detection error: {e}")
+        return None
+
+# 8. Add comprehensive validation utility
+class InputValidator:
+    """Comprehensive input validation utility"""
+    
+    @staticmethod
+    def validate_image_file(file_path):
+        """Validate image file"""
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"File not found: {file_path}")
+            
+        # Check file size
+        size = os.path.getsize(file_path)
+        if size == 0:
+            raise ValueError("File is empty")
+        if size > 50 * 1024 * 1024:  # 50MB
+            raise ValueError("File too large (max 50MB)")
+            
+        # Check file extension
+        ext = os.path.splitext(file_path)[1].lower()
+        allowed_exts = {'.jpg', '.jpeg', '.png', '.tif', '.tiff'}
+        if ext not in allowed_exts:
+            raise ValueError(f"Unsupported file type: {ext}")
+            
+        return True
+    
+    @staticmethod
+    def validate_confidence(confidence):
+        """Validate confidence parameter"""
+        try:
+            conf = float(confidence)
+            if not 0.1 <= conf <= 1.0:
+                raise ValueError("Confidence must be between 0.1 and 1.0")
+            return conf
+        except (TypeError, ValueError):
+            raise ValueError("Invalid confidence value")
+    
+    @staticmethod
+    def validate_coordinates(coords):
+        """Validate bounding box coordinates"""
+        if not isinstance(coords, (list, tuple)) or len(coords) != 4:
+            raise ValueError("Coordinates must be [x1, y1, x2, y2]")
+            
+        x1, y1, x2, y2 = coords
+        if x2 <= x1 or y2 <= y1:
+            raise ValueError("Invalid bounding box coordinates")
+            
+        return True
+
+# 9. Add memory monitoring utility
+import psutil
+
+class MemoryMonitor:
+    """Monitor memory usage during processing"""
+    
+    def __init__(self, max_memory_mb=1024):
+        self.max_memory_mb = max_memory_mb
+        self.process = psutil.Process()
+        
+    def check_memory(self):
+        """Check current memory usage"""
+        memory_mb = self.process.memory_info().rss / 1024 / 1024
+        if memory_mb > self.max_memory_mb:
+            raise MemoryError(f"Memory usage ({memory_mb:.1f}MB) exceeds limit ({self.max_memory_mb}MB)")
+        return memory_mb
+    
+    def monitor_function(self, func):
+        """Decorator to monitor memory usage"""
+        def wrapper(*args, **kwargs):
+            start_memory = self.check_memory()
+            try:
+                result = func(*args, **kwargs)
+                end_memory = self.check_memory()
+                logging.info(f"Memory usage: {start_memory:.1f}MB -> {end_memory:.1f}MB")
+                return result
+            except MemoryError:
+                logging.error("Memory limit exceeded during processing")
+                raise
+        return wrapper
