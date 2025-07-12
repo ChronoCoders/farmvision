@@ -3,6 +3,8 @@
 {% block title %}İnteraktif Harita - Farm Vision{% endblock %}
 
 {% block extra_css %}
+<!-- Leaflet Draw CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
 <style>
 #map {
     height: 70vh;
@@ -298,6 +300,9 @@
     </div>
 </div>
 
+<!-- Leaflet Draw JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+
 <script>
 let map;
 let drawnItems;
@@ -330,7 +335,16 @@ function initializeInteractiveMap() {
     };
     
     // Add default layer
-    baseLayers["OpenStreetMap"].addTo(map);
+    let currentBaseLayer = baseLayers["OpenStreetMap"];
+    currentBaseLayer.addTo(map);
+    
+    // Store layers for control
+    window.mapLayers = {
+        base: currentBaseLayer,
+        satellite: baseLayers["Uydu"],
+        openstreetmap: baseLayers["OpenStreetMap"],
+        topo: baseLayers["Topo"]
+    };
     
     // Initialize drawn items
     drawnItems = new L.FeatureGroup();
@@ -455,19 +469,44 @@ function loadVegetationOverlays() {
 
 function setupLayerControls() {
     document.getElementById('baseMapSwitch').addEventListener('change', function() {
-        // Handle base map toggle
+        if (this.checked) {
+            if (!map.hasLayer(window.mapLayers.base)) {
+                window.mapLayers.base.addTo(map);
+            }
+        } else {
+            if (map.hasLayer(window.mapLayers.base)) {
+                map.removeLayer(window.mapLayers.base);
+            }
+        }
     });
     
     document.getElementById('satelliteSwitch').addEventListener('change', function() {
-        // Handle satellite toggle
+        if (this.checked) {
+            // Remove other base layers first
+            map.removeLayer(window.mapLayers.openstreetmap);
+            map.removeLayer(window.mapLayers.topo);
+            // Add satellite layer
+            window.mapLayers.satellite.addTo(map);
+            window.mapLayers.base = window.mapLayers.satellite;
+        } else {
+            // Remove satellite layer
+            map.removeLayer(window.mapLayers.satellite);
+            // Add back OpenStreetMap
+            window.mapLayers.openstreetmap.addTo(map);
+            window.mapLayers.base = window.mapLayers.openstreetmap;
+        }
     });
     
     document.getElementById('vegetationSwitch').addEventListener('change', function() {
         Object.values(analysisOverlays).forEach(overlay => {
             if (this.checked) {
-                map.addLayer(overlay);
+                if (!map.hasLayer(overlay)) {
+                    map.addLayer(overlay);
+                }
             } else {
-                map.removeLayer(overlay);
+                if (map.hasLayer(overlay)) {
+                    map.removeLayer(overlay);
+                }
             }
         });
     });
@@ -475,9 +514,13 @@ function setupLayerControls() {
     document.getElementById('projectMarkersSwitch').addEventListener('change', function() {
         Object.values(projectMarkers).forEach(marker => {
             if (this.checked) {
-                map.addLayer(marker);
+                if (!map.hasLayer(marker)) {
+                    map.addLayer(marker);
+                }
             } else {
-                map.removeLayer(marker);
+                if (map.hasLayer(marker)) {
+                    map.removeLayer(marker);
+                }
             }
         });
     });
