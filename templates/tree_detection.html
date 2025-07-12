@@ -16,7 +16,8 @@
                         <h5 class="mb-0">Drone/Hava Görüntüsü Yükleme</h5>
                     </div>
                     <div class="card-body">
-                        <form method="POST" enctype="multipart/form-data" id="treeDetectionForm">
+                        <form method="POST" enctype="multipart/form-data" id="treeDetectionForm" role="form" aria-label="Ağaç tespiti formu">
+                            {{ csrf_token() if csrf_token else '' }}
                             <div class="mb-3">
                                 <label for="project_id" class="form-label">Proje (Opsiyonel)</label>
                                 <select class="form-select" id="project_id" name="project_id">
@@ -196,6 +197,97 @@ function updateConfidenceValue(value) {
 
 function updateIoUValue(value) {
     document.getElementById('iouValue').textContent = (value / 100).toFixed(1);
+}
+
+// Enhanced file validation for tree detection
+document.getElementById('image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        // Enhanced file validation
+        const fileSize = file.size / 1024 / 1024; // MB
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/tiff', 'image/tif'];
+        const maxSize = 100; // MB
+        
+        // File type validation
+        if (!allowedTypes.includes(file.type.toLowerCase())) {
+            showAlert('error', 'Desteklenmeyen dosya türü. Lütfen JPG, PNG veya TIFF dosyası seçin.');
+            this.value = '';
+            return false;
+        }
+        
+        // File size validation
+        if (fileSize > maxSize) {
+            showAlert('error', `Dosya boyutu ${maxSize}MB'dan küçük olmalıdır. (Mevcut: ${fileSize.toFixed(2)}MB)`);
+            this.value = '';
+            return false;
+        }
+        
+        // File name validation
+        const fileName = file.name;
+        if (fileName.length > 255) {
+            showAlert('error', 'Dosya adı çok uzun.');
+            this.value = '';
+            return false;
+        }
+        
+        // Check for suspicious extensions
+        const suspiciousExts = ['.php', '.exe', '.bat', '.cmd', '.scr', '.js'];
+        if (suspiciousExts.some(ext => fileName.toLowerCase().includes(ext))) {
+            showAlert('error', 'Güvenlik nedeniyle bu dosya türü kabul edilmiyor.');
+            this.value = '';
+            return false;
+        }
+        
+        // Create safe preview
+        createImagePreview(file, this);
+    }
+});
+
+function createImagePreview(file, inputElement) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        // Remove existing preview
+        const existingPreview = document.getElementById('imagePreview');
+        if (existingPreview) {
+            existingPreview.remove();
+        }
+        
+        // Create new preview
+        const preview = document.createElement('div');
+        preview.id = 'imagePreview';
+        preview.className = 'mt-3 text-center';
+        preview.innerHTML = `
+            <p class="text-muted small mb-2">Önizleme:</p>
+            <img src="${e.target.result}" class="img-fluid rounded shadow" 
+                 style="max-height: 200px; max-width: 100%;" alt="Önizleme"
+                 onerror="this.style.display='none'">
+        `;
+        
+        // Insert after form
+        inputElement.closest('.card-body').appendChild(preview);
+    };
+    reader.readAsDataURL(file);
+}
+
+function showAlert(type, message) {
+    const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
+    const alertHtml = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    // Remove existing alerts
+    const existingAlert = document.querySelector('.alert');
+    if (existingAlert) {
+        existingAlert.remove();
+    }
+    
+    // Add new alert
+    const formCard = document.querySelector('.card');
+    formCard.insertAdjacentHTML('beforebegin', alertHtml);
 }
 
 document.getElementById('treeDetectionForm').addEventListener('submit', function(e) {

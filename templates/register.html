@@ -13,8 +13,8 @@
                     <p class="text-muted">Yeni hesap oluşturun</p>
                 </div>
                 
-                <form method="POST" id="registerForm" role="form" aria-label="Kayıt formu">
-                    {{ csrf_token() if csrf_token else '' }}
+                <form method="POST" id="registerForm" role="form" aria-label="Kayıt formu" novalidate>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="first_name" class="form-label">Ad</label>
@@ -22,8 +22,17 @@
                                 <span class="input-group-text">
                                     <i class="fas fa-user"></i>
                                 </span>
-                                <input type="text" class="form-control" id="first_name" name="first_name" 
-                                       placeholder="Adınız">
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="first_name" 
+                                       name="first_name" 
+                                       placeholder="Adınız"
+                                       maxlength="50"
+                                       pattern="[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+"
+                                       title="Sadece harf karakterleri kullanın">
+                                <div class="invalid-feedback">
+                                    Geçerli bir ad girin (sadece harfler).
+                                </div>
                             </div>
                         </div>
                         
@@ -33,8 +42,17 @@
                                 <span class="input-group-text">
                                     <i class="fas fa-user"></i>
                                 </span>
-                                <input type="text" class="form-control" id="last_name" name="last_name" 
-                                       placeholder="Soyadınız">
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="last_name" 
+                                       name="last_name" 
+                                       placeholder="Soyadınız"
+                                       maxlength="50"
+                                       pattern="[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+"
+                                       title="Sadece harf karakterleri kullanın">
+                                <div class="invalid-feedback">
+                                    Geçerli bir soyad girin (sadece harfler).
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -45,8 +63,19 @@
                             <span class="input-group-text">
                                 <i class="fas fa-at"></i>
                             </span>
-                            <input type="text" class="form-control" id="username" name="username" 
-                                   placeholder="Kullanıcı adınız" required>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="username" 
+                                   name="username" 
+                                   placeholder="Kullanıcı adınız" 
+                                   required
+                                   minlength="3"
+                                   maxlength="20"
+                                   pattern="[a-zA-Z0-9_]+"
+                                   title="3-20 karakter, sadece harf, rakam ve alt çizgi">
+                            <div class="invalid-feedback">
+                                Kullanıcı adı 3-20 karakter olmalı (harf, rakam, alt çizgi).
+                            </div>
                         </div>
                     </div>
                     
@@ -56,8 +85,16 @@
                             <span class="input-group-text">
                                 <i class="fas fa-envelope"></i>
                             </span>
-                            <input type="email" class="form-control" id="email" name="email" 
-                                   placeholder="ornek@email.com" required>
+                            <input type="email" 
+                                   class="form-control" 
+                                   id="email" 
+                                   name="email" 
+                                   placeholder="ornek@email.com" 
+                                   required
+                                   maxlength="100">
+                            <div class="invalid-feedback">
+                                Geçerli bir e-posta adresi girin.
+                            </div>
                         </div>
                     </div>
                     
@@ -67,8 +104,17 @@
                             <span class="input-group-text">
                                 <i class="fas fa-phone"></i>
                             </span>
-                            <input type="tel" class="form-control" id="phone" name="phone" 
-                                   placeholder="+90 5XX XXX XX XX">
+                            <input type="tel" 
+                                   class="form-control" 
+                                   id="phone" 
+                                   name="phone" 
+                                   placeholder="+90 5XX XXX XX XX"
+                                   pattern="[\+]?[0-9\s\-\(\)]+"
+                                   maxlength="20"
+                                   title="Geçerli telefon numarası formatı">
+                            <div class="invalid-feedback">
+                                Geçerli bir telefon numarası girin.
+                            </div>
                         </div>
                     </div>
                     
@@ -79,8 +125,24 @@
                                 <span class="input-group-text">
                                     <i class="fas fa-lock"></i>
                                 </span>
-                                <input type="password" class="form-control" id="password" name="password" 
-                                       placeholder="En az 6 karakter" required minlength="6">
+                                <input type="password" 
+                                       class="form-control" 
+                                       id="password" 
+                                       name="password" 
+                                       placeholder="En az 8 karakter" 
+                                       required 
+                                       minlength="8"
+                                       pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}"
+                                       title="En az 8 karakter, büyük harf, küçük harf ve rakam içermeli">
+                                <div class="invalid-feedback">
+                                    Şifre en az 8 karakter, büyük harf, küçük harf ve rakam içermeli.
+                                </div>
+                            </div>
+                            <div class="password-strength mt-1">
+                                <div class="progress" style="height: 5px;">
+                                    <div class="progress-bar" id="passwordStrength" role="progressbar" style="width: 0%"></div>
+                                </div>
+                                <small class="text-muted" id="passwordStrengthText">Şifre gücü</small>
                             </div>
                         </div>
                         
@@ -90,8 +152,15 @@
                                 <span class="input-group-text">
                                     <i class="fas fa-lock"></i>
                                 </span>
-                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" 
-                                       placeholder="Şifreyi tekrarlayın" required>
+                                <input type="password" 
+                                       class="form-control" 
+                                       id="confirm_password" 
+                                       name="confirm_password" 
+                                       placeholder="Şifreyi tekrarlayın" 
+                                       required>
+                                <div class="invalid-feedback">
+                                    Şifreler eşleşmiyor.
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -100,14 +169,17 @@
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="terms" required>
                             <label class="form-check-label" for="terms">
-                                <a href="#" class="text-success">Kullanım şartlarını</a> ve 
-                                <a href="#" class="text-success">gizlilik politikasını</a> kabul ediyorum *
+                                <a href="/terms" target="_blank" class="text-success">Kullanım şartlarını</a> ve 
+                                <a href="/privacy" target="_blank" class="text-success">gizlilik politikasını</a> kabul ediyorum *
                             </label>
+                            <div class="invalid-feedback">
+                                Kullanım şartlarını kabul etmelisiniz.
+                            </div>
                         </div>
                     </div>
                     
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-success btn-lg">
+                        <button type="submit" class="btn btn-success btn-lg" id="submitBtn">
                             <i class="fas fa-user-plus me-2"></i>Hesap Oluştur
                         </button>
                     </div>
@@ -129,15 +201,103 @@
 </div>
 
 <script>
-document.getElementById('registerForm').addEventListener('submit', function(e) {
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirm_password').value;
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('registerForm');
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirm_password');
+    const strengthBar = document.getElementById('passwordStrength');
+    const strengthText = document.getElementById('passwordStrengthText');
     
-    if (password !== confirmPassword) {
+    // Real-time password strength indicator
+    password.addEventListener('input', function() {
+        const value = this.value;
+        let strength = 0;
+        let text = 'Çok zayıf';
+        let color = 'bg-danger';
+        
+        if (value.length >= 8) strength += 25;
+        if (/[a-z]/.test(value)) strength += 25;
+        if (/[A-Z]/.test(value)) strength += 25;
+        if (/\d/.test(value)) strength += 25;
+        
+        if (strength >= 75) {
+            text = 'Güçlü';
+            color = 'bg-success';
+        } else if (strength >= 50) {
+            text = 'Orta';
+            color = 'bg-warning';
+        } else if (strength >= 25) {
+            text = 'Zayıf';
+            color = 'bg-danger';
+        }
+        
+        strengthBar.style.width = strength + '%';
+        strengthBar.className = 'progress-bar ' + color;
+        strengthText.textContent = text;
+    });
+    
+    // Real-time password confirmation
+    confirmPassword.addEventListener('input', function() {
+        if (this.value !== password.value) {
+            this.classList.add('is-invalid');
+        } else {
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+        }
+    });
+    
+    // Form submission with enhanced validation
+    form.addEventListener('submit', function(e) {
         e.preventDefault();
-        alert('Şifreler eşleşmiyor!');
-        return false;
-    }
+        
+        // Clear previous validation
+        form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+        
+        let isValid = true;
+        
+        // Validate all required fields
+        const requiredFields = form.querySelectorAll('[required]');
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            }
+        });
+        
+        // Password match validation
+        if (password.value !== confirmPassword.value) {
+            confirmPassword.classList.add('is-invalid');
+            isValid = false;
+        }
+        
+        // Email format validation
+        const email = document.getElementById('email');
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (email.value && !emailRegex.test(email.value)) {
+            email.classList.add('is-invalid');
+            isValid = false;
+        }
+        
+        // Username validation
+        const username = document.getElementById('username');
+        const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+        if (!usernameRegex.test(username.value)) {
+            username.classList.add('is-invalid');
+            isValid = false;
+        }
+        
+        if (isValid) {
+            // Show loading state
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Hesap oluşturuluyor...';
+            
+            // Submit form
+            this.submit();
+        } else {
+            alert('Lütfen tüm alanları doğru şekilde doldurun.');
+        }
+    });
 });
 </script>
 {% endblock %}

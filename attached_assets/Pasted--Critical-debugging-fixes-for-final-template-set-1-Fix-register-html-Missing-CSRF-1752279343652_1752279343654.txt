@@ -1,0 +1,619 @@
+<!-- Critical debugging fixes for final template set -->
+
+<!-- 1. Fix register.html - Missing CSRF and enhanced validation -->
+<form method="POST" id="registerForm" novalidate>
+    <!-- Add CSRF token -->
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="first_name" class="form-label">Ad</label>
+            <div class="input-group">
+                <span class="input-group-text">
+                    <i class="fas fa-user"></i>
+                </span>
+                <input type="text" 
+                       class="form-control" 
+                       id="first_name" 
+                       name="first_name" 
+                       placeholder="Adınız"
+                       maxlength="50"
+                       pattern="[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+"
+                       title="Sadece harf karakterleri kullanın">
+                <div class="invalid-feedback">
+                    Geçerli bir ad girin (sadece harfler).
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-3">
+            <label for="last_name" class="form-label">Soyad</label>
+            <div class="input-group">
+                <span class="input-group-text">
+                    <i class="fas fa-user"></i>
+                </span>
+                <input type="text" 
+                       class="form-control" 
+                       id="last_name" 
+                       name="last_name" 
+                       placeholder="Soyadınız"
+                       maxlength="50"
+                       pattern="[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+"
+                       title="Sadece harf karakterleri kullanın">
+                <div class="invalid-feedback">
+                    Geçerli bir soyad girin (sadece harfler).
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mb-3">
+        <label for="username" class="form-label">Kullanıcı Adı *</label>
+        <div class="input-group">
+            <span class="input-group-text">
+                <i class="fas fa-at"></i>
+            </span>
+            <input type="text" 
+                   class="form-control" 
+                   id="username" 
+                   name="username" 
+                   placeholder="Kullanıcı adınız" 
+                   required
+                   minlength="3"
+                   maxlength="20"
+                   pattern="[a-zA-Z0-9_]+"
+                   title="3-20 karakter, sadece harf, rakam ve alt çizgi">
+            <div class="invalid-feedback">
+                Kullanıcı adı 3-20 karakter olmalı (harf, rakam, alt çizgi).
+            </div>
+        </div>
+    </div>
+    
+    <div class="mb-3">
+        <label for="email" class="form-label">E-posta *</label>
+        <div class="input-group">
+            <span class="input-group-text">
+                <i class="fas fa-envelope"></i>
+            </span>
+            <input type="email" 
+                   class="form-control" 
+                   id="email" 
+                   name="email" 
+                   placeholder="ornek@email.com" 
+                   required
+                   maxlength="100">
+            <div class="invalid-feedback">
+                Geçerli bir e-posta adresi girin.
+            </div>
+        </div>
+    </div>
+    
+    <div class="mb-3">
+        <label for="phone" class="form-label">Telefon</label>
+        <div class="input-group">
+            <span class="input-group-text">
+                <i class="fas fa-phone"></i>
+            </span>
+            <input type="tel" 
+                   class="form-control" 
+                   id="phone" 
+                   name="phone" 
+                   placeholder="+90 5XX XXX XX XX"
+                   pattern="[\+]?[0-9\s\-\(\)]+"
+                   maxlength="20"
+                   title="Geçerli telefon numarası formatı">
+            <div class="invalid-feedback">
+                Geçerli bir telefon numarası girin.
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="password" class="form-label">Şifre *</label>
+            <div class="input-group">
+                <span class="input-group-text">
+                    <i class="fas fa-lock"></i>
+                </span>
+                <input type="password" 
+                       class="form-control" 
+                       id="password" 
+                       name="password" 
+                       placeholder="En az 8 karakter" 
+                       required 
+                       minlength="8"
+                       pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}"
+                       title="En az 8 karakter, büyük harf, küçük harf ve rakam içermeli">
+                <div class="invalid-feedback">
+                    Şifre en az 8 karakter, büyük harf, küçük harf ve rakam içermeli.
+                </div>
+            </div>
+            <div class="password-strength mt-1">
+                <div class="progress" style="height: 5px;">
+                    <div class="progress-bar" id="passwordStrength" role="progressbar" style="width: 0%"></div>
+                </div>
+                <small class="text-muted" id="passwordStrengthText">Şifre gücü</small>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-3">
+            <label for="confirm_password" class="form-label">Şifre Tekrar *</label>
+            <div class="input-group">
+                <span class="input-group-text">
+                    <i class="fas fa-lock"></i>
+                </span>
+                <input type="password" 
+                       class="form-control" 
+                       id="confirm_password" 
+                       name="confirm_password" 
+                       placeholder="Şifreyi tekrarlayın" 
+                       required>
+                <div class="invalid-feedback">
+                    Şifreler eşleşmiyor.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mb-4">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="terms" required>
+            <label class="form-check-label" for="terms">
+                <a href="/terms" target="_blank" class="text-success">Kullanım şartlarını</a> ve 
+                <a href="/privacy" target="_blank" class="text-success">gizlilik politikasını</a> kabul ediyorum *
+            </label>
+            <div class="invalid-feedback">
+                Kullanım şartlarını kabul etmelisiniz.
+            </div>
+        </div>
+    </div>
+    
+    <div class="d-grid">
+        <button type="submit" class="btn btn-success btn-lg" id="submitBtn">
+            <i class="fas fa-user-plus me-2"></i>Hesap Oluştur
+        </button>
+    </div>
+</form>
+
+<!-- Enhanced JavaScript validation for register.html -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('registerForm');
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirm_password');
+    const strengthBar = document.getElementById('passwordStrength');
+    const strengthText = document.getElementById('passwordStrengthText');
+    
+    // Real-time password strength indicator
+    password.addEventListener('input', function() {
+        const value = this.value;
+        let strength = 0;
+        let text = 'Çok zayıf';
+        let color = 'bg-danger';
+        
+        if (value.length >= 8) strength += 25;
+        if (/[a-z]/.test(value)) strength += 25;
+        if (/[A-Z]/.test(value)) strength += 25;
+        if (/\d/.test(value)) strength += 25;
+        
+        if (strength >= 75) {
+            text = 'Güçlü';
+            color = 'bg-success';
+        } else if (strength >= 50) {
+            text = 'Orta';
+            color = 'bg-warning';
+        } else if (strength >= 25) {
+            text = 'Zayıf';
+            color = 'bg-danger';
+        }
+        
+        strengthBar.style.width = strength + '%';
+        strengthBar.className = 'progress-bar ' + color;
+        strengthText.textContent = text;
+    });
+    
+    // Real-time password confirmation
+    confirmPassword.addEventListener('input', function() {
+        if (this.value !== password.value) {
+            this.classList.add('is-invalid');
+        } else {
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+        }
+    });
+    
+    // Form submission with enhanced validation
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Clear previous validation
+        form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+        
+        let isValid = true;
+        
+        // Validate all required fields
+        const requiredFields = form.querySelectorAll('[required]');
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            }
+        });
+        
+        // Password match validation
+        if (password.value !== confirmPassword.value) {
+            confirmPassword.classList.add('is-invalid');
+            isValid = false;
+        }
+        
+        // Email format validation
+        const email = document.getElementById('email');
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (email.value && !emailRegex.test(email.value)) {
+            email.classList.add('is-invalid');
+            isValid = false;
+        }
+        
+        // Username validation
+        const username = document.getElementById('username');
+        const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+        if (!usernameRegex.test(username.value)) {
+            username.classList.add('is-invalid');
+            isValid = false;
+        }
+        
+        if (isValid) {
+            // Show loading state
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Hesap oluşturuluyor...';
+            
+            // Submit form
+            this.submit();
+        } else {
+            alert('Lütfen tüm alanları doğru şekilde doldurun.');
+        }
+    });
+});
+</script>
+
+<!-- 2. Fix tree_detection.html - Enhanced file validation -->
+<script>
+document.getElementById('image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        // Enhanced file validation
+        const fileSize = file.size / 1024 / 1024; // MB
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/tiff', 'image/tif'];
+        const maxSize = 100; // MB
+        
+        // File type validation
+        if (!allowedTypes.includes(file.type.toLowerCase())) {
+            showAlert('error', 'Desteklenmeyen dosya türü. Lütfen JPG, PNG veya TIFF dosyası seçin.');
+            this.value = '';
+            return false;
+        }
+        
+        // File size validation
+        if (fileSize > maxSize) {
+            showAlert('error', `Dosya boyutu ${maxSize}MB'dan küçük olmalıdır. (Mevcut: ${fileSize.toFixed(2)}MB)`);
+            this.value = '';
+            return false;
+        }
+        
+        // File name validation
+        const fileName = file.name;
+        if (fileName.length > 255) {
+            showAlert('error', 'Dosya adı çok uzun.');
+            this.value = '';
+            return false;
+        }
+        
+        // Check for suspicious extensions
+        const suspiciousExts = ['.php', '.exe', '.bat', '.cmd', '.scr', '.js'];
+        if (suspiciousExts.some(ext => fileName.toLowerCase().includes(ext))) {
+            showAlert('error', 'Güvenlik nedeniyle bu dosya türü kabul edilmiyor.');
+            this.value = '';
+            return false;
+        }
+        
+        // Create safe preview
+        createImagePreview(file, this);
+    }
+});
+
+function createImagePreview(file, inputElement) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        // Remove existing preview
+        const existingPreview = document.getElementById('imagePreview');
+        if (existingPreview) {
+            existingPreview.remove();
+        }
+        
+        // Create new preview
+        const preview = document.createElement('div');
+        preview.id = 'imagePreview';
+        preview.className = 'mt-3 text-center';
+        
+        // Sanitize file name for display
+        const safeName = file.name.replace(/[<>\"']/g, '');
+        
+        preview.innerHTML = `
+            <div class="card" style="max-width: 300px; margin: 0 auto;">
+                <img src="${e.target.result}" 
+                     class="card-img-top" 
+                     alt="Önizleme" 
+                     style="height: 200px; object-fit: cover;"
+                     onerror="this.style.display='none';">
+                <div class="card-body">
+                    <small class="text-muted">
+                        <i class="fas fa-file me-1"></i>${safeName}<br>
+                        <i class="fas fa-weight-hanging me-1"></i>${(file.size / 1024 / 1024).toFixed(2)} MB
+                    </small>
+                </div>
+            </div>
+        `;
+        
+        inputElement.closest('.card-body').appendChild(preview);
+    };
+    
+    reader.onerror = function() {
+        showAlert('error', 'Dosya önizleme oluşturulamadı.');
+    };
+    
+    reader.readAsDataURL(file);
+}
+
+function showAlert(type, message) {
+    // Create or update alert
+    let alertContainer = document.getElementById('alertContainer');
+    if (!alertContainer) {
+        alertContainer = document.createElement('div');
+        alertContainer.id = 'alertContainer';
+        alertContainer.className = 'mt-3';
+        document.querySelector('.card-body').prepend(alertContainer);
+    }
+    
+    const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
+    const icon = type === 'error' ? 'exclamation-triangle' : 'check-circle';
+    
+    alertContainer.innerHTML = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            <i class="fas fa-${icon} me-2"></i>${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+        const alert = alertContainer.querySelector('.alert');
+        if (alert) {
+            alert.classList.remove('show');
+            setTimeout(() => alert.remove(), 300);
+        }
+    }, 5000);
+}
+</script>
+
+<!-- 3. Fix vegetation_results.html - Null reference handling -->
+{% if results and results.items %}
+    <div class="row">
+        {% for result in results.items %}
+        <div class="col-lg-6 col-xl-4 mb-4">
+            <div class="card result-card h-100">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">
+                            <i class="fas fa-leaf text-success me-2"></i>
+                            Analiz #{{ result.id }}
+                        </h6>
+                        <span class="algorithm-badge">{{ (result.algorithm or 'NDVI')|upper|e }}</span>
+                    </div>
+                </div>
+                
+                {% if result.result_path %}
+                <div class="card-body text-center">
+                    <img src="{{ url_for('static', filename=result.result_path.replace('static/', '') if result.result_path else 'images/placeholder.png') }}" 
+                         alt="Bitki Örtüsü Analizi" 
+                         class="result-image mb-3"
+                         onerror="this.src='{{ url_for('static', filename='images/placeholder.png') }}'; this.onerror=null;"
+                         loading="lazy">
+                </div>
+                {% endif %}
+                
+                <div class="card-body pt-0">
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i>
+                            {{ result.created_at.strftime('%d.%m.%Y %H:%M') if result.created_at else 'Tarih bilinmiyor' }}
+                        </small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="stats-badge">
+                            <i class="fas fa-palette me-1"></i>
+                            {{ (result.colormap or 'Viridis')|title|e }}
+                        </div>
+                    </div>
+                    
+                    {% if result.min_range is not none and result.max_range is not none %}
+                    <div class="histogram-container">
+                        <h6><i class="fas fa-chart-bar me-2"></i>İstatistikler</h6>
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <div class="text-primary">
+                                    <strong>{{ "%.3f"|format(result.min_range) }}</strong>
+                                    <br><small>Min Değer</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-success">
+                                    <strong>{{ "%.3f"|format(result.max_range) }}</strong>
+                                    <br><small>Max Değer</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if result.result_path %}
+                    <div class="mt-3 text-center">
+                        <a href="{{ url_for('static', filename=result.result_path.replace('static/', '')) }}" 
+                           download 
+                           class="download-btn"
+                           onclick="return validateDownload(this);">
+                            <i class="fas fa-download me-2"></i>İndir
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if result.project %}
+                <div class="card-footer bg-light">
+                    <small class="text-muted">
+                        <i class="fas fa-folder me-1"></i>
+                        {{ result.project.title|e if result.project.title else 'Proje adı yok' }}
+                    </small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <!-- Empty state with better error handling -->
+    <div class="row">
+        <div class="col-12">
+            <div class="text-center py-5">
+                <div class="mb-4">
+                    <i class="fas fa-chart-area text-muted" style="font-size: 4rem;"></i>
+                </div>
+                <h4 class="text-muted mb-3">Henüz Bitki Örtüsü Analizi Yok</h4>
+                <p class="text-muted mb-4">
+                    İlk bitki örtüsü analizinizi başlatmak için tarımsal görüntülerinizi yükleyin.
+                </p>
+                <a href="{{ url_for('mapping.vegetation_analysis') }}" class="btn btn-success btn-lg">
+                    <i class="fas fa-plus me-2"></i>İlk Analizi Başlat
+                </a>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<!-- Enhanced JavaScript with error handling -->
+<script>
+function validateDownload(linkElement) {
+    try {
+        // Check if link is valid
+        if (!linkElement.href || linkElement.href === '#') {
+            alert('Dosya indirme linki geçersiz.');
+            return false;
+        }
+        
+        // Track download attempt
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'download', {
+                'event_category': 'vegetation_analysis',
+                'event_label': 'result_download'
+            });
+        }
+        
+        return true;
+    } catch (error) {
+        console.error('Download validation error:', error);
+        return true; // Allow download anyway
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        // Image modal handling with error protection
+        const resultImages = document.querySelectorAll('.result-image');
+        const modalImage = document.getElementById('modalImage');
+        const imageModalElement = document.getElementById('imageModal');
+        
+        if (resultImages.length > 0 && modalImage && imageModalElement) {
+            const imageModal = new bootstrap.Modal(imageModalElement);
+            
+            resultImages.forEach(img => {
+                img.addEventListener('click', function() {
+                    try {
+                        modalImage.src = this.src;
+                        imageModal.show();
+                    } catch (error) {
+                        console.error('Modal show error:', error);
+                    }
+                });
+                
+                img.style.cursor = 'pointer';
+                img.setAttribute('tabindex', '0');
+                img.setAttribute('role', 'button');
+                img.setAttribute('aria-label', 'Görüntüyü büyüt');
+            });
+        }
+        
+        // Error handling for broken images
+        const images = document.querySelectorAll('img[data-src-fallback]');
+        images.forEach(img => {
+            img.addEventListener('error', function() {
+                if (!this.dataset.errorHandled) {
+                    this.src = this.dataset.srcFallback || '/static/images/placeholder.png';
+                    this.dataset.errorHandled = 'true';
+                }
+            });
+        });
+        
+    } catch (error) {
+        console.error('DOM initialization error:', error);
+    }
+});
+</script>
+
+<!-- 4. Fix XSS vulnerabilities across all templates -->
+<!-- Always escape user content -->
+<h1>{{ project.title|e }}</h1>
+<p>{{ project.description|e|nl2br|safe }}</p>
+
+<!-- For URLs, use url_for with proper validation -->
+<a href="{{ url_for('main.project_detail', project_id=project.id|int) }}">
+    {{ project.title|e }}
+</a>
+
+<!-- For JavaScript data, use tojson filter -->
+<script>
+const projectData = {{ projects|tojson }};
+// Never use direct interpolation like {{ project.name }}
+</script>
+
+<!-- 5. Add proper error boundary components -->
+<div class="error-boundary" id="mainContent">
+    <!-- Main content here -->
+</div>
+
+<script>
+window.addEventListener('error', function(e) {
+    console.error('Global error:', e.error);
+    
+    // Show user-friendly error message
+    const errorBoundary = document.getElementById('mainContent');
+    if (errorBoundary && e.error.name !== 'NetworkError') {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'alert alert-danger mt-3';
+        errorDiv.innerHTML = `
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Bir hata oluştu. Sayfa yenilenerek tekrar deneyin.
+            <button class="btn btn-sm btn-outline-danger ms-2" onclick="location.reload()">
+                Yenile
+            </button>
+        `;
+        errorBoundary.prepend(errorDiv);
+    }
+});
+
+// Unhandled promise rejection handler
+window.addEventListener('unhandledrejection', function(e) {
+    console.error('Unhandled promise rejection:', e.reason);
+    e.preventDefault();
+});
+</script>
