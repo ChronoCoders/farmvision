@@ -269,26 +269,21 @@
 const ctx = document.getElementById('activityChart').getContext('2d');
 // Safely pass data using JSON encoding to prevent XSS
 const activityData = {{ activity_data|tojson|safe }};
-const activityChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: ['6 gün önce', '5 gün önce', '4 gün önce', '3 gün önce', '2 gün önce', 'Dün', 'Bugün'],
-        datasets: [{
-            label: 'Tespit Sayısı',
-            data: Array.isArray(activityData) ? activityData.slice(0, 7) : [2, 5, 3, 8, 4, 6, 7],
-            borderColor: '#198754',
-            backgroundColor: 'rgba(25, 135, 84, 0.1)',
-            tension: 0.4,
-            fill: true
-        }, {
-            label: 'Analiz Sayısı',
-            data: [1, 2, 4, 3, 2, 4, 3],
-            borderColor: '#ffc107',
-            backgroundColor: 'rgba(255, 193, 7, 0.1)',
-            tension: 0.4,
-            fill: true
-        }]
-    },
+// Only show chart if there's authentic data
+if (Array.isArray(activityData) && activityData.length > 0) {
+    const activityChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['6 gün önce', '5 gün önce', '4 gün önce', '3 gün önce', '2 gün önce', 'Dün', 'Bugün'],
+            datasets: [{
+                label: 'Tespit Sayısı',
+                data: activityData.slice(0, 7),
+                borderColor: '#198754',
+                backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
     options: {
         responsive: true,
         maintainAspectRatio: false,
@@ -305,7 +300,12 @@ const activityChart = new Chart(ctx, {
                 }
             }
         }
-    }
-});
+    });
+} else {
+    // Show message when no authentic data is available
+    document.getElementById('activityChart').style.display = 'none';
+    const chartContainer = document.getElementById('activityChart').parentElement;
+    chartContainer.innerHTML = '<div class="text-center text-muted py-4"><i class="fas fa-chart-line fa-3x mb-3"></i><p>Henüz tespit verisi bulunmuyor.<br>AI tespit işlemleri yaptıktan sonra aktivite grafiği görüntülenecektir.</p></div>';
+}
 </script>
 {% endblock %}

@@ -160,6 +160,9 @@ Farm Vision is a comprehensive web application that combines AI-powered computer
   - Enhanced error handling to show proper messages when authentic data is missing
   - Created proper SVG placeholder images for missing authentic content
   - System now requires authentic YOLO models (70-300MB) for AI detection functionality
+  - Removed all synthetic fallback data from dashboard activity chart
+  - Dashboard now shows only authentic detection data or informative empty state messages
+  - All charts and visualizations display authentic data only with proper error handling
 
 ## User Preferences
 
