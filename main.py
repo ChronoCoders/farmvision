@@ -16,6 +16,15 @@ def main():
         port = int(os.environ.get('PORT', 5000))
         host = os.environ.get('HOST', '0.0.0.0')
         
+        # Railway.app specific configuration
+        railway_env = os.environ.get('RAILWAY_ENVIRONMENT')
+        if railway_env:
+            logging.info(f"Railway environment detected: {railway_env}")
+            # Force production settings on Railway
+            if railway_env == 'production':
+                flask_env = 'production'
+                debug_mode = False
+        
         # Log startup information
         logging.info(f"Starting Farm Vision application")
         logging.info(f"Environment: {flask_env}")

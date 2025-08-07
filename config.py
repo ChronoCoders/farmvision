@@ -163,6 +163,20 @@ class ProductionConfig(Config):
     FLASK_ENV = 'production'
     LOG_LEVEL = os.environ.get('LOG_LEVEL', 'WARNING')
     
+    # Railway.app specific optimizations
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "pool_recycle": 280,  # Recycle connections before timeout
+        "pool_pre_ping": True,  # Verify connections before use
+        "pool_timeout": 20,  # Connection timeout
+        "max_overflow": 20,  # Additional connections for Railway scaling
+        "pool_size": 10,  # Base connection pool size for Railway
+        "connect_args": {
+            "sslmode": "require",  # Force SSL connection
+            "connect_timeout": 10,  # Connection establishment timeout
+            "application_name": "farm_vision_railway"  # Identify our Railway app
+        }
+    }
+    
     @classmethod
     def validate_required_config(cls) -> None:
         """Enhanced validation for production environment"""
@@ -204,7 +218,7 @@ def get_config(environment: Optional[str] = None) -> type[Config]:
     if not environment:
         environment = os.environ.get('FLASK_ENV', 'development')
     
-    config_class = config_mapping.get(environment, DevelopmentConfig)
+    config_class = config_mapping.get(environment or 'development', DevelopmentConfig)
     return config_class
 
 
@@ -232,7 +246,7 @@ def initialize_config(app, environment: Optional[str] = None):
     else:
         raise RuntimeError("SECRET_KEY is required but not found in environment variables")
     
-    logging.info(f"Initialized Farm Vision with {config.__class__.__name__}")
+    logging.info(f"Initialized Farm Vision with {config.__name__}")
     logging.info(f"Environment: {config.FLASK_ENV}")
     logging.info(f"Database: {config.SQLALCHEMY_DATABASE_URI}")
     logging.info(f"Upload folder: {config.UPLOAD_FOLDER}")

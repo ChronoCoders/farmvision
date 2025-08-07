@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ["python311", "gdal", "proj"]
+
+[phases.install]
+cmds = ["pip install --upgrade pip", "pip install -r pyproject.toml"]
+
+[phases.build]
+cmds = ["mkdir -p static/uploads static/results static/detected static/convertor detection_models logs"]
+
+[start]
+cmd = "gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 main:app"
