@@ -24,7 +24,15 @@ try:
         else:
             logging.warning("No .env file found. Using system environment variables only.")
 except ImportError:
-    logging.warning("python-dotenv not available. Using system environment variables only.")
+    # In production, python-dotenv should be mandatory
+    flask_env = os.environ.get('FLASK_ENV', 'development')
+    if flask_env == 'production':
+        raise RuntimeError(
+            "PRODUCTION ERROR: python-dotenv is required in production environment. "
+            "Install with: pip install python-dotenv"
+        )
+    else:
+        logging.warning("python-dotenv not available. Using system environment variables only.")
 
 
 class Config:

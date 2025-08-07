@@ -48,11 +48,21 @@ def load_user(user_id):
         logging.error(f"User loader error: {e}")
         return None
 
-# Create upload directories
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-os.makedirs(app.config['RESULTS_FOLDER'], exist_ok=True)
-os.makedirs('static/detected', exist_ok=True)
-os.makedirs('static/convertor', exist_ok=True)
+# Create required directories with proper logging
+directories_to_create = [
+    app.config['UPLOAD_FOLDER'],
+    app.config['RESULTS_FOLDER'], 
+    'static/detected',
+    'static/convertor'
+]
+
+for directory in directories_to_create:
+    try:
+        os.makedirs(directory, exist_ok=True)
+        logging.debug(f"Ensured directory exists: {directory}")
+    except OSError as e:
+        logging.error(f"Failed to create directory {directory}: {e}")
+        raise
 
 with app.app_context():
     # Import models and routes
@@ -68,12 +78,31 @@ with app.app_context():
     from routes.auth import auth_bp
     from routes.api import api
     
-    # Register blueprints
-    app.register_blueprint(main_bp)
-    app.register_blueprint(detection_bp, url_prefix='/detection')
-    app.register_blueprint(mapping_bp, url_prefix='/mapping')
-    app.register_blueprint(auth_bp, url_prefix='/auth')
-    app.register_blueprint(api)
+    # Register blueprints with proper logging
+    blueprints = [
+        (main_bp, None, 'main'),
+        (detection_bp, '/detection', 'detection'),
+        (mapping_bp, '/mapping', 'mapping'),
+        (auth_bp, '/auth', 'auth'),
+        (api, None, 'api')
+    ]
     
-    # Create all database tables
-    db.create_all()
+    for blueprint, url_prefix, name in blueprints:
+        try:
+            if url_prefix:
+                app.register_blueprint(blueprint, url_prefix=url_prefix)
+                logging.debug(f"Registered blueprint: {name} with prefix {url_prefix}")
+            else:
+                app.register_blueprint(blueprint)
+                logging.debug(f"Registered blueprint: {name}")
+        except Exception as e:
+            logging.error(f"Failed to register blueprint {name}: {e}")
+            raise
+    
+    # Create all database tables with error handling
+    try:
+        db.create_all()
+        logging.info("Database tables created successfully")
+    except Exception as e:
+        logging.error(f"Failed to create database tables: {e}")
+        raise

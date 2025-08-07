@@ -355,5 +355,5 @@ def analyze_vegetation_comprehensive(image_bands, algorithm='ndvi', colormap='rd
         }
         
     except Exception as e:
-        print(f"Bitki örtüsü analizinde hata: {e}")
+        logging.error(f"Bitki örtüsü analizinde hata: {e}")
         return None

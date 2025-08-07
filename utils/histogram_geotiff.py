@@ -85,7 +85,7 @@ def write_geotiff(filename, data, metadata, compress='lzw'):
             
         return True
     except Exception as e:
-        print(f"GeoTIFF yazma hatası: {e}")
+        logging.error(f"GeoTIFF yazma hatası: {e}")
         return False
 
 def calculate_histogram(image_data, bins=256, range_values=None, mask=None):
@@ -134,7 +134,7 @@ def calculate_histogram(image_data, bins=256, range_values=None, mask=None):
             return [(hist, bin_edges)]
             
     except Exception as e:
-        print(f"Histogram hesaplama hatası: {e}")
+        logging.error(f"Histogram hesaplama hatası: {e}")
         return None
 
 def create_histogram_plot(histogram_data, title="Histogram", save_path=None):
@@ -176,7 +176,7 @@ def create_histogram_plot(histogram_data, title="Histogram", save_path=None):
             return fig
             
     except Exception as e:
-        print(f"Histogram plot oluşturma hatası: {e}")
+        logging.error(f"Histogram plot oluşturma hatası: {e}")
         return None
 
 def process_geotiff_histogram(file_path, output_dir=None, bins=256):
@@ -243,7 +243,7 @@ def process_geotiff_histogram(file_path, output_dir=None, bins=256):
         return result
         
     except Exception as e:
-        print(f"GeoTIFF histogram işleme hatası: {e}")
+        logging.error(f"GeoTIFF histogram işleme hatası: {e}")
         return None
 
 def extract_rgb_from_geotiff(file_path, output_path=None):
