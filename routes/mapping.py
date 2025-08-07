@@ -148,9 +148,36 @@ def vegetation_analysis():
                                      original_image=file_path,
                                      processing_time=processing_time)
                 
+            except FileNotFoundError as file_error:
+                # Clean up uploaded file
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                current_app.logger.error(f"File not found during vegetation analysis: {str(file_error)}")
+                flash('Dosya bulunamadı. Lütfen dosyayı tekrar yükleyin.', 'error')
+                return redirect(url_for('mapping.vegetation_analysis'))
+                
+            except ValueError as value_error:
+                # Handle algorithm or input validation errors
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                current_app.logger.error(f"Value error in vegetation analysis: {str(value_error)}")
+                flash(f'Girdi doğrulama hatası: {str(value_error)}', 'error')
+                return redirect(url_for('mapping.vegetation_analysis'))
+                
+            except PermissionError as perm_error:
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                current_app.logger.error(f"Permission error during vegetation analysis: {str(perm_error)}")
+                flash('Dosya izinleri hatası. Lütfen sistem yöneticisi ile iletişime geçin.', 'error')
+                return redirect(url_for('mapping.vegetation_analysis'))
+                
             except Exception as e:
-                flash(f'Analiz sırasında hata oluştu: {str(e)}', 'error')
-                current_app.logger.error(f"Vegetation analysis error: {str(e)}")
+                # Cleanup and generic error handling
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                current_app.logger.error(f"Unexpected error in vegetation analysis: {str(e)}")
+                flash('Vegetation analizi sırasında beklenmeyen hata oluştu. Lütfen tekrar deneyin.', 'error')
+                return redirect(url_for('mapping.vegetation_analysis'))
         else:
             flash('Geçersiz dosya formatı. Lütfen GeoTIFF (.tif/.tiff) dosyası yükleyin.', 'error')
     

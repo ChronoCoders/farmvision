@@ -90,15 +90,21 @@ def fruit_detection():
             file_path = save_uploaded_file(file, secure_name)
             
             try:
-                # Perform fruit detection
+                # Perform fruit detection with enhanced error handling
                 detection_result = detect_fruits(file_path, fruit_type)
                 
                 processing_time = time.time() - start_time
                 
-                # Calculate total weight
+                # Calculate total weight with enhanced validation
                 count = detection_result.get('count', 0)
                 unit_weight = FRUIT_WEIGHTS.get(fruit_type, 0.15)
                 total_weight = count * unit_weight
+                
+                # Enhanced feedback for detection results
+                if count == 0:
+                    flash(f'Görüntüde {fruit_type} tespit edilemedi. Görüntü kalitesini artırmayı veya farklı açıdan çekmeyi deneyin.', 'warning')
+                else:
+                    flash(f'Tespit tamamlandı! {count} adet {fruit_type} tespit edildi. Toplam ağırlık: {total_weight:.2f} kg', 'success')
                 
                 # Save to database with validated inputs
                 result = DetectionResult(
@@ -117,16 +123,25 @@ def fruit_detection():
                 db.session.add(result)
                 db.session.commit()
                 
-                flash(f'Tespit tamamlandı! {count} adet {fruit_type} tespit edildi. Toplam ağırlık: {total_weight:.2f} kg', 'success')
-                
                 return render_template('detection_result.html', 
                                      result=result,
                                      detection_result=detection_result,
                                      original_image=file_path)
                 
+            except FileNotFoundError as file_error:
+                current_app.logger.error(f"File not found during fruit detection: {str(file_error)}")
+                flash('Dosya bulunamadı. Lütfen dosyayı tekrar yükleyin.', 'error')
+                return redirect(url_for('detection.fruit_detection'))
+                
+            except ValueError as value_error:
+                current_app.logger.error(f"Value error in fruit detection: {str(value_error)}")
+                flash(f'Girdi doğrulama hatası: {str(value_error)}', 'error')
+                return redirect(url_for('detection.fruit_detection'))
+                
             except Exception as e:
-                flash(f'Tespit sırasında hata oluştu: {str(e)}', 'error')
-                current_app.logger.error(f"Detection error: {str(e)}")
+                current_app.logger.error(f"Unexpected error in fruit detection: {str(e)}")
+                flash('Meyve tespiti sırasında beklenmeyen hata oluştu. Lütfen tekrar deneyin.', 'error')
+                return redirect(url_for('detection.fruit_detection'))
         else:
             flash('Geçersiz dosya formatı. Lütfen JPG, PNG veya JPEG dosyası yükleyin.', 'error')
     
@@ -183,19 +198,28 @@ def leaf_detection():
             file_path = save_uploaded_file(file, secure_name)
             
             try:
-                # Perform leaf disease detection
+                # Perform leaf disease detection with enhanced error handling
                 detection_result = detect_leaf_disease(file_path)
                 
                 processing_time = time.time() - start_time
+                
+                # Enhanced feedback for detection results with Turkish localization
+                disease_name = detection_result.get('name', 'Bilinmeyen')
+                confidence = detection_result.get('confidence', 0.0)
+                
+                if confidence == 0.0 or not disease_name or disease_name == 'Bilinmeyen':
+                    flash('Yaprak hastalığı tespit edilemedi. Görüntü kalitesini artırmayı veya farklı açıdan çekmeyi deneyin.', 'warning')
+                else:
+                    flash(f'Yaprak hastalık tespiti tamamlandı! Tespit edilen: {disease_name} (Güven: %{confidence*100:.1f})', 'success')
                 
                 # Save to database
                 result = DetectionResult(
                     image_path=file_path,
                     result_path=detection_result.get('result_path'),
                     detection_type='leaf_disease',
-                    fruit_type=detection_result.get('name'),
-                    confidence=detection_result.get('confidence', 0.0),
-                    processing_time=processing_time,
+                    fruit_type=disease_name,
+                    confidence=max(0.0, min(1.0, confidence)),  # Clamp to [0,1]
+                    processing_time=max(0.0, processing_time),
                     user_id=current_user.id,
                     project_id=project_id if project_id else None
                 )
@@ -203,16 +227,25 @@ def leaf_detection():
                 db.session.add(result)
                 db.session.commit()
                 
-                flash('Yaprak hastalık tespiti tamamlandı!', 'success')
-                
                 return render_template('leaf_detection_result.html', 
                                      result=result,
                                      detection_result=detection_result,
                                      original_image=file_path)
                 
+            except FileNotFoundError as file_error:
+                current_app.logger.error(f"File not found during leaf detection: {str(file_error)}")
+                flash('Dosya bulunamadı. Lütfen dosyayı tekrar yükleyin.', 'error')
+                return redirect(url_for('detection.leaf_detection'))
+                
+            except ValueError as value_error:
+                current_app.logger.error(f"Value error in leaf detection: {str(value_error)}")
+                flash(f'Girdi doğrulama hatası: {str(value_error)}', 'error')
+                return redirect(url_for('detection.leaf_detection'))
+                
             except Exception as e:
-                flash(f'Tespit sırasında hata oluştu: {str(e)}', 'error')
-                current_app.logger.error(f"Leaf detection error: {str(e)}")
+                current_app.logger.error(f"Unexpected error in leaf detection: {str(e)}")
+                flash('Yaprak hastalık tespiti sırasında beklenmeyen hata oluştu. Lütfen tekrar deneyin.', 'error')
+                return redirect(url_for('detection.leaf_detection'))
         else:
             flash('Geçersiz dosya formatı. Lütfen JPG, PNG veya JPEG dosyası yükleyin.', 'error')
     
