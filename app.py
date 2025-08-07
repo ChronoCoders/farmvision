@@ -22,7 +22,16 @@ csrf = CSRFProtect()
 
 # Create the app
 app = Flask(__name__)
-app.secret_key = os.environ.get("SESSION_SECRET", "default_secret_key_for_development")
+
+# CRITICAL: Require secure secret key from environment
+try:
+    app.secret_key = os.environ["SECRET_KEY"]
+except KeyError:
+    raise RuntimeError(
+        "CRITICAL SECURITY ERROR: SECRET_KEY environment variable is required. "
+        "Set a strong, random SECRET_KEY before deployment. "
+        "Generate one with: python -c 'import secrets; print(secrets.token_hex(32))'"
+    )
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # Configure the database
@@ -41,7 +50,7 @@ app.config['RESULTS_FOLDER'] = 'static/results'
 db.init_app(app)
 login_manager.init_app(app)
 csrf.init_app(app)
-login_manager.login_view = 'auth.login'  # type: ignore
+login_manager.login_view = 'auth.login'  # type: ignore[assignment]
 login_manager.login_message = 'Lütfen giriş yapın.'
 login_manager.login_message_category = 'info'
 
