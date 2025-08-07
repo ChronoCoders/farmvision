@@ -7,15 +7,13 @@ from flask_wtf.csrf import CSRFProtect
 from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-# Configure logging
-logging.basicConfig(level=logging.DEBUG)
-
-# Suppress rasterio boto3 warning
-logging.getLogger('rasterio.session').setLevel(logging.ERROR)
+# Import centralized configuration
+from config import initialize_config
 
 class Base(DeclarativeBase):
     pass
 
+# Initialize Flask extensions
 db = SQLAlchemy(model_class=Base)
 login_manager = LoginManager()
 csrf = CSRFProtect()
@@ -23,33 +21,18 @@ csrf = CSRFProtect()
 # Create the app
 app = Flask(__name__)
 
-# CRITICAL: Require secure secret key from environment
-try:
-    app.secret_key = os.environ["SECRET_KEY"]
-except KeyError:
-    raise RuntimeError(
-        "CRITICAL SECURITY ERROR: SECRET_KEY environment variable is required. "
-        "Set a strong, random SECRET_KEY before deployment. "
-        "Generate one with: python -c 'import secrets; print(secrets.token_hex(32))'"
-    )
+# Initialize configuration from environment
+config = initialize_config(app)
+
+# Apply ProxyFix for proper HTTPS handling
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-# Configure the database
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///farm_vision.db")
-app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-    "pool_recycle": 300,
-    "pool_pre_ping": True,
-}
-
-# Configure upload settings
-app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB max file size
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
-app.config['RESULTS_FOLDER'] = 'static/results'
-
-# Initialize extensions
+# Initialize Flask extensions with app
 db.init_app(app)
 login_manager.init_app(app)
 csrf.init_app(app)
+
+# Configure Flask-Login
 login_manager.login_view = 'auth.login'  # type: ignore[assignment]
 login_manager.login_message = 'Lütfen giriş yapın.'
 login_manager.login_message_category = 'info'

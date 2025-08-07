@@ -41,6 +41,39 @@ Preferred communication style: Simple, everyday language.
 - **Geospatial**: Rasterio, GDAL, Rio-tiler, Proj4.
 - **Frontend Libraries**: Leaflet.js, Chart.js, Bootstrap, Font Awesome.
 - **AI Models**: YOLO models (e.g., via Ultralytics) and custom-trained agricultural models.
+- **Configuration**: python-dotenv for environment variable management.
+
+## Required Environment Variables
+
+The following environment variables must be configured for production deployment:
+
+### Critical Security Variables
+- `SECRET_KEY`: Strong random key (32+ characters) for Flask sessions and CSRF protection
+- `WTF_CSRF_SECRET_KEY`: Separate CSRF token signing key for additional security
+
+### Database Configuration  
+- `DATABASE_URL` or `SQLALCHEMY_DATABASE_URI`: Full database connection string
+
+### Application Settings
+- `FLASK_ENV`: Environment mode (development/production/testing)
+- `DEBUG`: Enable/disable debug mode (false in production)
+- `LOG_LEVEL`: Logging verbosity (INFO/WARNING/ERROR/DEBUG)
+
+### File Upload Configuration
+- `UPLOAD_FOLDER`: Directory for uploaded files (default: static/uploads)  
+- `RESULTS_FOLDER`: Directory for processing results (default: static/results)
+- `MAX_CONTENT_LENGTH`: Maximum file size in bytes (default: 50MB)
+- `ALLOWED_EXTENSIONS`: Comma-separated list of allowed file extensions
+
+### AI Model Configuration
+- `MODEL_PATH`: Directory containing YOLO model files (default: detection_models)
+- `YOLO_CONFIDENCE_THRESHOLD`: AI detection confidence threshold (default: 0.25)
+- `YOLO_IOU_THRESHOLD`: Non-maximum suppression threshold (default: 0.45)
+
+Copy `.env.example` to configure your environment variables. Generate secure keys with:
+```bash
+python -c 'import secrets; print(secrets.token_hex(32))'
+```
 
 ## Recent Critical Updates
 
@@ -55,3 +88,15 @@ Preferred communication style: Simple, everyday language.
   - Protected all 3 core detection functions: `detect_fruits_yolo()`, `detect_leaf_disease_corn()`, `detect_trees_from_drone()`
   - Maintained 100% authentic data policy - no synthetic fallbacks, clear error messaging when models unavailable
   - System now handles missing YOLO models gracefully while maintaining production stability
+
+- **August 07, 2025**: Environment Configuration System - Production-Grade Configuration Management
+  - **SECURITY CRITICAL**: Implemented comprehensive environment configuration using python-dotenv
+  - Added centralized configuration management in config.py with environment-specific settings
+  - Eliminated all hardcoded secrets, paths, and environment-specific values from codebase
+  - Created secure configuration classes: DevelopmentConfig, ProductionConfig, TestingConfig
+  - Added comprehensive validation for required environment variables with clear error messages
+  - Implemented automatic directory creation for uploads, results, models, and logs
+  - Added production security validation: DEBUG mode blocking, strong SECRET_KEY requirements
+  - Created .env.example template with all required configuration variables
+  - Enhanced file upload security to use configurable limits and extensions
+  - Production systems now enforce secure configuration standards and fail fast on misconfigurations

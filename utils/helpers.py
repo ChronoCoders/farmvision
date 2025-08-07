@@ -35,10 +35,15 @@ def validate_file_security(file, filename):
     3. Magic number validation
     4. File size limits
     """
+    from flask import current_app
+    
     try:
+        # Get allowed extensions from config
+        allowed_extensions = current_app.config.get('ALLOWED_EXTENSIONS', {'png', 'jpg', 'jpeg', 'tif', 'tiff'})
+        
         # Layer 1: Extension validation
-        if not filename or not allowed_file(filename):
-            return False, f"Desteklenmeyen dosya türü. İzin verilen: {', '.join(ALLOWED_EXTENSIONS)}"
+        if not filename or not allowed_file_config(filename, allowed_extensions):
+            return False, f"Desteklenmeyen dosya türü. İzin verilen: {', '.join(allowed_extensions)}"
         
         # Layer 2: MIME type validation
         mime_type = file.mimetype
@@ -90,9 +95,14 @@ def validate_file_security(file, filename):
         return False, f"Dosya güvenlik kontrolü başarısız: {str(e)}"
 
 def allowed_file(filename):
-    """Check if file extension is allowed"""
+    """Check if file extension is allowed using global ALLOWED_EXTENSIONS"""
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def allowed_file_config(filename, allowed_extensions):
+    """Check if file extension is allowed using provided extensions set"""
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 def save_uploaded_file(file, filename):
     """Enhanced secure file saving with comprehensive validation"""
