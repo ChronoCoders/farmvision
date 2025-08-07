@@ -2,6 +2,7 @@
 nixPkgs = ["python311", "python311Packages.pip", "gdal", "proj", "gcc"]
 
 [phases.install]
+dependsOn = ["setup"]
 cmds = [
   "python -m venv /opt/venv",
   "/opt/venv/bin/pip install --upgrade pip",
@@ -13,6 +14,7 @@ cmds = [
 ]
 
 [phases.build]
+dependsOn = ["install"]
 cmds = ["mkdir -p static/uploads static/results static/detected static/convertor detection_models logs"]
 
 [start]
@@ -20,3 +22,4 @@ cmd = "/opt/venv/bin/gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 mai
 
 [variables]
 PATH = "/opt/venv/bin:$PATH"
+NIXPACKS_PYTHON_VERSION = "3.11"
