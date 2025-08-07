@@ -40,7 +40,13 @@ login_manager.login_message_category = 'info'
 @login_manager.user_loader
 def load_user(user_id):
     from models import User
-    return User.query.get(int(user_id))
+    from utils.database_helpers import safe_first_query
+    try:
+        user_query = User.query.filter(User.id == int(user_id))
+        return safe_first_query(user_query, error_default=None)
+    except Exception as e:
+        logging.error(f"User loader error: {e}")
+        return None
 
 # Create upload directories
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)

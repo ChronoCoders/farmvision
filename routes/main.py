@@ -26,34 +26,56 @@ def index():
 @main_bp.route('/dashboard')
 @login_required
 def dashboard():
-    # Get comprehensive user statistics
-    projects = Project.query.filter_by(user_id=current_user.id).all()
+    from utils.database_helpers import safe_count_query, safe_all_query
     
-    stats = {
-        'total_projects': len(projects),
-        'total_detections': DetectionResult.query.filter_by(user_id=current_user.id).count(),
-        'total_vegetation_analyses': VegetationAnalysis.query.join(Project).filter(Project.user_id == current_user.id).count(),
-        'recent_activities': []
-    }
-    
-    # Recent detection results
-    recent_detections = DetectionResult.query.filter_by(user_id=current_user.id)\
-                                           .order_by(DetectionResult.created_at.desc())\
-                                           .limit(10).all()
-    
-    # Activity data for chart - only authentic data
-    activity_data = []
-    for i in range(7):
-        date = datetime.now() - timedelta(days=6-i)
-        day_detections = DetectionResult.query.filter_by(user_id=current_user.id)\
-                                            .filter(DetectionResult.created_at >= date.replace(hour=0, minute=0, second=0, microsecond=0))\
-                                            .filter(DetectionResult.created_at < date.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1))\
-                                            .count()
-        activity_data.append(day_detections)
-    
-    return render_template('dashboard.html', stats=stats, 
-                         projects=projects, recent_detections=recent_detections,
-                         activity_data=activity_data)
+    try:
+        # Get comprehensive user statistics with robust error handling
+        projects_query = Project.query.filter_by(user_id=current_user.id)
+        projects = safe_all_query(projects_query, error_default=[])
+        
+        stats = {
+            'total_projects': len(projects),
+            'total_detections': safe_count_query(
+                DetectionResult.query.filter_by(user_id=current_user.id),
+                error_default=0
+            ),
+            'total_vegetation_analyses': safe_count_query(
+                VegetationAnalysis.query.join(Project).filter(Project.user_id == current_user.id),
+                error_default=0
+            ),
+            'recent_activities': []
+        }
+        
+        # Recent detection results with error handling
+        recent_detections_query = DetectionResult.query.filter_by(user_id=current_user.id)\
+                                               .order_by(DetectionResult.created_at.desc())\
+                                               .limit(10)
+        recent_detections = safe_all_query(recent_detections_query, error_default=[])
+        
+        # Activity data for chart - only authentic data with safe queries
+        activity_data = []
+        for i in range(7):
+            date = datetime.now() - timedelta(days=6-i)
+            start_date = date.replace(hour=0, minute=0, second=0, microsecond=0)
+            end_date = start_date + timedelta(days=1)
+            
+            day_query = DetectionResult.query.filter_by(user_id=current_user.id)\
+                                          .filter(DetectionResult.created_at >= start_date)\
+                                          .filter(DetectionResult.created_at < end_date)
+            day_detections = safe_count_query(day_query, error_default=0)
+            activity_data.append(day_detections)
+        
+        return render_template('dashboard.html', stats=stats, 
+                             projects=projects, recent_detections=recent_detections,
+                             activity_data=activity_data)
+                             
+    except Exception as e:
+        logging.error(f"Dashboard error: {e}")
+        flash('Dashboard yüklenirken bir sorun oluştu. Lütfen sayfayı yenileyin.', 'warning')
+        # Return minimal dashboard with no data rather than crashing
+        return render_template('dashboard.html', 
+                             stats={'total_projects': 0, 'total_detections': 0, 'total_vegetation_analyses': 0},
+                             projects=[], recent_detections=[], activity_data=[0,0,0,0,0,0,0])
 
 @main_bp.route('/projects')
 @login_required

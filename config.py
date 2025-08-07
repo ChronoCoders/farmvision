@@ -39,13 +39,21 @@ class Config:
     DEBUG = os.environ.get('DEBUG', 'false').lower() == 'true'
     FLASK_ENV = os.environ.get('FLASK_ENV', 'production')
     
-    # Database Configuration
+    # Database Configuration  
     DATABASE_URL = os.environ.get('DATABASE_URL')
     SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI') or DATABASE_URL
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {
-        "pool_recycle": 300,
-        "pool_pre_ping": True,
+        "pool_recycle": 280,  # Recycle connections before timeout
+        "pool_pre_ping": True,  # Verify connections before use
+        "pool_timeout": 20,  # Connection timeout
+        "max_overflow": 10,  # Additional connections beyond pool_size
+        "pool_size": 5,  # Base connection pool size
+        "connect_args": {
+            "sslmode": "require",  # Force SSL connection
+            "connect_timeout": 10,  # Connection establishment timeout
+            "application_name": "farm_vision"  # Identify our application
+        }
     }
     
     # File Upload Configuration
