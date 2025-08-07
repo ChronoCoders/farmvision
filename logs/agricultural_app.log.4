@@ -1,0 +1,124 @@
+2025-07-11 23:57:15,408 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:93]
+2025-07-11 23:57:38,654 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:96]
+2025-07-11 23:57:49,326 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:96]
+2025-07-12 00:00:11,090 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:96]
+2025-07-12 00:00:22,198 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:96]
+2025-07-12 00:00:38,680 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:96]
+2025-07-12 00:01:14,423 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:96]
+2025-07-12 00:01:23,008 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:96]
+2025-07-12 00:03:10,450 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:07:33,203 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:08:57,876 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:09:37,374 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:10:10,271 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:14:08,432 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:14:15,565 ERROR: Exception on / [GET] [in /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py:875]
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/routes/main.py", line 23, in index
+    return render_template('index.html')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/runner/workspace/templates/index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/home/runner/workspace/templates/base.html", line 9, in top-level template code
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/utils.py", line 92, in from_obj
+    if hasattr(obj, "jinja_pass_arg"):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'csrf_token' is undefined
+2025-07-12 00:14:27,304 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:14:37,413 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:15:07,851 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:15:24,073 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:17:35,628 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:20:09,119 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:20:30,331 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:23:04,331 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:23:26,181 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:24:41,441 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:25:46,234 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:27:20,183 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:28:35,006 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:29:44,817 ERROR: Exception on /dashboard [GET] [in /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py:875]
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/routes/main.py", line 43, in dashboard
+    return render_template('dashboard.html', stats=stats,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/runner/workspace/templates/dashboard.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/home/runner/workspace/templates/base.html", line 153, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/templates/dashboard.html", line 271, in block 'content'
+    const activityData = {{ activity_data|tojson|safe }};
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/filters.py", line 1721, in do_tojson
+    return htmlsafe_json_dumps(value, dumps=dumps, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/utils.py", line 669, in htmlsafe_json_dumps
+    dumps(obj, **kwargs)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/json/provider.py", line 179, in dumps
+    return json.dumps(obj, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nix/store/clx0mcir7qw8zk36zbr4jra789g3knf6-python3-3.11.10/lib/python3.11/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/nix/store/clx0mcir7qw8zk36zbr4jra789g3knf6-python3-3.11.10/lib/python3.11/json/encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nix/store/clx0mcir7qw8zk36zbr4jra789g3knf6-python3-3.11.10/lib/python3.11/json/encoder.py", line 258, in iterencode
+    return _iterencode(o, 0)
+           ^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/json/provider.py", line 121, in _default
+    raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
+TypeError: Object of type Undefined is not JSON serializable
+2025-07-12 00:30:27,528 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:31:03,856 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:31:19,768 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]

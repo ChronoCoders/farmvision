@@ -41,7 +41,7 @@ app.config['RESULTS_FOLDER'] = 'static/results'
 db.init_app(app)
 login_manager.init_app(app)
 csrf.init_app(app)
-login_manager.login_view = 'auth.login'
+login_manager.login_view = 'auth.login'  # type: ignore
 login_manager.login_message = 'Lütfen giriş yapın.'
 login_manager.login_message_category = 'info'
 

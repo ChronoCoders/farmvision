@@ -20,6 +20,16 @@ class User(UserMixin, db.Model):
     # Relationships
     projects = relationship('Project', backref='owner', lazy=True, cascade='all, delete-orphan')
     detection_results = relationship('DetectionResult', backref='user', lazy=True)
+    
+    def __init__(self, username=None, email=None, password_hash=None, first_name=None, 
+                 last_name=None, phone=None, is_active=True):
+        self.username = username
+        self.email = email
+        self.password_hash = password_hash
+        self.first_name = first_name
+        self.last_name = last_name
+        self.phone = phone
+        self.is_active = is_active
 
 class Project(db.Model):
     __tablename__ = 'projects'
@@ -37,6 +47,15 @@ class Project(db.Model):
     # Relationships
     detection_results = relationship('DetectionResult', backref='project', lazy=True)
     vegetation_analyses = relationship('VegetationAnalysis', backref='project', lazy=True)
+    
+    def __init__(self, title=None, description=None, farm_name=None, field_name=None, 
+                 location=None, user_id=None):
+        self.title = title
+        self.description = description
+        self.farm_name = farm_name
+        self.field_name = field_name
+        self.location = location
+        self.user_id = user_id
 
 class DetectionResult(db.Model):
     __tablename__ = 'detection_results'
@@ -53,6 +72,20 @@ class DetectionResult(db.Model):
     created_at = Column(DateTime, default=datetime.utcnow)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     project_id = Column(Integer, ForeignKey('projects.id'))
+    
+    def __init__(self, image_path=None, result_path=None, detection_type=None, 
+                 fruit_type=None, count=0, total_weight=0.0, confidence=None, 
+                 processing_time=None, user_id=None, project_id=None):
+        self.image_path = image_path
+        self.result_path = result_path
+        self.detection_type = detection_type
+        self.fruit_type = fruit_type
+        self.count = count
+        self.total_weight = total_weight
+        self.confidence = confidence
+        self.processing_time = processing_time
+        self.user_id = user_id
+        self.project_id = project_id
 
 class VegetationAnalysis(db.Model):
     __tablename__ = 'vegetation_analyses'
@@ -66,3 +99,13 @@ class VegetationAnalysis(db.Model):
     max_range = Column(Float)
     created_at = Column(DateTime, default=datetime.utcnow)
     project_id = Column(Integer, ForeignKey('projects.id'))
+    
+    def __init__(self, image_path=None, result_path=None, algorithm=None, 
+                 colormap=None, min_range=None, max_range=None, project_id=None):
+        self.image_path = image_path
+        self.result_path = result_path
+        self.algorithm = algorithm
+        self.colormap = colormap
+        self.min_range = min_range
+        self.max_range = max_range
+        self.project_id = project_id

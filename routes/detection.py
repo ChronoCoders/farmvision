@@ -1,6 +1,6 @@
 import os
 import time
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, jsonify
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from models import DetectionResult, Project
@@ -54,7 +54,7 @@ def fruit_detection():
             start_time = time.time()
             
             # Save uploaded file
-            filename = secure_filename(file.filename)
+            filename = secure_filename(file.filename or 'upload.jpg')
             file_path = save_uploaded_file(file, filename)
             
             try:
@@ -94,7 +94,7 @@ def fruit_detection():
                 
             except Exception as e:
                 flash(f'Tespit sırasında hata oluştu: {str(e)}', 'error')
-                app.logger.error(f"Detection error: {str(e)}")
+                current_app.logger.error(f"Detection error: {str(e)}")
         else:
             flash('Geçersiz dosya formatı. Lütfen JPG, PNG veya JPEG dosyası yükleyin.', 'error')
     
@@ -120,7 +120,7 @@ def leaf_detection():
             start_time = time.time()
             
             # Save uploaded file
-            filename = secure_filename(file.filename)
+            filename = secure_filename(file.filename or 'upload.jpg')
             file_path = save_uploaded_file(file, filename)
             
             try:
@@ -153,7 +153,7 @@ def leaf_detection():
                 
             except Exception as e:
                 flash(f'Tespit sırasında hata oluştu: {str(e)}', 'error')
-                app.logger.error(f"Leaf detection error: {str(e)}")
+                current_app.logger.error(f"Leaf detection error: {str(e)}")
         else:
             flash('Geçersiz dosya formatı. Lütfen JPG, PNG veya JPEG dosyası yükleyin.', 'error')
     
@@ -179,7 +179,7 @@ def tree_detection():
             start_time = time.time()
             
             # Save uploaded file
-            filename = secure_filename(file.filename)
+            filename = secure_filename(file.filename or 'upload.jpg')
             file_path = save_uploaded_file(file, filename)
             
             try:
@@ -212,7 +212,7 @@ def tree_detection():
                 
             except Exception as e:
                 flash(f'Tespit sırasında hata oluştu: {str(e)}', 'error')
-                app.logger.error(f"Tree detection error: {str(e)}")
+                current_app.logger.error(f"Tree detection error: {str(e)}")
         else:
             flash('Geçersiz dosya formatı. Lütfen JPG, PNG veya JPEG dosyası yükleyin.', 'error')
     
@@ -251,7 +251,7 @@ def process_advanced_multi_detection():
         
         if file and allowed_file(file.filename):
             # Fix: Proper file saving
-            filename = secure_filename(file.filename)
+            filename = secure_filename(file.filename or 'upload.jpg')
             file_path = save_uploaded_file(file, filename)
             
             # Check if file was actually saved

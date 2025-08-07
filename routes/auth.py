@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import User
@@ -58,7 +58,7 @@ def register():
             flash('Şifreler eşleşmiyor.', 'error')
             return render_template('register.html')
         
-        if len(password) < 6:
+        if not password or len(password) < 6:
             flash('Şifre en az 6 karakter olmalıdır.', 'error')
             return render_template('register.html')
         
@@ -75,7 +75,7 @@ def register():
         user = User(
             username=username,
             email=email,
-            password_hash=generate_password_hash(password),
+            password_hash=generate_password_hash(password) if password else "",
             first_name=first_name,
             last_name=last_name,
             phone=phone
@@ -89,7 +89,7 @@ def register():
         except Exception as e:
             db.session.rollback()
             flash('Kayıt sırasında hata oluştu. Lütfen tekrar deneyin.', 'error')
-            app.logger.error(f"Registration error: {str(e)}")
+            current_app.logger.error(f"Registration error: {str(e)}")
             return render_template('register.html')
     
     return render_template('register.html')
@@ -145,6 +145,6 @@ def profile():
         except Exception as e:
             db.session.rollback()
             flash('Profil güncellenirken hata oluştu.', 'error')
-            app.logger.error(f"Profile update error: {str(e)}")
+            current_app.logger.error(f"Profile update error: {str(e)}")
     
     return render_template('profile.html')
