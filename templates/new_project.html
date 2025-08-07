@@ -12,7 +12,7 @@
                 </h4>
             </div>
             <div class="card-body p-4">
-                <form method="POST" role="form" aria-label="Yeni proje oluşturma formu">
+                <form method="POST" id="projectForm" role="form" aria-label="Yeni proje oluşturma formu" novalidate>
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <div class="mb-3">
                         <label for="title" class="form-label">Proje Başlığı *</label>
@@ -21,14 +21,19 @@
                                 <i class="fas fa-heading"></i>
                             </span>
                             <input type="text" class="form-control" id="title" name="title" 
-                                   placeholder="Örn: 2025 Yaz Dönemi Elma Hasadı" required>
+                                   placeholder="Örn: 2025 Yaz Dönemi Elma Hasadı" 
+                                   required minlength="3" maxlength="200">
+                            <div class="invalid-feedback">
+                                Proje başlığı 3-200 karakter arasında olmalıdır.
+                            </div>
                         </div>
                     </div>
                     
                     <div class="mb-3">
                         <label for="description" class="form-label">Açıklama</label>
                         <textarea class="form-control" id="description" name="description" rows="3"
-                                  placeholder="Proje hakkında detaylı bilgi verin..."></textarea>
+                                  placeholder="Proje hakkında detaylı bilgi verin..." maxlength="1000"></textarea>
+                        <div class="form-text">Maksimum 1000 karakter.</div>
                     </div>
                     
                     <div class="row">

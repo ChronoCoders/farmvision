@@ -23,8 +23,10 @@
                     <li><hr class="dropdown-divider"></li>
                     <li>
                         <form method="POST" action="{{ url_for('main.delete_project', project_id=project.id) }}" style="display: inline;">
+                            {{ csrf_token() }}
                             <button type="submit" class="dropdown-item text-danger" 
-                                    onclick="return confirm('Bu projeyi ve tüm verilerini silmek istediğinizden emin misiniz?')">
+                                    onclick="return confirm('Bu projeyi ve tüm verilerini silmek istediğinizden emin misiniz?')" 
+                                    required>
                                 <i class="fas fa-trash me-2"></i>Sil
                             </button>
                         </form>
@@ -56,15 +58,15 @@
                 <i class="fas fa-chart-bar me-2"></i>Tespit İstatistikleri
             </div>
             <div class="card-body">
-                <p class="mb-1"><strong>Toplam Tespit:</strong> {{ detection_stats.total_detections }}</p>
+                <p class="mb-1"><strong>Toplam Tespit:</strong> {{ detection_stats.get('total_detections', 0) }}</p>
                 <p class="mb-1"><strong>Ortalama Güven:</strong> 
-                    {% if detection_stats.avg_confidence > 0 %}
-                        {{ "%.1f%%"|format(detection_stats.avg_confidence * 100) }}
+                    {% if detection_stats.get('avg_confidence', 0) > 0 %}
+                        {{ "%.1f%%"|format(detection_stats.get('avg_confidence', 0) * 100) }}
                     {% else %}
                         -
                     {% endif %}
                 </p>
-                <p class="mb-0"><strong>Bitki Analizi:</strong> {{ detection_stats.total_vegetation }}</p>
+                <p class="mb-0"><strong>Bitki Analizi:</strong> {{ detection_stats.get('total_vegetation', 0) }}</p>
             </div>
         </div>
     </div>
@@ -75,8 +77,8 @@
                 <i class="fas fa-apple-alt me-2"></i>Meyve Sayıları
             </div>
             <div class="card-body">
-                {% if detection_stats.fruit_counts %}
-                    {% for fruit, count in detection_stats.fruit_counts.items() %}
+                {% if detection_stats.get('fruit_counts') %}
+                    {% for fruit, count in detection_stats.get('fruit_counts', {}).items() %}
                         <p class="mb-1"><strong>{{ fruit.title() }}:</strong> {{ count }} adet</p>
                     {% endfor %}
                 {% else %}

@@ -14,7 +14,11 @@
                 </div>
                 
                 <form method="POST" id="registerForm" role="form" aria-label="Kayıt formu" novalidate>
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    {% if form.hidden_tag %}
+                        {{ form.hidden_tag() }}
+                    {% else %}
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    {% endif %}
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="first_name" class="form-label">Ad</label>
@@ -236,67 +240,45 @@ document.addEventListener('DOMContentLoaded', function() {
         strengthText.textContent = text;
     });
     
-    // Real-time password confirmation
-    confirmPassword.addEventListener('input', function() {
-        if (this.value !== password.value) {
-            this.classList.add('is-invalid');
+    // Password match validation
+    function validatePasswordMatch() {
+        if (confirmPassword.value && confirmPassword.value !== password.value) {
+            confirmPassword.setCustomValidity('Şifreler eşleşmiyor');
+            confirmPassword.classList.add('is-invalid');
         } else {
-            this.classList.remove('is-invalid');
-            this.classList.add('is-valid');
+            confirmPassword.setCustomValidity('');
+            confirmPassword.classList.remove('is-invalid');
+            if (confirmPassword.value) {
+                confirmPassword.classList.add('is-valid');
+            }
         }
+    }
+    
+    password.addEventListener('input', validatePasswordMatch);
+    confirmPassword.addEventListener('input', validatePasswordMatch);
+    
+    // Form validation
+    form.addEventListener('submit', function(event) {
+        validatePasswordMatch();
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
     });
     
-    // Form submission with enhanced validation
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Clear previous validation
-        form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-        
-        let isValid = true;
-        
-        // Validate all required fields
-        const requiredFields = form.querySelectorAll('[required]');
-        requiredFields.forEach(field => {
-            if (!field.value.trim()) {
-                field.classList.add('is-invalid');
-                isValid = false;
+    // Real-time validation for all fields
+    const inputs = form.querySelectorAll('input');
+    inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            if (this.checkValidity()) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+                this.classList.add('is-invalid');
             }
         });
-        
-        // Password match validation
-        if (password.value !== confirmPassword.value) {
-            confirmPassword.classList.add('is-invalid');
-            isValid = false;
-        }
-        
-        // Email format validation
-        const email = document.getElementById('email');
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (email.value && !emailRegex.test(email.value)) {
-            email.classList.add('is-invalid');
-            isValid = false;
-        }
-        
-        // Username validation
-        const username = document.getElementById('username');
-        const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
-        if (!usernameRegex.test(username.value)) {
-            username.classList.add('is-invalid');
-            isValid = false;
-        }
-        
-        if (isValid) {
-            // Show loading state
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Hesap oluşturuluyor...';
-            
-            // Submit form
-            this.submit();
-        } else {
-            alert('Lütfen tüm alanları doğru şekilde doldurun.');
-        }
     });
 });
 </script>

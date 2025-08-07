@@ -23,7 +23,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="card-title text-white-50">Toplam Proje</h6>
-                        <h2 class="mb-0">{{ stats.total_projects }}</h2>
+                        <h2 class="mb-0">{{ stats.get('total_projects', 0) }}</h2>
                     </div>
                     <div>
                         <i class="fas fa-folder fa-2x opacity-75"></i>
@@ -44,7 +44,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="card-title text-white-50">AI Tespit</h6>
-                        <h2 class="mb-0">{{ stats.total_detections }}</h2>
+                        <h2 class="mb-0">{{ stats.get('total_detections', 0) }}</h2>
                     </div>
                     <div>
                         <i class="fas fa-search fa-2x opacity-75"></i>
@@ -65,7 +65,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="card-title text-white-50">Bitki Analizi</h6>
-                        <h2 class="mb-0">{{ stats.total_vegetation_analyses }}</h2>
+                        <h2 class="mb-0">{{ stats.get('total_vegetation_analyses', 0) }}</h2>
                     </div>
                     <div>
                         <i class="fas fa-chart-area fa-2x opacity-75"></i>

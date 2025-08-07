@@ -13,35 +13,89 @@
                     <p class="text-muted">Hesabınıza giriş yapın</p>
                 </div>
                 
-                <form method="POST" role="form" aria-label="Giriş formu">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <form method="POST" id="loginForm" role="form" aria-label="Giriş formu" novalidate>
+                    {% if form.hidden_tag %}
+                        {{ form.hidden_tag() }}
+                    {% else %}
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    {% endif %}
+                    
                     <div class="mb-3">
-                        <label for="username" class="form-label">Kullanıcı Adı</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fas fa-user"></i>
-                            </span>
-                            <input type="text" class="form-control" id="username" name="username" 
-                                   placeholder="Kullanıcı adınızı girin" required>
-                        </div>
+                        {% if form.username %}
+                            {{ form.username.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                                {{ form.username(class="form-control", placeholder="Kullanıcı adınızı girin") }}
+                            </div>
+                            {% for error in form.username.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        {% else %}
+                            <label for="username" class="form-label">Kullanıcı Adı</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="username" 
+                                       name="username" 
+                                       placeholder="Kullanıcı adınızı girin" 
+                                       required
+                                       minlength="3"
+                                       maxlength="50"
+                                       pattern="[a-zA-Z0-9_]+"
+                                       title="3-50 karakter, harf, rakam ve alt çizgi">
+                                <div class="invalid-feedback">
+                                    Geçerli bir kullanıcı adı girin (3-50 karakter).
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                     
                     <div class="mb-3">
-                        <label for="password" class="form-label">Şifre</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fas fa-lock"></i>
-                            </span>
-                            <input type="password" class="form-control" id="password" name="password" 
-                                   placeholder="Şifrenizi girin" required>
-                        </div>
+                        {% if form.password %}
+                            {{ form.password.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                {{ form.password(class="form-control", placeholder="Şifrenizi girin") }}
+                            </div>
+                            {% for error in form.password.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        {% else %}
+                            <label for="password" class="form-label">Şifre</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                <input type="password" 
+                                       class="form-control" 
+                                       id="password" 
+                                       name="password" 
+                                       placeholder="Şifrenizi girin" 
+                                       required>
+                                <div class="invalid-feedback">
+                                    Şifre gereklidir.
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                     
                     <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                        <label class="form-check-label" for="remember">
-                            Beni hatırla
-                        </label>
+                        {% if form.remember %}
+                            {{ form.remember(class="form-check-input") }}
+                            {{ form.remember.label(class="form-check-label") }}
+                        {% else %}
+                            <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                            <label class="form-check-label" for="remember">
+                                Beni hatırla
+                            </label>
+                        {% endif %}
                     </div>
                     
                     <div class="d-grid">
@@ -65,4 +119,33 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('loginForm');
+    
+    // Form validation on submit
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    });
+    
+    // Real-time validation feedback
+    const inputs = form.querySelectorAll('input[required]');
+    inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            if (this.checkValidity()) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+                this.classList.add('is-invalid');
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

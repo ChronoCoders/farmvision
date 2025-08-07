@@ -30,7 +30,7 @@
         <div class="card bg-success text-white">
             <div class="card-body text-center">
                 <i class="fas fa-chart-area fa-2x mb-2"></i>
-                <h3>{{ report.total_analyses }}</h3>
+                <h3>{{ report.get('total_analyses', 0) }}</h3>
                 <p class="mb-0">Toplam Analiz</p>
             </div>
         </div>
@@ -39,7 +39,7 @@
         <div class="card bg-warning text-white">
             <div class="card-body text-center">
                 <i class="fas fa-cogs fa-2x mb-2"></i>
-                <h3>{{ report.algorithms_used|length }}</h3>
+                <h3>{{ report.get('algorithms_used', [])|length }}</h3>
                 <p class="mb-0">Kullanılan Algoritma</p>
             </div>
         </div>
@@ -48,7 +48,13 @@
         <div class="card bg-info text-white">
             <div class="card-body text-center">
                 <i class="fas fa-calendar fa-2x mb-2"></i>
-                <h3>{{ report.period.split(' - ')[1].split('.')[0] }}</h3>
+                <h3>
+                    {% if report.get('period') %}
+                        {{ report.period.split(' - ')[1].split('.')[0] if ' - ' in report.period else report.period.split('.')[0] }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </h3>
                 <p class="mb-0">Analiz Günü</p>
             </div>
         </div>
@@ -63,9 +69,9 @@
                 <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Algoritma İstatistikleri</h5>
             </div>
             <div class="card-body">
-                {% if report.algorithm_stats %}
+                {% if report.get('algorithm_stats') %}
                     <div class="row">
-                        {% for algorithm, stats in report.algorithm_stats.items() %}
+                        {% for algorithm, stats in report.get('algorithm_stats', {}).items() %}
                         <div class="col-md-4 mb-4">
                             <div class="card border-success h-100">
                                 <div class="card-header bg-light">
@@ -73,31 +79,41 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="text-center mb-3">
-                                        <h4 class="text-success">{{ stats.count }}</h4>
+                                        <h4 class="text-success">{{ stats.get('count', 0) }}</h4>
                                         <small class="text-muted">Analiz Sayısı</small>
                                     </div>
                                     
-                                    {% if stats.avg_min %}
+                                    {% if stats.get('avg_min') and stats.avg_min|length > 0 %}
                                         <div class="mb-2">
                                             <small class="text-muted">Minimum Değer Ortalaması</small>
                                             <div class="progress" style="height: 20px;">
                                                 {% set min_avg = (stats.avg_min|sum / stats.avg_min|length) %}
-                                                <div class="progress-bar bg-danger" style="width: {{ ((min_avg + 1) * 50)|round }}%">
+                                                <div class="progress-bar bg-danger" style="width: {{ ((min_avg + 1) * 50)|round|abs }}%">
                                                     {{ "%.3f"|format(min_avg) }}
                                                 </div>
                                             </div>
                                         </div>
+                                    {% else %}
+                                        <div class="mb-2">
+                                            <small class="text-muted">Minimum Değer</small>
+                                            <div class="text-center text-muted">-</div>
+                                        </div>
                                     {% endif %}
                                     
-                                    {% if stats.avg_max %}
+                                    {% if stats.get('avg_max') and stats.avg_max|length > 0 %}
                                         <div class="mb-2">
                                             <small class="text-muted">Maksimum Değer Ortalaması</small>
                                             <div class="progress" style="height: 20px;">
                                                 {% set max_avg = (stats.avg_max|sum / stats.avg_max|length) %}
-                                                <div class="progress-bar bg-success" style="width: {{ ((max_avg + 1) * 50)|round }}%">
+                                                <div class="progress-bar bg-success" style="width: {{ ((max_avg + 1) * 50)|round|abs }}%">
                                                     {{ "%.3f"|format(max_avg) }}
                                                 </div>
                                             </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="mb-2">
+                                            <small class="text-muted">Maksimum Değer</small>
+                                            <div class="text-center text-muted">-</div>
                                         </div>
                                     {% endif %}
                                 </div>
@@ -109,6 +125,7 @@
                     <div class="text-center py-4">
                         <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
                         <h5 class="text-muted">Algoritma istatistiği bulunamadı</h5>
+                        <p class="text-muted">Henüz vegetation analizi yapılmamış veya veriler yüklenemedi.</p>
                     </div>
                 {% endif %}
             </div>
@@ -137,40 +154,59 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for analysis in report.analyses %}
-                            <tr>
-                                <td>{{ analysis.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
-                                <td>
-                                    <span class="badge bg-success">{{ analysis.algorithm.upper() }}</span>
-                                </td>
-                                <td>{{ analysis.colormap or 'Varsayılan' }}</td>
-                                <td class="text-center">
-                                    {% if analysis.min_range is not none %}
-                                        {{ "%.3f"|format(analysis.min_range) }}
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                                <td class="text-center">
-                                    {% if analysis.max_range is not none %}
-                                        {{ "%.3f"|format(analysis.max_range) }}
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                                <td class="text-center">
-                                    {% if analysis.result_path %}
-                                        <span class="badge bg-info">
-                                            <i class="fas fa-check me-1"></i>Mevcut
-                                        </span>
-                                    {% else %}
-                                        <span class="badge bg-secondary">
-                                            <i class="fas fa-times me-1"></i>Yok
-                                        </span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endfor %}
+                            {% if report.get('analyses') and report.analyses|length > 0 %}
+                                {% for analysis in report.analyses %}
+                                <tr>
+                                    <td>
+                                        {% if analysis.get('created_at') %}
+                                            {{ analysis.created_at.strftime('%d.%m.%Y %H:%M') }}
+                                        {% else %}
+                                            <span class="text-muted">Bilinmiyor</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if analysis.get('algorithm') %}
+                                            <span class="badge bg-success">{{ analysis.algorithm.upper() }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Bilinmiyor</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ analysis.get('colormap', 'Varsayılan') }}</td>
+                                    <td class="text-center">
+                                        {% if analysis.get('min_range') is not none %}
+                                            {{ "%.3f"|format(analysis.min_range) }}
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if analysis.get('max_range') is not none %}
+                                            {{ "%.3f"|format(analysis.max_range) }}
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if analysis.get('result_path') %}
+                                            <span class="badge bg-info">
+                                                <i class="fas fa-check me-1"></i>Mevcut
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">
+                                                <i class="fas fa-times me-1"></i>Yok
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <i class="fas fa-info-circle fa-2x text-muted mb-2"></i>
+                                        <p class="text-muted mb-0">Bu rapor için analiz verisi bulunamadı.</p>
+                                    </td>
+                                </tr>
+                            {% endif %}
                         </tbody>
                     </table>
                 </div>

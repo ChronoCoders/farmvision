@@ -12,7 +12,8 @@
                 </h4>
             </div>
             <div class="card-body">
-                <form method="POST" novalidate>
+                <form method="POST" id="editProjectForm" novalidate>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <div class="mb-3">
                         <label for="title" class="form-label">
                             <i class="fas fa-heading me-2"></i>Proje Başlığı <span class="text-danger">*</span>
