@@ -9,7 +9,7 @@ from models import DetectionResult, Project
 from utils.ai_detection import detect_fruits, detect_leaf_disease, detect_trees
 from utils.yolo_detection import detect_fruits_yolo, detect_leaf_disease_corn, detect_trees_from_drone
 from utils.advanced_vegetation import analyze_vegetation_comprehensive
-from utils.helpers import allowed_file, save_uploaded_file
+from utils.helpers import allowed_file, save_uploaded_file, validate_file_security
 from utils.error_handlers import safe_db_commit, handle_errors
 from app import db
 
@@ -52,6 +52,12 @@ def fruit_detection():
         # Comprehensive filename validation
         if not file or not file.filename or file.filename.strip() == '':
             flash('Dosya seçilmedi.', 'error')
+            return redirect(request.url)
+        
+        # Enhanced security validation: MIME type + Magic number + Extension
+        is_valid, security_error = validate_file_security(file, file.filename)
+        if not is_valid:
+            flash(f'Güvenlik hatası: {security_error}', 'error')
             return redirect(request.url)
         
         # Validate project_id if provided
@@ -145,6 +151,12 @@ def leaf_detection():
             flash('Dosya seçilmedi.', 'error')
             return redirect(request.url)
         
+        # Enhanced security validation: MIME type + Magic number + Extension
+        is_valid, security_error = validate_file_security(file, file.filename)
+        if not is_valid:
+            flash(f'Güvenlik hatası: {security_error}', 'error')
+            return redirect(request.url)
+        
         # Validate project_id if provided
         project_id: Optional[int] = None
         if project_id_str and project_id_str.strip():
@@ -222,6 +234,12 @@ def tree_detection():
             flash('Dosya seçilmedi.', 'error')
             return redirect(request.url)
         
+        # Enhanced security validation: MIME type + Magic number + Extension
+        is_valid, security_error = validate_file_security(file, file.filename)
+        if not is_valid:
+            flash(f'Güvenlik hatası: {security_error}', 'error')
+            return redirect(request.url)
+        
         if file and allowed_file(file.filename):
             start_time = time.time()
             
@@ -294,6 +312,12 @@ def process_advanced_multi_detection():
         file = request.files['image']
         if file.filename == '':
             flash('Dosya seçilmedi.', 'error')
+            return redirect(url_for('detection.advanced_multi_detection'))
+        
+        # Enhanced security validation: MIME type + Magic number + Extension
+        is_valid, security_error = validate_file_security(file, file.filename)
+        if not is_valid:
+            flash(f'Güvenlik hatası: {security_error}', 'error')
             return redirect(url_for('detection.advanced_multi_detection'))
         
         if file and allowed_file(file.filename):

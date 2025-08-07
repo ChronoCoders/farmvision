@@ -9,7 +9,7 @@ from models import VegetationAnalysis, Project
 from utils.vegetation_analysis import VegetationAnalyzer
 from utils.histogram_geotiff import process_geotiff_histogram, analyze_vegetation_from_geotiff, extract_rgb_from_geotiff
 from utils.advanced_vegetation import analyze_vegetation_comprehensive
-from utils.helpers import allowed_file, save_uploaded_file
+from utils.helpers import allowed_file, save_uploaded_file, validate_file_security
 from app import db
 
 mapping_bp = Blueprint('mapping', __name__)
@@ -82,6 +82,12 @@ def vegetation_analysis():
         # Comprehensive filename validation
         if not file or not file.filename or file.filename.strip() == '':
             flash('Dosya seçilmedi.', 'error')
+            return redirect(request.url)
+        
+        # Enhanced security validation: MIME type + Magic number + Extension
+        is_valid, security_error = validate_file_security(file, file.filename)
+        if not is_valid:
+            flash(f'Güvenlik hatası: {security_error}', 'error')
             return redirect(request.url)
         
         # Validate project_id if provided
@@ -214,6 +220,12 @@ def process_geotiff():
         file = request.files['geotiff_file']
         if file.filename == '':
             flash('Dosya seçilmedi.', 'error')
+            return redirect(url_for('mapping.geotiff_processing'))
+        
+        # Enhanced security validation: MIME type + Magic number + Extension
+        is_valid, security_error = validate_file_security(file, file.filename)
+        if not is_valid:
+            flash(f'Güvenlik hatası: {security_error}', 'error')
             return redirect(url_for('mapping.geotiff_processing'))
         
         if file and file.filename and file.filename.lower().endswith(('.tif', '.tiff')):
