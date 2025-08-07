@@ -38,24 +38,76 @@ FRUIT_WEIGHTS = {
     'limon': 0.060
 }
 
+def create_safe_detection_result(image_path, count, confidence, detection_type, error=None):
+    """
+    Create a safe detection result structure when YOLO models are unavailable
+    Maintains authentic data policy by indicating model unavailability
+    """
+    return {
+        'count': count,
+        'confidence': confidence,
+        'result_path': image_path,  # Return original image path
+        'processing_time': 0.0,
+        'detections': [],
+        'total_weight': 0.0,
+        'fruit_type': detection_type,
+        'status': 'model_unavailable',
+        'error': error or "AI model files not available. Please upload authentic YOLO model files (.pt) to detection_models/ directory.",
+        'requires_model': True
+    }
+
+def check_model_availability(model_type='fruit'):
+    """
+    Check if YOLO model files are available for the specified type
+    Returns tuple: (is_available, model_path, error_message)
+    """
+    model_paths = {
+        'fruit': ['detection_models/yolov7_fruit.pt', 'detection_models/fruit_detection.pt'],
+        'disease': ['detection_models/yolov7_disease.pt', 'detection_models/leaf_disease_detection.pt'], 
+        'tree': ['detection_models/yolov7_tree.pt', 'detection_models/tree_detection.pt']
+    }
+    
+    paths_to_check = model_paths.get(model_type, [])
+    for model_path in paths_to_check:
+        if Path(model_path).exists():
+            file_size = Path(model_path).stat().st_size
+            # Real YOLO models should be at least 10MB
+            if file_size > 10 * 1024 * 1024:
+                return True, model_path, None
+            else:
+                logging.warning(f"Model file {model_path} too small ({file_size/1024/1024:.1f}MB) - may not be authentic")
+    
+    return False, None, f"No authentic {model_type} model files found. Authentic YOLO models are typically 70-300MB .pt files."
+
 def detect_fruits_yolo(image_path, confidence=0.25, fruit_type='mixed'):
     """
-    Advanced fruit detection using YOLO v7 models
-    Integrates uploaded detection algorithms
+    Advanced fruit detection using YOLO v7 models with robust error handling
+    Returns safe empty results when models are missing to prevent system crashes
     """
     try:
         start_time = time.time()
         
+        # Validate input image
+        if not image_path or not Path(image_path).exists():
+            logging.error(f"Image file not found: {image_path}")
+            return create_safe_detection_result(image_path, 0, 0.0, fruit_type)
+        
         # Load image
         image = cv2.imread(image_path)
         if image is None:
-            return None
+            logging.error(f"Failed to load image: {image_path}")
+            return create_safe_detection_result(image_path, 0, 0.0, fruit_type)
             
         height, width = image.shape[:2]
         
-        # Real YOLO v7 inference using authentic AI detection
+        # Real YOLO v7 inference using authentic AI detection with error handling
         try:
             from utils.real_yolo_inference import yolo_engine
+            
+            # Check if YOLO engine is available and has models
+            if not hasattr(yolo_engine, 'models') or not yolo_engine.models:
+                logging.warning("YOLO engine not properly initialized or no models loaded")
+                return create_safe_detection_result(image_path, 0, 0.0, fruit_type)
             
             # Use real YOLO detection
             result = yolo_engine.detect_fruits(image_path, 'fruit', confidence)
@@ -63,10 +115,10 @@ def detect_fruits_yolo(image_path, confidence=0.25, fruit_type='mixed'):
             # Check if we got valid results
             if result and 'detections' in result and len(result['detections']) > 0:
                 # Filter by fruit type if specified
+                filtered_detections = []
+                total_weight = 0.0
+                
                 if fruit_type != 'mixed':
-                    filtered_detections = []
-                    total_weight = 0.0
-                    
                     for detection in result['detections']:
                         if detection.get('class_name') == fruit_type:
                             formatted_detection = {
@@ -75,136 +127,185 @@ def detect_fruits_yolo(image_path, confidence=0.25, fruit_type='mixed'):
                                 'bbox': detection.get('bbox', [0, 0, 100, 100]),
                                 'weight': detection.get('weight', FRUIT_WEIGHTS.get(fruit_type, 0.1))
                             }
-                        filtered_detections.append(formatted_detection)
-                        total_weight += formatted_detection['weight']
+                            filtered_detections.append(formatted_detection)
+                            total_weight += formatted_detection['weight']
                 
-                result['detections'] = filtered_detections
-                result['total_count'] = len(filtered_detections)
-                result['total_weight'] = round(total_weight, 3)
-            else:
-                # Convert all detections to standard format
-                formatted_detections = []
-                total_weight = 0.0
-                
-                for detection in result.get('detections', []):
-                    fruit_name = detection.get('class_name', 'unknown')
-                    weight = FRUIT_WEIGHTS.get(fruit_name, 0.1)
+                    result['detections'] = filtered_detections
+                    result['total_count'] = len(filtered_detections)
+                    result['total_weight'] = round(total_weight, 3)
+                else:
+                    # Convert all detections to standard format
+                    formatted_detections = []
+                    total_weight = 0.0
                     
-                    formatted_detection = {
-                        'fruit': fruit_name,
-                        'confidence': detection.get('confidence', 0.0),
-                        'bbox': detection.get('bbox', [0, 0, 100, 100]),
-                        'weight': weight
-                    }
-                    formatted_detections.append(formatted_detection)
-                    total_weight += weight
-                
-                result['detections'] = formatted_detections
-                result['total_count'] = len(formatted_detections)
-                result['total_weight'] = round(total_weight, 3)
+                    for detection in result.get('detections', []):
+                        fruit_name = detection.get('class_name', 'unknown')
+                        weight = FRUIT_WEIGHTS.get(fruit_name, 0.1)
+                        
+                        formatted_detection = {
+                            'fruit': fruit_name,
+                            'confidence': detection.get('confidence', 0.0),
+                            'bbox': detection.get('bbox', [0, 0, 100, 100]),
+                            'weight': weight
+                        }
+                        formatted_detections.append(formatted_detection)
+                        total_weight += weight
+                    
+                    result['detections'] = formatted_detections
+                    result['total_count'] = len(formatted_detections)
+                    result['total_weight'] = round(total_weight, 3)
             
-            result['algorithm'] = 'YOLO v7 Real AI'
-            return result
+                # Add timing and algorithm info
+                result['processing_time'] = time.time() - start_time
+                result['algorithm'] = 'YOLO v7 Real AI'
+                return result
             
-        except Exception as e:
-            logging.error(f"Real YOLO inference failed: {e}")
-            # No fallback data - raise error for authentic system
-            raise Exception(f"YOLO model not available: {e}")
-        
-        return result
+            else:
+                # No detections found - return empty authentic result
+                return create_safe_detection_result(image_path, 0, 0.0, fruit_type, 
+                                                   error="No fruits detected in image")
+                                                   
+        except ImportError as import_error:
+            logging.warning(f"YOLO inference module not available: {import_error}")
+            return create_safe_detection_result(image_path, 0, 0.0, fruit_type, 
+                                               error="AI model engine not available. Please install required YOLO dependencies.")
+                                               
+        except FileNotFoundError as file_error:
+            logging.warning(f"YOLO model files not found: {file_error}")
+            return create_safe_detection_result(image_path, 0, 0.0, fruit_type,
+                                               error="AI model files (.pt) not found. Please upload authentic YOLO model files to detection_models/ directory.")
+                                               
+        except Exception as yolo_error:
+            logging.error(f"YOLO inference failed: {yolo_error}")
+            return create_safe_detection_result(image_path, 0, 0.0, fruit_type,
+                                               error=f"AI detection failed: {str(yolo_error)}")
         
     except Exception as e:
-        print(f"YOLO meyve tespitinde hata: {e}")
-        return None
+        logging.error(f"Fruit detection error: {e}")
+        return create_safe_detection_result(image_path, 0, 0.0, fruit_type,
+                                           error=f"Detection processing failed: {str(e)}")
 
 def detect_leaf_disease_corn(image_path, confidence=0.25):
     """
-    Real corn leaf disease detection using trained YOLO model
+    Real corn leaf disease detection using trained YOLO model with robust error handling
+    Returns safe empty results when models are missing to prevent system crashes
     """
     try:
         start_time = time.time()
         
-        # Use real YOLO inference for disease detection
-        from utils.real_yolo_inference import yolo_engine
+        # Validate input image
+        if not image_path or not Path(image_path).exists():
+            logging.error(f"Image file not found: {image_path}")
+            return create_safe_detection_result(image_path, 0, 0.0, 'disease')
         
-        result = yolo_engine.detect_leaf_disease(image_path, confidence)
+        # Check model availability first
+        model_available, model_path, error_msg = check_model_availability('disease')
+        if not model_available:
+            logging.warning(f"Disease detection model not available: {error_msg}")
+            return create_safe_detection_result(image_path, 0, 0.0, 'disease', error=error_msg)
         
-        if result and result.get('detections'):
-            # Map detected classes to diseases and recommendations
-            disease_mapping = {
+        # Use real YOLO inference for disease detection with error handling
+        try:
+            from utils.real_yolo_inference import yolo_engine
+            
+            result = yolo_engine.detect_leaf_disease(image_path, confidence)
+        
+            if result and result.get('detections'):
+                # Map detected classes to diseases and recommendations
+                disease_mapping = {
                 0: 'Corn maize healthy',
                 1: 'Cercospora Leaf Spot Gray Leaf Spot', 
                 2: 'Corn maize Northern Leaf Blight',
                 3: 'Corn maize Common rust'
             }
             
-            # Get the highest confidence detection
-            best_detection = max(result['detections'], key=lambda x: x.get('confidence', 0))
-            class_id = best_detection.get('class_id', 0)
-            disease_name = disease_mapping.get(class_id, 'Corn maize healthy')
+                # Get the highest confidence detection
+                best_detection = max(result['detections'], key=lambda x: x.get('confidence', 0))
+                class_id = best_detection.get('class_id', 0)
+                disease_name = disease_mapping.get(class_id, 'Corn maize healthy')
+                
+                # Calculate severity based on confidence
+                conf_val = best_detection.get('confidence', 0.5)
+                if conf_val > 0.8:
+                    severity = 'Şiddetli'
+                elif conf_val > 0.6:
+                    severity = 'Orta'
+                else:
+                    severity = 'Hafif'
+                
+                result = {
+                    'disease': disease_name,
+                    'confidence': conf_val,
+                    'recommendations': corn_diseases_and_recommendations[disease_name]['recommendations'],
+                    'processing_time': result.get('processing_time', 0.0),
+                    'severity': severity,
+                    'algorithm': 'YOLO v7 Disease Detection',
+                    'detection_count': len(result['detections'])
+                }
+                return result
             
-            # Calculate severity based on confidence
-            conf_val = best_detection.get('confidence', 0.5)
-            if conf_val > 0.8:
-                severity = 'Şiddetli'
-            elif conf_val > 0.6:
-                severity = 'Orta'
             else:
-                severity = 'Hafif'
+                # No detections found - assume healthy
+                return {
+                    'disease': 'Corn maize healthy',
+                    'confidence': 0.95,
+                    'recommendations': corn_diseases_and_recommendations['Corn maize healthy']['recommendations'],
+                    'processing_time': round(time.time() - start_time, 2),
+                    'severity': 'Yok',
+                    'algorithm': 'YOLO v7 Disease Detection',
+                    'detection_count': 0
+                }
             
-            result = {
-                'disease': disease_name,
-                'confidence': conf_val,
-                'recommendations': corn_diseases_and_recommendations[disease_name]['recommendations'],
-                'processing_time': result.get('processing_time', 0.0),
-                'severity': severity,
-                'algorithm': 'YOLO v7 Disease Detection',
-                'detection_count': len(result['detections'])
-            }
+            return result
             
-        else:
-            # No detections found - assume healthy
-            result = {
-                'disease': 'Corn maize healthy',
-                'confidence': 0.95,
-                'recommendations': corn_diseases_and_recommendations['Corn maize healthy']['recommendations'],
-                'processing_time': round(time.time() - start_time, 2),
-                'severity': 'Yok',
-                'algorithm': 'YOLO v7 Disease Detection',
-                'detection_count': 0
-            }
-        
-        return result
+        except ImportError as import_error:
+            logging.warning(f"Disease detection module not available: {import_error}")
+            return create_safe_detection_result(image_path, 0, 0.0, 'disease',
+                                               error="Disease AI model engine not available. Please install required dependencies.")
+                                               
+        except FileNotFoundError as file_error:
+            logging.warning(f"Disease model files not found: {file_error}")
+            return create_safe_detection_result(image_path, 0, 0.0, 'disease',
+                                               error="Disease AI model files (.pt) not found. Please upload authentic disease detection model files.")
+                                               
+        except Exception as yolo_error:
+            logging.error(f"Disease detection failed: {yolo_error}")
+            return create_safe_detection_result(image_path, 0, 0.0, 'disease',
+                                               error=f"Disease AI detection failed: {str(yolo_error)}")
         
     except Exception as e:
-        logging.error(f"Real disease detection error: {e}")
-        # Return healthy result when model unavailable - no fake data
-        return {
-            'disease': 'Corn maize healthy',
-            'confidence': 0.50,
-            'recommendations': 'Model yüklenirken hata oluştu. Lütfen tekrar deneyin.',
-            'processing_time': 0.0,
-            'severity': 'Bilinmiyor',
-            'algorithm': 'YOLO v7 Disease Detection (Model Loading...)',
-            'error': str(e)
-        }
+        logging.error(f"Disease detection error: {e}")
+        return create_safe_detection_result(image_path, 0, 0.0, 'disease',
+                                           error=f"Disease detection processing failed: {str(e)}")
 
 def detect_trees_from_drone(image_path, confidence=0.25, iou_threshold=0.7):
     """
-    Tree detection and counting from drone imagery
-    Based on uploaded prediction algorithms
+    Tree detection and counting from drone imagery with robust error handling
+    Returns safe empty results when models are missing to prevent system crashes
     """
     try:
         start_time = time.time()
         
+        # Validate input image
+        if not image_path or not Path(image_path).exists():
+            logging.error(f"Image file not found: {image_path}")
+            return create_safe_detection_result(image_path, 0, 0.0, 'tree')
+        
         # Load image
         image = cv2.imread(image_path)
         if image is None:
-            return None
+            logging.error(f"Failed to load image: {image_path}")
+            return create_safe_detection_result(image_path, 0, 0.0, 'tree')
+        
+        # Check model availability first  
+        model_available, model_path, error_msg = check_model_availability('tree')
+        if not model_available:
+            logging.warning(f"Tree detection model not available: {error_msg}")
+            return create_safe_detection_result(image_path, 0, 0.0, 'tree', error=error_msg)
             
         height, width = image.shape[:2]
         
-        # Real YOLO tree detection using trained model
+        # Real YOLO tree detection using trained model with error handling
         try:
             from utils.real_yolo_inference import yolo_engine
             
