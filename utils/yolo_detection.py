@@ -1,14 +1,26 @@
+"""
+Professional YOLO Detection Module with Production-Grade Security
+Enhanced with comprehensive error handling, type safety, and logging standards
+"""
 import torch
 import cv2
 import numpy as np
 import time
+import os
 from pathlib import Path
 from PIL import Image
 import torchvision.transforms as transforms
 import logging
+from typing import Optional, Union, Dict, List, Any, Tuple
 
-# Set up logging
-logging.basicConfig(level=logging.INFO)
+# Professional logging setup
+logger = logging.getLogger(__name__)
+if not logger.handlers:
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
 
 # Corn leaf disease detection (from uploaded files)
 corn_diseases_and_recommendations = {
@@ -38,67 +50,214 @@ FRUIT_WEIGHTS = {
     'limon': 0.060
 }
 
-def create_safe_detection_result(image_path, count, confidence, detection_type, error=None):
+def create_safe_detection_result(
+    image_path: Optional[str], 
+    count: int, 
+    confidence: float, 
+    detection_type: str, 
+    error: Optional[str] = None
+) -> Dict[str, Any]:
     """
     Create a safe detection result structure when YOLO models are unavailable
     Maintains authentic data policy by indicating model unavailability
+    
+    Args:
+        image_path: Path to the input image (can be None)
+        count: Detection count (must be non-negative integer)
+        confidence: Confidence score (must be 0.0-1.0)
+        detection_type: Type of detection being performed
+        error: Optional error message
+        
+    Returns:
+        Dict containing safe detection results with type validation
     """
+    # Type safety and validation
+    if not isinstance(count, int) or count < 0:
+        logger.error(f"Invalid count value: {count}. Must be non-negative integer")
+        count = 0
+        
+    if not isinstance(confidence, (int, float)) or not (0.0 <= confidence <= 1.0):
+        logger.error(f"Invalid confidence value: {confidence}. Must be between 0.0 and 1.0")
+        confidence = 0.0
+        
+    if not isinstance(detection_type, str) or not detection_type.strip():
+        logger.error(f"Invalid detection_type: {detection_type}. Must be non-empty string")
+        detection_type = "unknown"
+    
+    # Validate image path
+    safe_image_path = None
+    if image_path and isinstance(image_path, str) and os.path.exists(image_path):
+        safe_image_path = image_path
+    elif image_path:
+        logger.warning(f"Image path invalid or does not exist: {image_path}")
+    
     return {
         'count': count,
-        'confidence': confidence,
-        'result_path': image_path,  # Return original image path
+        'confidence': float(confidence),
+        'result_path': safe_image_path,
         'processing_time': 0.0,
         'detections': [],
         'total_weight': 0.0,
-        'fruit_type': detection_type,
+        'fruit_type': detection_type.strip(),
         'status': 'model_unavailable',
         'error': error or "AI model files not available. Please upload authentic YOLO model files (.pt) to detection_models/ directory.",
         'requires_model': True
     }
 
-def check_model_availability(model_type='fruit'):
+def check_model_availability(model_type: str = 'fruit') -> Tuple[bool, Optional[str], Optional[str]]:
     """
-    Check if YOLO model files are available for the specified type
-    Returns tuple: (is_available, model_path, error_message)
+    Check if YOLO model files are available for the specified type with comprehensive validation
+    
+    Args:
+        model_type: Type of model to check ('fruit', 'disease', 'tree')
+        
+    Returns:
+        Tuple of (is_available, model_path, error_message)
     """
+    # Input validation
+    if not isinstance(model_type, str) or not model_type.strip():
+        logger.error(f"Invalid model_type: {model_type}. Must be non-empty string")
+        return False, None, "Invalid model type specified"
+    
+    model_type = model_type.strip().lower()
+    
+    # Define model paths with validation
     model_paths = {
         'fruit': ['detection_models/yolov7_fruit.pt', 'detection_models/fruit_detection.pt'],
         'disease': ['detection_models/yolov7_disease.pt', 'detection_models/leaf_disease_detection.pt'], 
         'tree': ['detection_models/yolov7_tree.pt', 'detection_models/tree_detection.pt']
     }
     
-    paths_to_check = model_paths.get(model_type, [])
-    for model_path in paths_to_check:
-        if Path(model_path).exists():
-            file_size = Path(model_path).stat().st_size
-            # Real YOLO models should be at least 10MB
-            if file_size > 10 * 1024 * 1024:
-                return True, model_path, None
-            else:
-                logging.warning(f"Model file {model_path} too small ({file_size/1024/1024:.1f}MB) - may not be authentic")
+    # Validate model type
+    if model_type not in model_paths:
+        logger.error(f"Unsupported model type: {model_type}")
+        return False, None, f"Unsupported model type: {model_type}. Supported types: {list(model_paths.keys())}"
     
-    return False, None, f"No authentic {model_type} model files found. Authentic YOLO models are typically 70-300MB .pt files."
+    paths_to_check = model_paths[model_type]
+    
+    for model_path in paths_to_check:
+        try:
+            # Enhanced path validation
+            path_obj = Path(model_path)
+            if not path_obj.exists():
+                logger.debug(f"Model file not found: {model_path}")
+                continue
+                
+            if not path_obj.is_file():
+                logger.warning(f"Model path exists but is not a file: {model_path}")
+                continue
+                
+            # Check file size and permissions
+            try:
+                file_size = path_obj.stat().st_size
+                if not os.access(path_obj, os.R_OK):
+                    logger.warning(f"Model file not readable: {model_path}")
+                    continue
+                    
+                # Real YOLO models should be at least 10MB
+                min_size_mb = 10
+                if file_size > min_size_mb * 1024 * 1024:
+                    logger.info(f"Found authentic model: {model_path} ({file_size/1024/1024:.1f}MB)")
+                    return True, str(path_obj.absolute()), None
+                else:
+                    logger.warning(f"Model file {model_path} too small ({file_size/1024/1024:.1f}MB) - may not be authentic")
+                    
+            except OSError as e:
+                logger.error(f"Cannot access model file {model_path}: {e}")
+                continue
+                
+        except Exception as e:
+            logger.error(f"Unexpected error checking model {model_path}: {e}")
+            continue
+    
+    error_msg = f"No authentic {model_type} model files found. Authentic YOLO models are typically 70-300MB .pt files."
+    logger.warning(error_msg)
+    return False, None, error_msg
 
-def detect_fruits_yolo(image_path, confidence=0.25, fruit_type='mixed'):
+def detect_fruits_yolo(
+    image_path: Optional[str], 
+    confidence: float = 0.25, 
+    fruit_type: str = 'mixed'
+) -> Dict[str, Any]:
     """
-    Advanced fruit detection using YOLO v7 models with robust error handling
+    Advanced fruit detection using YOLO v7 models with production-grade error handling
     Returns safe empty results when models are missing to prevent system crashes
+    
+    Args:
+        image_path: Path to the input image for detection
+        confidence: Confidence threshold for detections (0.0-1.0)
+        fruit_type: Type of fruit to detect ('mixed' for all types)
+        
+    Returns:
+        Dictionary containing detection results with comprehensive error handling
     """
+    start_time = time.time()
+    
     try:
-        start_time = time.time()
+        # Comprehensive input validation
+        if not isinstance(image_path, str) or not image_path.strip():
+            logger.error(f"Invalid image_path: {image_path}. Must be non-empty string")
+            return create_safe_detection_result(image_path, 0, 0.0, fruit_type, 
+                                             "Invalid image path provided")
         
-        # Validate input image
-        if not image_path or not Path(image_path).exists():
-            logging.error(f"Image file not found: {image_path}")
-            return create_safe_detection_result(image_path, 0, 0.0, fruit_type)
-        
-        # Load image
-        image = cv2.imread(image_path)
-        if image is None:
-            logging.error(f"Failed to load image: {image_path}")
-            return create_safe_detection_result(image_path, 0, 0.0, fruit_type)
+        # Validate confidence parameter
+        if not isinstance(confidence, (int, float)) or not (0.0 <= confidence <= 1.0):
+            logger.error(f"Invalid confidence: {confidence}. Must be between 0.0 and 1.0")
+            confidence = 0.25  # Safe fallback
             
-        height, width = image.shape[:2]
+        # Validate fruit_type parameter  
+        if not isinstance(fruit_type, str) or not fruit_type.strip():
+            logger.error(f"Invalid fruit_type: {fruit_type}. Using 'mixed' as fallback")
+            fruit_type = 'mixed'
+            
+        fruit_type = fruit_type.strip().lower()
+        
+        # Enhanced file path validation
+        image_path = image_path.strip()
+        path_obj = Path(image_path)
+        
+        if not path_obj.exists():
+            logger.error(f"Image file not found: {image_path}")
+            return create_safe_detection_result(image_path, 0, 0.0, fruit_type, 
+                                             f"Image file not found: {image_path}")
+        
+        if not path_obj.is_file():
+            logger.error(f"Path exists but is not a file: {image_path}")
+            return create_safe_detection_result(image_path, 0, 0.0, fruit_type,
+                                             "Invalid file path - not a regular file")
+        
+        # Check file permissions
+        if not os.access(path_obj, os.R_OK):
+            logger.error(f"Image file not readable: {image_path}")
+            return create_safe_detection_result(image_path, 0, 0.0, fruit_type,
+                                             "Image file not readable - check permissions")
+        
+        # Load and validate image with enhanced error handling
+        try:
+            image = cv2.imread(str(path_obj.absolute()))
+            if image is None:
+                logger.error(f"Failed to load image with OpenCV: {image_path}")
+                return create_safe_detection_result(image_path, 0, 0.0, fruit_type,
+                                                 "Failed to load image - possibly corrupted or unsupported format")
+            
+            # Validate image dimensions
+            if len(image.shape) < 2:
+                logger.error(f"Invalid image dimensions: {image.shape}")
+                return create_safe_detection_result(image_path, 0, 0.0, fruit_type,
+                                                 "Invalid image - insufficient dimensions")
+                                                 
+            height, width = image.shape[:2]
+            if height < 32 or width < 32:
+                logger.error(f"Image too small for detection: {width}x{height}")
+                return create_safe_detection_result(image_path, 0, 0.0, fruit_type,
+                                                 f"Image too small for reliable detection: {width}x{height}")
+                                                 
+        except Exception as img_error:
+            logger.error(f"Image loading error: {img_error}")
+            return create_safe_detection_result(image_path, 0, 0.0, fruit_type,
+                                             f"Image loading failed: {str(img_error)}")
+        
+        logger.info(f"Starting fruit detection on {image_path} ({width}x{height}) with confidence {confidence}")
         
         # Real YOLO v7 inference using authentic AI detection with error handling
         try:
@@ -185,10 +344,20 @@ def detect_fruits_yolo(image_path, confidence=0.25, fruit_type='mixed'):
         return create_safe_detection_result(image_path, 0, 0.0, fruit_type,
                                            error=f"Detection processing failed: {str(e)}")
 
-def detect_leaf_disease_corn(image_path, confidence=0.25):
+def detect_leaf_disease_corn(
+    image_path: Optional[str], 
+    confidence: float = 0.25
+) -> Dict[str, Any]:
     """
-    Real corn leaf disease detection using trained YOLO model with robust error handling
+    Real corn leaf disease detection using trained YOLO model with production-grade error handling
     Returns safe empty results when models are missing to prevent system crashes
+    
+    Args:
+        image_path: Path to the input image for disease detection
+        confidence: Confidence threshold for detections (0.0-1.0)
+        
+    Returns:
+        Dictionary containing disease detection results and recommendations
     """
     try:
         start_time = time.time()
@@ -278,10 +447,22 @@ def detect_leaf_disease_corn(image_path, confidence=0.25):
         return create_safe_detection_result(image_path, 0, 0.0, 'disease',
                                            error=f"Disease detection processing failed: {str(e)}")
 
-def detect_trees_from_drone(image_path, confidence=0.25, iou_threshold=0.7):
+def detect_trees_from_drone(
+    image_path: Optional[str], 
+    confidence: float = 0.25, 
+    iou_threshold: float = 0.7
+) -> Optional[Dict[str, Any]]:
     """
-    Tree detection and counting from drone imagery with robust error handling
+    Tree detection and counting from drone imagery with production-grade error handling
     Returns safe empty results when models are missing to prevent system crashes
+    
+    Args:
+        image_path: Path to the input image for tree detection
+        confidence: Confidence threshold for detections (0.0-1.0)
+        iou_threshold: IoU threshold for non-maximum suppression (0.0-1.0)
+        
+    Returns:
+        Dictionary containing tree detection results or None on failure
     """
     try:
         start_time = time.time()
@@ -358,7 +539,7 @@ def detect_trees_from_drone(image_path, confidence=0.25, iou_threshold=0.7):
                 }
                 
         except Exception as e:
-            logging.error(f"Real tree detection error: {e}")
+            logger.error(f"Real tree detection error: {e}")
             # Return empty result when model unavailable
             result = {
                 'detections': [],
@@ -374,27 +555,56 @@ def detect_trees_from_drone(image_path, confidence=0.25, iou_threshold=0.7):
         return result
         
     except Exception as e:
-        print(f"Ağaç tespitinde hata: {e}")
+        logger.error(f"Tree detection error: {e}")
         return None
 
-def count_objects_in_region(image_path, founded_classes, region_coords):
+def count_objects_in_region(
+    image_path: Optional[str], 
+    founded_classes: List[str], 
+    region_coords: List[int]
+) -> Optional[Dict[str, Any]]:
     """
-    Advanced counting algorithm from uploaded files
+    Advanced counting algorithm with production-grade error handling
+    
+    Args:
+        image_path: Path to the input image for object counting
+        founded_classes: List of class names to count
+        region_coords: Coordinates defining the region of interest
+        
+    Returns:
+        Dictionary containing counting results or None on failure
     """
     try:
-        # Simulated counting based on uploaded counting.py logic
+        # Input validation
+        if not isinstance(image_path, str) or not image_path.strip():
+            logger.error("Invalid image_path for object counting")
+            return None
+            
+        if not isinstance(founded_classes, list) or not founded_classes:
+            logger.error("Invalid or empty founded_classes list")
+            return None
+            
+        if not isinstance(region_coords, list) or len(region_coords) < 4:
+            logger.error("Invalid region_coords - need at least 4 coordinates")
+            return None
+        
+        # Placeholder for real counting logic
+        # In production, this would use authentic AI detection models
         total_count = 0
         
         for cls in founded_classes:
-            count = np.random.randint(2, 12)
-            total_count += count
+            if isinstance(cls, str) and cls.strip():
+                count = np.random.randint(2, 12)  # Placeholder - would be real AI detection
+                total_count += count
             
         return {
             'total_count': total_count,
             'classes': founded_classes,
-            'region': region_coords
+            'region': region_coords,
+            'algorithm': 'Region-based Object Counting',
+            'status': 'placeholder_implementation'
         }
         
     except Exception as e:
-        print(f"Nesne sayımında hata: {e}")
+        logger.error(f"Object counting error: {e}")
         return None
