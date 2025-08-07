@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+
+{% block title %}Analitik Dashboard - Farm Vision{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-6">
+            <i class="fas fa-chart-line me-2 text-success"></i>Analitik Dashboard
+        </h1>
+        <p class="lead text-muted">Tarlalarınızdan gelen verilerin kapsamlı analizi</p>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-gradient-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h3 class="card-title">{{ analytics.total_yield or 0 }}</h3>
+                        <p class="card-text">Toplam Verim (kg)</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-weight-hanging fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-gradient-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h3 class="card-title">{{ analytics.avg_confidence|round(1) or 0 }}%</h3>
+                        <p class="card-text">Ortalama Güven</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-percentage fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-gradient-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h3 class="card-title">{{ analytics.active_fields or 0 }}</h3>
+                        <p class="card-text">Aktif Tarlalar</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-map fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-gradient-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h3 class="card-title">{{ analytics.health_score|round(1) or 0 }}</h3>
+                        <p class="card-text">Sağlık Skoru</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-heartbeat fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Haftalık Tespit Trendi</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="weeklyTrendChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Meyve Dağılımı</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="fruitDistributionChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Vegetation Analysis Progress -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-leaf me-2"></i>Bitki Örtüsü Analiz Sonuçları</h5>
+            </div>
+            <div class="card-body">
+                {% if vegetation_stats %}
+                    <div class="row">
+                        {% for algorithm, stats in vegetation_stats.items() %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card border-success">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">{{ algorithm.upper() }}</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-2">
+                                        <small class="text-muted">Ortalama Değer</small>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar bg-success" style="width: {{ (stats.avg_value * 100)|round }}%">
+                                                {{ stats.avg_value|round(3) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row text-center">
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">Min</small>
+                                            <strong>{{ stats.min_value|round(3) }}</strong>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">Max</small>
+                                            <strong>{{ stats.max_value|round(3) }}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-chart-area fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Henüz bitki örtüsü analizi yok</h5>
+                        <p class="text-muted">GeoTIFF dosyalarınızı analiz ederek bitki sağlığı hakkında detaylı bilgi alın.</p>
+                        <a href="{{ url_for('mapping.vegetation_analysis') }}" class="btn btn-success">
+                            <i class="fas fa-plus me-2"></i>Analiz Başlat
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Performance -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-history me-2"></i>Son Performans Metrikleri</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_metrics %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-success">
+                                <tr>
+                                    <th><i class="fas fa-calendar me-2"></i>Tarih</th>
+                                    <th><i class="fas fa-search me-2"></i>Tespit Türü</th>
+                                    <th><i class="fas fa-eye me-2"></i>Güven Oranı</th>
+                                    <th><i class="fas fa-apple-alt me-2"></i>Tespit Edilen</th>
+                                    <th><i class="fas fa-weight me-2"></i>Tahmini Ağırlık</th>
+                                    <th><i class="fas fa-clock me-2"></i>İşlem Süresi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for metric in recent_metrics %}
+                                <tr>
+                                    <td>{{ metric.date.strftime('%d.%m.%Y') }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if metric.detection_type == 'fruit' else 'warning' }}">
+                                            {{ metric.detection_type.title() }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="height: 20px; width: 80px;">
+                                            <div class="progress-bar" 
+                                                 style="width: {{ metric.confidence * 100 }}%; 
+                                                        background-color: {% if metric.confidence > 0.8 %}#28a745{% elif metric.confidence > 0.6 %}#ffc107{% else %}#dc3545{% endif %};">
+                                                {{ (metric.confidence * 100)|round }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ metric.count }} adet</td>
+                                    <td>{{ metric.total_weight|round(2) }} kg</td>
+                                    <td>{{ metric.processing_time|round(2) }}s</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Henüz performans verisi yok</h5>
+                        <p class="text-muted">AI tespit işlemleri yaptıkça performans metrikleri burada görünecek.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Weekly Trend Chart (Authentic Data Only)
+    const weeklyCtx = document.getElementById('weeklyTrendChart').getContext('2d');
+    const weeklyData = {{ analytics.weekly_data|tojson if analytics.weekly_data else '[]' }};
+    
+    if (weeklyData.length > 0) {
+        new Chart(weeklyCtx, {
+            type: 'line',
+            data: {
+                labels: weeklyData.map(d => d.date),
+                datasets: [{
+                    label: 'Tespit Sayısı',
+                    data: weeklyData.map(d => d.detections),
+                    borderColor: '#28a745',
+                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Tespit Sayısı'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Tarih'
+                        }
+                    }
+                }
+            }
+        });
+    } else {
+        weeklyCtx.canvas.parentNode.innerHTML = '<div class="text-center py-4"><p class="text-muted">Henüz veri yok</p></div>';
+    }
+    
+    // Fruit Distribution Chart (Authentic Data Only)
+    const fruitCtx = document.getElementById('fruitDistributionChart').getContext('2d');
+    const fruitData = {{ analytics.fruit_distribution|tojson if analytics.fruit_distribution else '{}' }};
+    
+    if (Object.keys(fruitData).length > 0) {
+        new Chart(fruitCtx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(fruitData),
+                datasets: [{
+                    data: Object.values(fruitData),
+                    backgroundColor: [
+                        '#28a745', '#ffc107', '#dc3545', 
+                        '#17a2b8', '#6f42c1', '#fd7e14'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    } else {
+        fruitCtx.canvas.parentNode.innerHTML = '<div class="text-center py-4"><p class="text-muted">Henüz veri yok</p></div>';
+    }
+});
+</script>
+
+<style>
+.bg-gradient-success {
+    background: linear-gradient(45deg, #28a745, #20c997);
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #007bff, #6f42c1);
+}
+
+.bg-gradient-warning {
+    background: linear-gradient(45deg, #ffc107, #fd7e14);
+}
+
+.bg-gradient-info {
+    background: linear-gradient(45deg, #17a2b8, #6f42c1);
+}
+</style>
+{% endblock %}

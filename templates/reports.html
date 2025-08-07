@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}Raporlar - Farm Vision{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-6">
+            <i class="fas fa-file-alt me-2 text-success"></i>Tarımsal Raporlar
+        </h1>
+        <p class="lead text-muted">Tarım verilerinizin kapsamlı analizi ve raporlanması</p>
+    </div>
+</div>
+
+<!-- Report Generation -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-apple-alt me-2"></i>Meyve Tespit Raporu</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Tarlalarınızdan elde edilen meyve tespit verilerinin detaylı analizi.</p>
+                <form method="POST" action="{{ url_for('main.generate_report') }}">
+                    <input type="hidden" name="report_type" value="fruit_detection">
+                    <div class="mb-3">
+                        <label class="form-label">Tarih Aralığı</label>
+                        <div class="row">
+                            <div class="col-6">
+                                <input type="date" name="start_date" class="form-control" required>
+                            </div>
+                            <div class="col-6">
+                                <input type="date" name="end_date" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Proje Seçimi</label>
+                        <select name="project_id" class="form-select">
+                            <option value="">Tüm Projeler</option>
+                            {% for project in projects %}
+                            <option value="{{ project.id }}">{{ project.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="fas fa-download me-2"></i>Rapor Oluştur
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="fas fa-chart-area me-2"></i>Bitki Örtüsü Raporu</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Bitki sağlığı ve vejetasyon indekslerinin trend analizi.</p>
+                <form method="POST" action="{{ url_for('main.generate_report') }}">
+                    <input type="hidden" name="report_type" value="vegetation_analysis">
+                    <div class="mb-3">
+                        <label class="form-label">Tarih Aralığı</label>
+                        <div class="row">
+                            <div class="col-6">
+                                <input type="date" name="start_date" class="form-control" required>
+                            </div>
+                            <div class="col-6">
+                                <input type="date" name="end_date" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Algoritma</label>
+                        <select name="algorithm" class="form-select">
+                            <option value="">Tümü</option>
+                            <option value="ndvi">NDVI</option>
+                            <option value="gli">GLI</option>
+                            <option value="vari">VARI</option>
+                            <option value="savi">SAVI</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100">
+                        <i class="fas fa-download me-2"></i>Rapor Oluştur
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Kapsamlı Analiz</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Tüm tarımsal verilerin birleştirilmiş performans analizi.</p>
+                <form method="POST" action="{{ url_for('main.generate_report') }}">
+                    <input type="hidden" name="report_type" value="comprehensive">
+                    <div class="mb-3">
+                        <label class="form-label">Rapor Formatı</label>
+                        <select name="format" class="form-select">
+                            <option value="html">HTML (Web)</option>
+                            <option value="pdf">PDF</option>
+                            <option value="excel">Excel</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Detay Seviyesi</label>
+                        <select name="detail_level" class="form-select">
+                            <option value="summary">Özet</option>
+                            <option value="detailed">Detaylı</option>
+                            <option value="technical">Teknik</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-info w-100">
+                        <i class="fas fa-download me-2"></i>Rapor Oluştur
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Reports -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-history me-2"></i>Son Oluşturulan Raporlar</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_reports %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-success">
+                                <tr>
+                                    <th><i class="fas fa-file me-2"></i>Rapor Adı</th>
+                                    <th><i class="fas fa-tag me-2"></i>Tür</th>
+                                    <th><i class="fas fa-calendar me-2"></i>Oluşturma</th>
+                                    <th><i class="fas fa-download me-2"></i>İndir</th>
+                                    <th><i class="fas fa-eye me-2"></i>Görüntüle</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for report in recent_reports %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ report.title }}</strong>
+                                        <br><small class="text-muted">{{ report.description }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if report.type == 'fruit_detection' else 'warning' if report.type == 'vegetation_analysis' else 'info' }}">
+                                            {{ report.type.replace('_', ' ').title() }}
+                                        </span>
+                                    </td>
+                                    <td>{{ report.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                                    <td>
+                                        {% if report.file_path and report.file_path|exists %}
+                                            <a href="{{ url_for('main.download_report', report_id=report.id) }}" 
+                                               class="btn btn-sm btn-outline-success">
+                                                <i class="fas fa-download me-1"></i>İndir
+                                            </a>
+                                        {% else %}
+                                            <span class="text-muted">Dosya bulunamadı</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('main.view_report', report_id=report.id) }}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye me-1"></i>Görüntüle
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Henüz rapor oluşturulmamış</h5>
+                        <p class="text-muted">Yukarıdaki formları kullanarak tarımsal verilerinizin raporlarını oluşturabilirsiniz.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set default dates (last 30 days)
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(endDate.getDate() - 30);
+    
+    // Format dates as YYYY-MM-DD
+    const formatDate = (date) => {
+        return date.toISOString().split('T')[0];
+    };
+    
+    // Set default values for all date inputs
+    document.querySelectorAll('input[type="date"][name="start_date"]').forEach(input => {
+        input.value = formatDate(startDate);
+    });
+    
+    document.querySelectorAll('input[type="date"][name="end_date"]').forEach(input => {
+        input.value = formatDate(endDate);
+    });
+});
+</script>
+{% endblock %}

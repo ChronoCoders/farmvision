@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Projeyi Düzenle - Farm Vision{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-edit me-2"></i>Projeyi Düzenle
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" novalidate>
+                    <div class="mb-3">
+                        <label for="title" class="form-label">
+                            <i class="fas fa-heading me-2"></i>Proje Başlığı <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="title" name="title" 
+                               value="{{ project.title }}" required maxlength="200">
+                        <div class="invalid-feedback">
+                            Proje başlığı gereklidir.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">
+                            <i class="fas fa-file-alt me-2"></i>Açıklama
+                        </label>
+                        <textarea class="form-control" id="description" name="description" 
+                                  rows="4" maxlength="1000">{{ project.description or '' }}</textarea>
+                        <div class="form-text">Projeniz hakkında kısa bir açıklama yazın.</div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="farm_name" class="form-label">
+                                    <i class="fas fa-seedling me-2"></i>Çiftlik Adı
+                                </label>
+                                <input type="text" class="form-control" id="farm_name" name="farm_name" 
+                                       value="{{ project.farm_name or '' }}" maxlength="100">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="field_name" class="form-label">
+                                    <i class="fas fa-map me-2"></i>Tarla Adı
+                                </label>
+                                <input type="text" class="form-control" id="field_name" name="field_name" 
+                                       value="{{ project.field_name or '' }}" maxlength="100">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="location" class="form-label">
+                            <i class="fas fa-map-marker-alt me-2"></i>Konum
+                        </label>
+                        <input type="text" class="form-control" id="location" name="location" 
+                               value="{{ project.location or '' }}" maxlength="200" 
+                               placeholder="Örn: Ankara, Türkiye veya GPS koordinatları">
+                        <div class="form-text">Çiftlik veya tarla konumunu belirtin.</div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('main.project_detail', project_id=project.id) }}" 
+                           class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Geri Dön
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-2"></i>Değişiklikleri Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Form validation
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const titleInput = document.getElementById('title');
+    
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        
+        // Reset validation
+        titleInput.classList.remove('is-invalid');
+        
+        // Validate title
+        if (!titleInput.value.trim()) {
+            titleInput.classList.add('is-invalid');
+            isValid = false;
+        }
+        
+        if (!isValid) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        form.classList.add('was-validated');
+    });
+    
+    // Real-time validation
+    titleInput.addEventListener('input', function() {
+        if (this.value.trim()) {
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+        } else {
+            this.classList.remove('is-valid');
+        }
+    });
+});
+</script>
+{% endblock %}
