@@ -2,221 +2,42 @@
 
 ## Overview
 
-Farm Vision is a comprehensive web application that combines AI-powered computer vision with agricultural mapping and analysis. The platform enables farmers and agricultural professionals to analyze crops, detect diseases, count fruits, and visualize farm data through interactive maps and vegetation indices.
-
-## System Architecture
-
-### Backend Architecture
-- **Framework**: Flask with SQLAlchemy ORM
-- **Database**: SQLite (configurable to PostgreSQL via environment variables)
-- **Authentication**: Flask-Login for user session management
-- **File Handling**: Local file storage with configurable upload directories
-- **AI Processing**: YOLO models integrated for object detection and disease recognition
-
-### Frontend Architecture
-- **Template Engine**: Jinja2 with responsive HTML templates
-- **Styling**: Bootstrap framework with custom CSS
-- **Interactive Maps**: Leaflet.js for GeoTIFF visualization and mapping
-- **Charts**: Chart.js for data visualization
-- **Language**: Turkish interface throughout the application
-
-## Key Components
-
-### 1. User Management System
-- User registration and authentication
-- Profile management with personal information
-- Session-based access control
-- Password reset functionality
-
-### 2. Project Management
-- Create and manage farm projects
-- Associate projects with specific farms and fields
-- Track project metadata (location, creation dates, etc.)
-- Link projects to detection results and analyses
-
-### 3. AI Detection System
-- **Fruit Detection**: YOLO-based counting and classification
-- **Disease Detection**: Leaf disease identification with recommendations
-- **Multi-object Detection**: Batch processing capabilities
-- **Model Ensemble**: Multiple AI models for improved accuracy
-
-### 4. Geospatial Analysis
-- **GeoTIFF Processing**: Handle large agricultural imagery
-- **Vegetation Indices**: NDVI, EVI, SAVI and other agricultural indices
-- **Interactive Mapping**: Real-time visualization of processed data
-- **Histogram Analysis**: Statistical analysis of vegetation data
-
-### 5. Data Storage
-- **User Data**: Personal information and authentication
-- **Project Data**: Farm and field information
-- **Detection Results**: AI analysis results with metadata
-- **File Management**: Organized storage for uploads and results
-
-## Data Flow
-
-1. **User Registration/Login**: Authentication through Flask-Login
-2. **Project Creation**: Users create farm projects with metadata
-3. **Image Upload**: Agricultural images uploaded to configured directories
-4. **AI Processing**: YOLO models process images for detection/classification
-5. **Result Storage**: Analysis results saved to database with file references
-6. **Visualization**: Results displayed through charts, maps, and reports
-7. **Export**: Processed data available for download and further analysis
-
-## External Dependencies
-
-### Core Framework Dependencies
-- Flask and extensions (SQLAlchemy, Login)
-- PyTorch for AI model inference
-- OpenCV for image processing
-- NumPy/SciPy for numerical computations
-
-### Geospatial Dependencies
-- Rasterio for GeoTIFF handling
-- GDAL for geospatial operations
-- Rio-tiler for raster processing
-- Proj4 for coordinate transformations
-
-### Frontend Dependencies
-- Leaflet.js for interactive mapping
-- Chart.js for data visualization
-- Bootstrap for responsive design
-- Font Awesome for icons
-
-### AI Model Dependencies
-- YOLO models for object detection
-- Ultralytics for model management
-- Custom trained models for agricultural applications
-
-## Deployment Strategy
-
-### Development Environment
-- Flask development server with debug mode
-- SQLite database for rapid prototyping
-- Local file storage for uploads and results
-- Environment variables for configuration
-
-### Production Considerations
-- Gunicorn WSGI server recommended
-- PostgreSQL database for scalability
-- Cloud storage integration capability
-- SSL/TLS encryption for secure access
-- Load balancing for high availability
-
-### Configuration Management
-- Environment-based configuration
-- Separate settings for development/production
-- Configurable file upload limits and directories
-- Database connection string management
-
-## Changelog
-- July 03, 2025. Initial setup
-- July 11, 2025. System audit and authentication improvements
-  - Removed all mock/synthetic data from AI detection functions
-  - Implemented authentic-only YOLO model system
-  - Fixed PostgreSQL database integration
-  - Enhanced error handling for missing model files
-  - Updated UI with green header theme customization
-- July 12, 2025. Critical debugging fixes and system hardening
-  - Fixed circular import issues between app.py and error_handlers.py
-  - Enhanced error handling with proper logging and exception management
-  - Improved file upload validation with disk space and size checks
-  - Added memory-efficient image preprocessing with fallback handling
-  - Fixed division by zero protection in vegetation analysis calculations
-  - Enhanced GeoTIFF reading with comprehensive error checking
-  - Upgraded colormap application with bounds checking and vectorization
-  - Added robust NDVI calculation with NaN/infinite value handling
-  - Fixed health check endpoint with proper SQL text wrapping
-  - Implemented comprehensive utility testing framework
-  - Added memory monitoring with psutil for large file processing
-  - Implemented timeout controls for long-running operations
-  - Enhanced AI inference functions with proper exception handling
-  - Added comprehensive input validation for all user parameters
-  - Implemented file cleanup mechanisms for temporary processing files
-  - Added logging throughout the system for debugging and monitoring
-  - Implemented comprehensive HTML template security fixes with CSRF protection
-  - Added XSS prevention with proper output escaping across all templates
-  - Enhanced JavaScript security with input sanitization and safe data handling
-  - Fixed duplicate form elements and improved accessibility with ARIA labels
-  - Added responsive image handling with error fallbacks and lazy loading
-  - Implemented client-side form validation with comprehensive error checking
-  - Enhanced file upload security with type validation and size limits
-  - Added safe AJAX wrapper functions to prevent injection attacks
-  - Fixed Chart.js and interactive map data handling to prevent XSS
-  - Configured Flask-WTF CSRF protection across all forms
-  - Enhanced registration form with comprehensive password validation and real-time strength indicator
-  - Added advanced file validation with security checks for all upload forms
-  - Implemented Turkish character support in form validation patterns
-  - Added comprehensive client-side validation with Bootstrap feedback styling
-  - Enhanced form accessibility with proper ARIA labels and semantic HTML structure
-  - Added loading states and progress indicators for improved user experience
-  - Implemented safe image preview functionality with error handling
-  - Added security validation to prevent malicious file uploads
-  - Enhanced all detection forms with CSRF protection and comprehensive validation
-  - COMPLETE SYNTHETIC DATA REMOVAL: Eliminated all mock data, placeholder content, test files, and synthetic code
-  - Removed placeholder YOLO model files (agac.pt, corn_leaf.pt) - only 4KB each, not authentic models
-  - Cleaned up all JavaScript mock data references and random number generators
-  - Removed training utilities and sample data generation functions
-  - Updated vegetation analysis to require authentic spectral band data
-  - Enhanced error handling to show proper messages when authentic data is missing
-  - Created proper SVG placeholder images for missing authentic content
-  - System now requires authentic YOLO models (70-300MB) for AI detection functionality
-  - Removed all synthetic fallback data from dashboard activity chart
-  - Dashboard now shows only authentic detection data or informative empty state messages
-  - All charts and visualizations display authentic data only with proper error handling
-  - Fixed interactive map layer control functionality with proper satellite view, base map, vegetation analysis, and project marker controls
-  - Removed problematic Leaflet Draw control causing JavaScript errors and implemented working layer switching
-  - Added console logging for layer control debugging and verified all toggle functions work correctly
-  - Suppressed rasterio boto3 import warning by setting logging level to ERROR for cleaner console output
-- August 07, 2025: Complete elimination of remaining mock implementations in vegetation analysis
-  - Removed mock NDRE calculation that incorrectly used RGB channels instead of required NIR/Red Edge bands
-  - Removed mock BAI calculation that used approximate RGB formula instead of required NIR/SWIR bands
-  - Updated vegetation analysis algorithm lists to exclude NDRE and BAI options from user interface
-  - Both functions now properly raise informative errors explaining authentic spectral band requirements
-  - System maintains 100% authentic data policy with proper error handling for unavailable calculations
-- August 07, 2025: Comprehensive System Enhancement - Advanced Project Management and Analytics
-  - **Enhanced Project Management System**: Complete project lifecycle management with detailed views, editing, and deletion
-    - Added comprehensive project detail pages with real-time statistics, activity timelines, and quick action buttons
-    - Implemented project editing functionality with full form validation and error handling
-    - Added secure project deletion with file cleanup and confirmation dialogs
-    - Enhanced project cards with statistics display (detections count, vegetation analyses, last update)
-  - **Advanced Analytics Dashboard**: Professional-grade analytics with authentic data visualization
-    - Created comprehensive analytics dashboard with real yield data, confidence metrics, and health scoring
-    - Implemented authentic fruit distribution charts and weekly activity trend analysis
-    - Added vegetation analysis statistics with algorithm-specific breakdowns and progress indicators
-    - Integrated recent performance metrics table with processing time and confidence tracking
-  - **Professional Reporting System**: Complete report generation and management infrastructure
-    - Built dedicated reports section with fruit detection, vegetation analysis, and comprehensive report types
-    - Implemented date-range filtering, project-specific reporting, and multiple format options
-    - Created detailed report templates with print support and professional data visualization
-    - Added algorithm information sections with educational content for vegetation indices
-  - **Enhanced Navigation and User Experience**: Improved system navigation and professional interface design
-    - Updated main navigation with Analytics and Reports sections for comprehensive access
-    - Enhanced dashboard with quick action buttons and improved statistics display
-    - Added professional timeline components with activity tracking and visual indicators
-    - Implemented responsive design with consistent color scheme and professional layouts
-  - **System Architecture Improvements**: Robust backend enhancements for scalability and reliability
-    - Enhanced route structure with comprehensive error handling and database transaction management
-    - Improved data flow with authentic-only analytics calculations and proper null handling
-    - Added comprehensive logging and monitoring capabilities for system performance tracking
-    - Implemented proper file cleanup mechanisms and resource management for large-scale operations
-  - **CRITICAL SECURITY FIXES**: Production-ready database models and authentication security
-    - RESOLVED: All 18 database model constructor failures that would prevent production deployment
-    - Fixed UserMixin conflicts, implemented keyword-based constructors for all models
-    - SECURITY CRITICAL: Removed hardcoded secret key fallback, now requires SECRET_KEY environment variable
-    - Implemented fail-safe SECRET_KEY validation with clear error messaging for secure deployment
-    - Enhanced Flask-Login configuration with proper type safety and session security
-  - **COMPREHENSIVE TYPE SAFETY RESOLUTION**: All 18+ type safety violations fixed for production deployment
-    - Added Optional[str] type hints and None checks for all form inputs across route files
-    - Implemented comprehensive filename validation with secure_filename() protection against None values
-    - Fixed undefined variable errors: replaced all 'app' references with 'current_app' imports
-    - Enhanced file upload security with FileStorage typing and extension validation
-    - Added numeric input validation with try/except blocks and range checking
-    - Implemented algorithm/parameter whitelisting with safe fallback values
-    - Enhanced database input validation with ownership verification and bounds checking
-    - Added comprehensive error handling with user-friendly Turkish error messages
-    - Zero LSP diagnostics remaining - codebase now fully type-safe and production-ready
+Farm Vision is a comprehensive web application combining AI-powered computer vision with agricultural mapping and analysis. It enables farmers and agricultural professionals to analyze crops, detect diseases, count fruits, and visualize farm data through interactive maps and vegetation indices. The platform aims to provide advanced, data-driven insights for improved agricultural productivity and decision-making.
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
 **Critical Requirement**: 100% real AI data only - no mock, synthetic, or fallback data allowed.
+
+## System Architecture
+
+**Backend:**
+- **Framework**: Flask with SQLAlchemy ORM.
+- **Database**: SQLite (default), configurable to PostgreSQL.
+- **Authentication**: Flask-Login for user session management.
+- **AI Processing**: Integrated YOLO models for object detection and disease recognition.
+- **File Handling**: Local storage for uploads.
+
+**Frontend:**
+- **Template Engine**: Jinja2.
+- **Styling**: Bootstrap with custom CSS.
+- **Interactive Maps**: Leaflet.js for GeoTIFF visualization.
+- **Charts**: Chart.js for data visualization.
+- **Language**: Turkish interface.
+
+**Core Features:**
+- **User Management**: Registration, authentication, profile management, and password reset.
+- **Project Management**: Creation, tracking, and management of farm projects, linking them to analyses.
+- **AI Detection**: YOLO-based fruit counting, disease identification, and multi-object detection with model ensemble capabilities.
+- **Geospatial Analysis**: Processing of large agricultural imagery (GeoTIFF), calculation of vegetation indices (NDVI, EVI, SAVI), interactive mapping, and histogram analysis.
+- **Data Storage**: Secure storage for user, project, and AI detection results.
+- **Analytics Dashboard**: Professional-grade analytics with authentic data visualization, including yield data, confidence metrics, fruit distribution, and activity trends.
+- **Reporting System**: Generation of detailed reports for fruit detection, vegetation analysis, with filtering options and multiple formats.
+- **UI/UX**: Responsive design with a consistent color scheme, professional layouts, enhanced navigation, and improved accessibility.
+
+## External Dependencies
+
+- **Core Frameworks**: Flask, PyTorch, OpenCV, NumPy, SciPy.
+- **Geospatial**: Rasterio, GDAL, Rio-tiler, Proj4.
+- **Frontend Libraries**: Leaflet.js, Chart.js, Bootstrap, Font Awesome.
+- **AI Models**: YOLO models (e.g., via Ultralytics) and custom-trained agricultural models.

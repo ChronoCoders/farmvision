@@ -45,20 +45,45 @@ def get_analysis(analysis_id):
     try:
         analysis = VegetationAnalysis.query.get_or_404(analysis_id)
         
-        # Calculate statistics from actual analysis data
+        # Calculate authentic statistics from actual GeoTIFF analysis data
         statistics = None
         if analysis.result_path and os.path.exists(analysis.result_path):
             try:
-                # In a real implementation, this would read the actual GeoTIFF
-                # and calculate real statistics
-                statistics = {
-                    'mean': 0.0,
-                    'std': 0.0,
-                    'min': 0.0,
-                    'max': 0.0
-                }
+                import rasterio
+                import numpy as np
+                
+                # Read the actual GeoTIFF file and calculate real statistics
+                with rasterio.open(analysis.result_path) as src:
+                    # Read the first band (vegetation index data)
+                    data = src.read(1)
+                    
+                    # Remove NoData values for accurate statistics
+                    if src.nodata is not None:
+                        valid_data = data[data != src.nodata]
+                    else:
+                        valid_data = data.flatten()
+                    
+                    # Remove infinite and NaN values
+                    valid_data = valid_data[np.isfinite(valid_data)]
+                    
+                    if len(valid_data) > 0:
+                        statistics = {
+                            'mean': float(np.mean(valid_data)),
+                            'std': float(np.std(valid_data)),
+                            'min': float(np.min(valid_data)),
+                            'max': float(np.max(valid_data)),
+                            'median': float(np.median(valid_data)),
+                            'pixel_count': int(len(valid_data)),
+                            'total_pixels': int(data.size)
+                        }
+                    else:
+                        # No valid data found - return error state
+                        statistics = None
+                        logging.warning(f"No valid data found in analysis file: {analysis.result_path}")
+                        
             except Exception as e:
-                logging.warning(f"Statistics calculation failed: {e}")
+                logging.warning(f"Authentic statistics calculation failed for {analysis.result_path}: {e}")
+                statistics = None
         
         return jsonify({
             'success': True,
@@ -69,7 +94,8 @@ def get_analysis(analysis_id):
             'max_range': analysis.max_range,
             'result_path': analysis.result_path,
             'created_at': analysis.created_at.isoformat(),
-            'statistics': statistics
+            'statistics': statistics,
+            'has_valid_statistics': statistics is not None
         })
         
     except Exception as e:
@@ -202,7 +228,7 @@ def get_vegetation_analyses():
     try:
         # Get only analyses that have actual results and coordinates
         analyses = VegetationAnalysis.query.filter(
-            VegetationAnalysis.result_path.isnot(None),
+            VegetationAnalysis.result_path != None,
             VegetationAnalysis.result_path != ''
         ).all()
         

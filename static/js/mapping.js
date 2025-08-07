@@ -352,24 +352,49 @@ function loadAnalysisDetails(analysisId, modal) {
                             <hr>
                             
                             <h6>İstatistikler</h6>
+                            ${data.has_valid_statistics ? `
                             <div class="small">
                                 <div class="d-flex justify-content-between">
                                     <span>Ortalama:</span>
-                                    <span>${data.statistics?.mean?.toFixed(3) || 'N/A'}</span>
+                                    <span class="text-success fw-bold">${data.statistics.mean.toFixed(3)}</span>
                                 </div>
                                 <div class="d-flex justify-content-between">
                                     <span>Standart Sapma:</span>
-                                    <span>${data.statistics?.std?.toFixed(3) || 'N/A'}</span>
+                                    <span>${data.statistics.std.toFixed(3)}</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Medyan:</span>
+                                    <span>${data.statistics.median.toFixed(3)}</span>
                                 </div>
                                 <div class="d-flex justify-content-between">
                                     <span>Minimum:</span>
-                                    <span>${data.statistics?.min?.toFixed(3) || 'N/A'}</span>
+                                    <span class="text-primary">${data.statistics.min.toFixed(3)}</span>
                                 </div>
                                 <div class="d-flex justify-content-between">
                                     <span>Maksimum:</span>
-                                    <span>${data.statistics?.max?.toFixed(3) || 'N/A'}</span>
+                                    <span class="text-warning">${data.statistics.max.toFixed(3)}</span>
+                                </div>
+                                <hr class="my-2">
+                                <div class="d-flex justify-content-between">
+                                    <span>Geçerli Piksel:</span>
+                                    <span>${data.statistics.pixel_count.toLocaleString('tr-TR')}</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Toplam Piksel:</span>
+                                    <span>${data.statistics.total_pixels.toLocaleString('tr-TR')}</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Veri Oranı:</span>
+                                    <span class="text-info">${((data.statistics.pixel_count / data.statistics.total_pixels) * 100).toFixed(1)}%</span>
                                 </div>
                             </div>
+                            ` : `
+                            <div class="text-center text-muted">
+                                <i class="fas fa-info-circle me-2"></i>
+                                İstatistik hesaplaması için geçerli GeoTIFF verisi bulunamadı.
+                                <br><small>Sadece gerçek spektral analiz sonuçları gösterilir.</small>
+                            </div>
+                            `}
                         </div>
                     </div>
                 `;
