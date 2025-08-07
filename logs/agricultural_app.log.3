@@ -1,6 +1,17 @@
-2025-07-12 00:32:59,048 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:35:05,231 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:37:14,162 ERROR: Exception on /mapping/interactive [GET] [in /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py:875]
+2025-08-07 20:21:24,290 ERROR: Exception on /dashboard [GET] [in /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py:875]
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1963, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 943, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.UndefinedColumn: column users.active does not exist
+LINE 1: ...sers_phone, users.created_at AS users_created_at, users.acti...
+                                                             ^
+HINT:  Perhaps you meant to reference the column "users.is_active".
+
+
+The above exception was the direct cause of the following exception:
+
 Traceback (most recent call last):
   File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1511, in wsgi_app
     response = self.full_dispatch_request()
@@ -14,66 +25,77 @@ Traceback (most recent call last):
   File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
     return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask_login/utils.py", line 290, in decorated_view
-    return current_app.ensure_sync(func)(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/routes/mapping.py", line 134, in interactive_map
-    return render_template('interactive_map.html', projects=projects, analyses=analyses)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 149, in render_template
-    template = app.jinja_env.get_or_select_template(template_name_or_list)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 1087, in get_or_select_template
-    return self.get_template(template_name_or_list, parent, globals)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 1016, in get_template
-    return self._load_template(name, globals)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask_login/utils.py", line 284, in decorated_view
+    elif not current_user.is_authenticated:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/werkzeug/local.py", line 318, in __get__
+    obj = instance._get_current_object()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/werkzeug/local.py", line 526, in _get_current_object
+    return get_name(local())
+                    ^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask_login/utils.py", line 25, in <lambda>
+    current_user = LocalProxy(lambda: _get_user())
+                                      ^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask_login/utils.py", line 370, in _get_user
+    current_app.login_manager._load_user()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask_login/login_manager.py", line 364, in _load_user
+    user = self._user_callback(user_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/app.py", line 51, in load_user
+    return User.query.get(int(user_id))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 2, in get
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/util/deprecations.py", line 386, in warned
+    return fn(*args, **kwargs)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 1126, in get
+    return self._get_impl(ident, loading.load_on_pk_identity)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 1135, in _get_impl
+    return self.session._get_impl(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 3873, in _get_impl
+    return db_load_fn(
+           ^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/orm/loading.py", line 694, in load_on_pk_identity
+    session.execute(
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2365, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2251, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1415, in execute
+    return meth(
+           ^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/sql/elements.py", line 523, in _execute_on_connection
+    return connection._execute_clauseelement(
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 975, in _load_template
-    template = self.loader.load(self, name, self.make_globals(globals))
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/loaders.py", line 138, in load
-    code = environment.compile(source, name, filename)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 771, in compile
-    self.handle_exception(source=source_hint)
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 942, in handle_exception
-    raise rewrite_traceback_stack(source=source)
-  File "/home/runner/workspace/templates/interactive_map.html", line 448, in template
-    {% endfor %}
-jinja2.exceptions.TemplateSyntaxError: Encountered unknown tag 'endfor'. You probably made a nesting mistake. Jinja is expecting this tag, but currently looking for 'elif' or 'else' or 'endif'. The innermost block that needs to be closed is 'if'.
-2025-07-12 00:38:03,276 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:40:23,562 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:42:47,727 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:51:19,042 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:51:55,123 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-21 22:25:14,647 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-22 16:08:01,112 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-22 18:32:00,554 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-24 19:07:51,089 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 19:37:13,396 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 19:57:34,019 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:01:14,762 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:02:07,195 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:02:27,017 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:02:56,271 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:05:09,758 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:06:09,910 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:06:20,821 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:06:29,599 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:06:59,636 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:08:29,497 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:09:30,246 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:09:35,449 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:10:52,466 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:12:03,177 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:14:32,829 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:16:35,010 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:16:37,371 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:16:37,381 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:21:09,269 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:21:09,270 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:21:09,270 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:21:19,042 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:21:19,133 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-08-07 20:21:19,393 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1637, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1842, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1982, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 2351, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1963, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 943, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedColumn) column users.active does not exist
+LINE 1: ...sers_phone, users.created_at AS users_created_at, users.acti...
+                                                             ^
+HINT:  Perhaps you meant to reference the column "users.is_active".
+
+[SQL: SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password_hash AS users_password_hash, users.first_name AS users_first_name, users.last_name AS users_last_name, users.phone AS users_phone, users.created_at AS users_created_at, users.active AS users_active 
+FROM users 
+WHERE users.id = %(pk_1)s]
+[parameters: {'pk_1': 2}]
+(Background on this error at: https://sqlalche.me/e/20/f405)

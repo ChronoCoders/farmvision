@@ -1,67 +1,6 @@
-2025-07-11 23:57:15,408 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:93]
-2025-07-11 23:57:38,654 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:96]
-2025-07-11 23:57:49,326 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:96]
-2025-07-12 00:00:11,090 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:96]
-2025-07-12 00:00:22,198 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:96]
-2025-07-12 00:00:38,680 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:96]
-2025-07-12 00:01:14,423 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:96]
-2025-07-12 00:01:23,008 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:96]
-2025-07-12 00:03:10,450 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:07:33,203 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:08:57,876 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:09:37,374 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:10:10,271 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:14:08,432 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:14:15,565 ERROR: Exception on / [GET] [in /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py:875]
-Traceback (most recent call last):
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1511, in wsgi_app
-    response = self.full_dispatch_request()
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 919, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
-    rv = self.dispatch_request()
-         ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/routes/main.py", line 23, in index
-    return render_template('index.html')
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 150, in render_template
-    return _render(app, template, context)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 131, in _render
-    rv = template.render(context)
-         ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 1295, in render
-    self.environment.handle_exception()
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 942, in handle_exception
-    raise rewrite_traceback_stack(source=source)
-  File "/home/runner/workspace/templates/index.html", line 1, in top-level template code
-    {% extends "base.html" %}
-  File "/home/runner/workspace/templates/base.html", line 9, in top-level template code
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/utils.py", line 92, in from_obj
-    if hasattr(obj, "jinja_pass_arg"):
-       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-jinja2.exceptions.UndefinedError: 'csrf_token' is undefined
-2025-07-12 00:14:27,304 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:14:37,413 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:15:07,851 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:15:24,073 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:17:35,628 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:20:09,119 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:20:30,331 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:23:04,331 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:23:26,181 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:24:41,441 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:25:46,234 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:27:20,183 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:28:35,006 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:29:44,817 ERROR: Exception on /dashboard [GET] [in /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py:875]
+2025-07-12 00:32:59,048 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:35:05,231 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:37:14,162 ERROR: Exception on /mapping/interactive [GET] [in /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py:875]
 Traceback (most recent call last):
   File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1511, in wsgi_app
     response = self.full_dispatch_request()
@@ -78,47 +17,63 @@ Traceback (most recent call last):
   File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask_login/utils.py", line 290, in decorated_view
     return current_app.ensure_sync(func)(*args, **kwargs)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/routes/main.py", line 43, in dashboard
-    return render_template('dashboard.html', stats=stats,
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 150, in render_template
-    return _render(app, template, context)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 131, in _render
-    rv = template.render(context)
-         ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 1295, in render
-    self.environment.handle_exception()
+  File "/home/runner/workspace/routes/mapping.py", line 134, in interactive_map
+    return render_template('interactive_map.html', projects=projects, analyses=analyses)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 149, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
   File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 942, in handle_exception
     raise rewrite_traceback_stack(source=source)
-  File "/home/runner/workspace/templates/dashboard.html", line 1, in top-level template code
-    {% extends "base.html" %}
-  File "/home/runner/workspace/templates/base.html", line 153, in top-level template code
-    {% block content %}{% endblock %}
-    ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/templates/dashboard.html", line 271, in block 'content'
-    const activityData = {{ activity_data|tojson|safe }};
-    ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/filters.py", line 1721, in do_tojson
-    return htmlsafe_json_dumps(value, dumps=dumps, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/utils.py", line 669, in htmlsafe_json_dumps
-    dumps(obj, **kwargs)
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/json/provider.py", line 179, in dumps
-    return json.dumps(obj, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/nix/store/clx0mcir7qw8zk36zbr4jra789g3knf6-python3-3.11.10/lib/python3.11/json/__init__.py", line 238, in dumps
-    **kw).encode(obj)
-          ^^^^^^^^^^^
-  File "/nix/store/clx0mcir7qw8zk36zbr4jra789g3knf6-python3-3.11.10/lib/python3.11/json/encoder.py", line 200, in encode
-    chunks = self.iterencode(o, _one_shot=True)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/nix/store/clx0mcir7qw8zk36zbr4jra789g3knf6-python3-3.11.10/lib/python3.11/json/encoder.py", line 258, in iterencode
-    return _iterencode(o, 0)
-           ^^^^^^^^^^^^^^^^^
-  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/json/provider.py", line 121, in _default
-    raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
-TypeError: Object of type Undefined is not JSON serializable
-2025-07-12 00:30:27,528 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:31:03,856 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
-2025-07-12 00:31:19,768 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+  File "/home/runner/workspace/templates/interactive_map.html", line 448, in template
+    {% endfor %}
+jinja2.exceptions.TemplateSyntaxError: Encountered unknown tag 'endfor'. You probably made a nesting mistake. Jinja is expecting this tag, but currently looking for 'elif' or 'else' or 'endif'. The innermost block that needs to be closed is 'if'.
+2025-07-12 00:38:03,276 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:40:23,562 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:42:47,727 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:51:19,042 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-12 00:51:55,123 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-21 22:25:14,647 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-22 16:08:01,112 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-22 18:32:00,554 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-07-24 19:07:51,089 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 19:37:13,396 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 19:57:34,019 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:01:14,762 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:02:07,195 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:02:27,017 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:02:56,271 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:05:09,758 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:06:09,910 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:06:20,821 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:06:29,599 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:06:59,636 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:08:29,497 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:09:30,246 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:09:35,449 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:10:52,466 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:12:03,177 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:14:32,829 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:16:35,010 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:16:37,371 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:16:37,381 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:21:09,269 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:21:09,270 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:21:09,270 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:21:19,042 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:21:19,133 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]
+2025-08-07 20:21:19,393 INFO: Agricultural monitoring app startup [in /home/runner/workspace/utils/error_handlers.py:100]

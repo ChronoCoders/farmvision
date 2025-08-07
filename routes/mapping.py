@@ -1,14 +1,16 @@
 import os
 import time
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from typing import Optional, Dict, Any, Union
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, current_app
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
+from werkzeug.datastructures import FileStorage
 from models import VegetationAnalysis, Project
 from utils.vegetation_analysis import VegetationAnalyzer
 from utils.histogram_geotiff import process_geotiff_histogram, analyze_vegetation_from_geotiff, extract_rgb_from_geotiff
 from utils.advanced_vegetation import analyze_vegetation_comprehensive
 from utils.helpers import allowed_file, save_uploaded_file
-from app import db, app
+from app import db
 
 mapping_bp = Blueprint('mapping', __name__)
 
@@ -56,22 +58,55 @@ def index():
 @login_required
 def vegetation_analysis():
     if request.method == 'POST':
+        # Type-safe file validation
         if 'image' not in request.files:
             flash('Lütfen bir GeoTIFF dosyası seçin.', 'error')
             return redirect(request.url)
         
-        file = request.files['image']
-        project_id = request.form.get('project_id')
-        algorithm = request.form.get('algorithm', 'ndvi')
-        colormap = request.form.get('colormap', 'rdylgn')
-        min_range = float(request.form.get('min_range', -1.0))
-        max_range = float(request.form.get('max_range', 1.0))
+        file: FileStorage = request.files['image']
+        project_id_str: Optional[str] = request.form.get('project_id')
+        algorithm: str = request.form.get('algorithm', 'ndvi')
+        colormap: str = request.form.get('colormap', 'rdylgn')
         
-        if file.filename == '':
+        # Safe numeric input validation
+        min_range_str: Optional[str] = request.form.get('min_range', '-1.0')
+        max_range_str: Optional[str] = request.form.get('max_range', '1.0')
+        
+        try:
+            min_range: float = float(min_range_str) if min_range_str else -1.0
+            max_range: float = float(max_range_str) if max_range_str else 1.0
+        except (ValueError, TypeError):
+            flash('Geçersiz sayı değerleri girildi.', 'error')
+            return redirect(request.url)
+        
+        # Comprehensive filename validation
+        if not file or not file.filename or file.filename.strip() == '':
             flash('Dosya seçilmedi.', 'error')
             return redirect(request.url)
         
-        if file and file.filename and file.filename.lower().endswith(('.tif', '.tiff')):
+        # Validate project_id if provided
+        project_id: Optional[int] = None
+        if project_id_str and project_id_str.strip():
+            try:
+                project_id = int(project_id_str.strip())
+                # Verify user owns this project
+                project = Project.query.filter_by(id=project_id, user_id=current_user.id).first()
+                if not project:
+                    flash('Geçersiz proje seçimi.', 'error')
+                    return redirect(request.url)
+            except (ValueError, TypeError):
+                flash('Geçersiz proje ID\'si.', 'error')
+                return redirect(request.url)
+        
+        # Validate algorithm and colormap
+        if algorithm not in VEGETATION_ALGORITHMS:
+            algorithm = 'ndvi'  # Safe fallback
+        
+        if colormap not in COLORMAPS:
+            colormap = 'rdylgn'  # Safe fallback
+        
+        original_filename = file.filename.strip()
+        if original_filename.lower().endswith(('.tif', '.tiff')):
             start_time = time.time()
             
             # Save uploaded file
@@ -109,7 +144,7 @@ def vegetation_analysis():
                 
             except Exception as e:
                 flash(f'Analiz sırasında hata oluştu: {str(e)}', 'error')
-                app.logger.error(f"Vegetation analysis error: {str(e)}")
+                current_app.logger.error(f"Vegetation analysis error: {str(e)}")
         else:
             flash('Geçersiz dosya formatı. Lütfen GeoTIFF (.tif/.tiff) dosyası yükleyin.', 'error')
     
@@ -183,12 +218,12 @@ def process_geotiff():
         
         if file and file.filename and file.filename.lower().endswith(('.tif', '.tiff')):
             # Save uploaded file
-            filename = save_uploaded_file(file, app.config['UPLOAD_FOLDER'])
+            filename = save_uploaded_file(file, current_app.config['UPLOAD_FOLDER'])
             if not filename:
                 flash('Dosya yüklenirken hata oluştu.', 'error')
                 return redirect(url_for('mapping.geotiff_processing'))
             
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
             process_type = request.form.get('process_type', 'histogram')
             project_id = request.form.get('project_id')
             
@@ -207,7 +242,7 @@ def process_geotiff():
                     
             elif process_type == 'rgb_extract':
                 # RGB extraction
-                output_path = os.path.join(app.config['RESULTS_FOLDER'], 
+                output_path = os.path.join(current_app.config['RESULTS_FOLDER'], 
                                          f'rgb_{os.path.splitext(filename)[0]}.png')
                 rgb_result = extract_rgb_from_geotiff(file_path, output_path)
                 
@@ -222,7 +257,7 @@ def process_geotiff():
             elif process_type == 'vegetation':
                 # Advanced vegetation analysis for GeoTIFF
                 algorithm = request.form.get('algorithm', 'ndvi')
-                output_dir = os.path.join(app.config['RESULTS_FOLDER'], 'vegetation_analysis')
+                output_dir = os.path.join(current_app.config['RESULTS_FOLDER'], 'vegetation_analysis')
                 
                 veg_result = analyze_vegetation_from_geotiff(file_path, algorithm, output_dir)
                 
@@ -253,7 +288,7 @@ def process_geotiff():
             
     except Exception as e:
         flash(f'İşlem sırasında hata oluştu: {str(e)}', 'error')
-        app.logger.error(f"GeoTIFF processing error: {str(e)}")
+        current_app.logger.error(f"GeoTIFF processing error: {str(e)}")
         return redirect(url_for('mapping.geotiff_processing'))
 
 @mapping_bp.route('/advanced_vegetation')

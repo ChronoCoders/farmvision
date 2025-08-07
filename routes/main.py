@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, current_app
 from flask_login import login_required, current_user
 from models import Project, DetectionResult, VegetationAnalysis
-from app import db, app
+from app import db
 import time
 import os
 from datetime import datetime, timedelta
@@ -453,7 +453,7 @@ def health_check():
         db.session.execute(text('SELECT 1'))
         
         # Check required directories
-        required_dirs = [app.config['UPLOAD_FOLDER'], app.config['RESULTS_FOLDER']]
+        required_dirs = [current_app.config['UPLOAD_FOLDER'], current_app.config['RESULTS_FOLDER']]
         for directory in required_dirs:
             if not os.path.exists(directory):
                 os.makedirs(directory)
