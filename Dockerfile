@@ -54,4 +54,4 @@ RUN mkdir -p static/uploads static/results static/detected static/convertor dete
     chmod -R 755 static/ detection_models/ logs/
 
 # Start application
-CMD ["/opt/venv/bin/gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "120", "main:app"]
+CMD ["/bin/bash", "-c", "/opt/venv/bin/gunicorn --bind 0.0.0.0:${PORT:-5000} --workers 2 --timeout 120 main:app"]
