@@ -1,0 +1,167 @@
+# Railway Deployment Updates for Farm Vision
+
+# 1. Create/Update requirements.txt (Railway sometimes prefers this over pyproject.toml)
+cat > requirements.txt << 'EOF'
+email-validator>=2.2.0
+flask>=3.1.1
+flask-login>=0.6.3
+flask-sqlalchemy>=3.1.1
+flask-wtf>=1.2.2
+gunicorn>=23.0.0
+matplotlib>=3.10.3
+numpy>=2.3.1
+opencv-python-headless>=4.11.0.86
+pandas>=2.3.0
+pillow>=11.2.1
+psutil>=7.0.0
+psycopg2-binary>=2.9.10
+python-dotenv>=1.0.0
+rasterio>=1.4.3
+scipy>=1.16.0
+sqlalchemy>=2.0.41
+torch>=2.7.1 --index-url https://download.pytorch.org/whl/cpu
+torchvision>=0.22.1 --index-url https://download.pytorch.org/whl/cpu
+werkzeug>=3.1.3
+wtforms>=3.2.1
+EOF
+
+# 2. Update railway.json with better health check configuration
+cat > railway.json << 'EOF'
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "nixpacks"
+  },
+  "deploy": {
+    "healthcheckPath": "/",
+    "healthcheckTimeout": 100,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}
+EOF
+
+# 3. Update Procfile for better Railway compatibility
+cat > Procfile << 'EOF'
+web: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --max-requests 1000 --max-requests-jitter 100 --preload main:app
+release: python -c "from app import app, db; app.app_context().push(); db.create_all()"
+EOF
+
+# 4. Create a start.sh script for Railway (alternative to Procfile)
+cat > start.sh << 'EOF'
+#!/bin/bash
+set -e
+
+# Set default port if not provided
+export PORT=${PORT:-5000}
+
+echo "Starting Farm Vision on port $PORT"
+
+# Initialize database
+python -c "
+from app import app, db
+with app.app_context():
+    try:
+        db.create_all()
+        print('Database tables created successfully')
+    except Exception as e:
+        print(f'Database initialization error: {e}')
+"
+
+# Start the application
+exec gunicorn \
+    --bind "0.0.0.0:$PORT" \
+    --workers 2 \
+    --timeout 120 \
+    --max-requests 1000 \
+    --max-requests-jitter 100 \
+    --preload \
+    --access-logfile - \
+    --error-logfile - \
+    main:app
+EOF
+
+chmod +x start.sh
+
+# 5. Update nixpacks.toml for Railway optimization
+cat > nixpacks.toml << 'EOF'
+[phases.setup]
+nixPkgs = ["python311", "python311Packages.pip", "gdal", "proj", "gcc", "git"]
+
+[phases.install]
+dependsOn = ["setup"]
+cmds = [
+  "python -m venv /opt/venv",
+  "/opt/venv/bin/pip install --upgrade pip",
+  "/opt/venv/bin/pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu",
+  "/opt/venv/bin/pip install -r requirements.txt"
+]
+
+[phases.build]
+dependsOn = ["install"]
+cmds = [
+  "mkdir -p static/uploads static/results static/detected static/convertor detection_models logs",
+  "chmod -R 755 static/ logs/"
+]
+
+[start]
+cmd = "./start.sh"
+
+[variables]
+PATH = "/opt/venv/bin:$PATH"
+NIXPACKS_PYTHON_VERSION = "3.11"
+RAILWAY_ENVIRONMENT = "production"
+EOF
+
+# 6. Environment variables for Railway (add these in Railway dashboard)
+cat > .env.railway.example << 'EOF'
+# COPY THESE TO RAILWAY ENVIRONMENT VARIABLES
+
+# Application Configuration
+SECRET_KEY=your_64_character_secret_key_here
+FLASK_ENV=production
+DEBUG=false
+
+# Database (automatically set by Railway PostgreSQL service)
+# DATABASE_URL=postgresql://user:password@host:port/database
+# SQLALCHEMY_DATABASE_URI=${DATABASE_URL}
+
+# File Upload Configuration
+UPLOAD_FOLDER=static/uploads
+RESULTS_FOLDER=static/results
+MAX_CONTENT_LENGTH=52428800
+ALLOWED_EXTENSIONS=jpg,jpeg,png,tiff,tif,geotiff
+
+# AI Model Configuration
+MODEL_PATH=detection_models
+YOLO_CONFIDENCE_THRESHOLD=0.25
+YOLO_IOU_THRESHOLD=0.45
+
+# Logging Configuration
+LOG_LEVEL=WARNING
+LOG_FILE=logs/farm_vision.log
+
+# Security Configuration
+WTF_CSRF_ENABLED=true
+WTF_CSRF_SECRET_KEY=your_csrf_secret_key_here
+
+# Railway specific
+RAILWAY_ENVIRONMENT=production
+PORT=5000
+EOF
+
+# 7. Generate secure keys for environment variables
+python3 << 'EOF'
+import secrets
+print("Add these to your Railway environment variables:")
+print(f"SECRET_KEY={secrets.token_hex(32)}")
+print(f"WTF_CSRF_SECRET_KEY={secrets.token_hex(32)}")
+EOF
+
+echo "Railway configuration files updated!"
+echo "Next steps:"
+echo "1. Commit these changes to your repository"
+echo "2. Connect your repository to Railway"
+echo "3. Add PostgreSQL service in Railway"
+echo "4. Set environment variables in Railway dashboard"
+echo "5. Deploy!"
