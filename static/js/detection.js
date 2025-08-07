@@ -122,7 +122,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
+                // Production-ready error logging
+                if (typeof window.logError === 'function') {
+                    window.logError('Detection deletion failed', error.message);
+                }
                 FarmVision.showNotification('Bir hata oluştu.', 'error');
             });
         }
@@ -275,7 +278,10 @@ function loadDetectionDetails(detectionId, modal) {
             }
         })
         .catch(error => {
-            console.error('Detection details load error:', error);
+            // Production-ready error logging
+            if (typeof window.logError === 'function') {
+                window.logError('Detection details load failed', error.message);
+            }
             contentDiv.innerHTML = `
                 <div class="alert alert-danger">
                     <i class="fas fa-exclamation-triangle me-2"></i>
@@ -333,7 +339,10 @@ function processBatchImages() {
         }
     })
     .catch(error => {
-        console.error('Batch processing error:', error);
+        // Production-ready error logging
+        if (typeof window.logError === 'function') {
+            window.logError('Batch processing failed', error.message);
+        }
         FarmVision.showNotification('Toplu işleme sırasında hata oluştu.', 'error');
         batchProgress.style.display = 'none';
     });

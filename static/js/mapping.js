@@ -91,21 +91,44 @@ function initializeMap() {
     // Initialize Leaflet map
     const map = L.map('map').setView([39.9334, 32.8597], 6); // Turkey center
     
-    // Add tile layers
-    const baseMaps = {
-        "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }),
-        "Satellite": L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles © Esri'
-        }),
-        "Terrain": L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenTopoMap contributors'
-        })
-    };
+    // Add tile layers with error handling
+    const baseMaps = {};
     
-    // Add default layer
-    baseMaps["OpenStreetMap"].addTo(map);
+    try {
+        baseMaps["OpenStreetMap"] = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            errorTileUrl: '/static/images/map-error-tile.png'
+        });
+        
+        baseMaps["Satellite"] = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles © Esri',
+            errorTileUrl: '/static/images/map-error-tile.png'
+        });
+        
+        baseMaps["Terrain"] = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenTopoMap contributors',
+            errorTileUrl: '/static/images/map-error-tile.png'
+        });
+    } catch (error) {
+        // Production-ready error logging
+        if (typeof window.logError === 'function') {
+            window.logError('Map layer creation failed', error.message);
+        }
+        showMapLoadingError('Harita katmanları yüklenemedi.');
+        return null;
+    }
+    
+    // Add default layer with error handling
+    try {
+        baseMaps["OpenStreetMap"].addTo(map);
+    } catch (error) {
+        // Production-ready error logging
+        if (typeof window.logError === 'function') {
+            window.logError('Map layer failed to load', error.message);
+        }
+        showMapLoadingError('Ana harita yüklenemedi. İnternet bağlantınızı kontrol edin.');
+        return null;
+    }
     
     // Add layer control
     L.control.layers(baseMaps).addTo(map);
@@ -128,38 +151,134 @@ function initializeMap() {
     
     // Store map reference globally
     window.farmVisionMap = map;
+    
+    return map;
+}
+
+// Map error handling function
+function showMapLoadingError(message) {
+    const mapContainer = document.getElementById('map');
+    if (mapContainer) {
+        mapContainer.innerHTML = `
+            <div class="d-flex align-items-center justify-content-center h-100 bg-light rounded">
+                <div class="text-center p-4">
+                    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                    <h5 class="text-muted">Harita Yüklenemedi</h5>
+                    <p class="text-muted">${message}</p>
+                    <button class="btn btn-primary" onclick="location.reload()">
+                        <i class="fas fa-refresh me-2"></i>Tekrar Dene
+                    </button>
+                </div>
+            </div>
+        `;
+    }
 }
 
 function loadAnalysisOverlays(map) {
-    // Load authentic analysis overlays from server
-    fetch('/api/vegetation_analyses')
-        .then(response => response.json())
+    // Add loading indicator
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.id = 'map-loading';
+    loadingIndicator.className = 'map-loading-indicator';
+    loadingIndicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analizler yükleniyor...';
+    map.getContainer().appendChild(loadingIndicator);
+    
+    // Load authentic analysis overlays from server with timeout
+    const fetchWithTimeout = (url, options = {}, timeout = 10000) => {
+        return Promise.race([
+            fetch(url, options),
+            new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Request timeout')), timeout)
+            )
+        ]);
+    };
+    
+    fetchWithTimeout('/api/vegetation_analyses')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.analyses && data.analyses.length > 0) {
                 const analysisLayers = L.layerGroup();
+                let validOverlays = 0;
                 
                 data.analyses.forEach(analysis => {
                     if (analysis.bounds && analysis.result_path) {
-                        const overlay = L.imageOverlay(analysis.result_path, analysis.bounds, {
-                            opacity: 0.7,
-                            title: analysis.algorithm
-                        });
-                        analysisLayers.addLayer(overlay);
+                        try {
+                            const overlay = L.imageOverlay(analysis.result_path, analysis.bounds, {
+                                opacity: 0.7,
+                                title: analysis.algorithm,
+                                errorOverlayUrl: '/static/images/overlay-error.png'
+                            });
+                            
+                            overlay.on('load', function() {
+                                validOverlays++;
+                            });
+                            
+                            overlay.on('error', function() {
+                                // Production-ready error logging
+                                if (typeof window.logError === 'function') {
+                                    window.logError('Overlay loading failed', analysis.result_path);
+                                }
+                            });
+                            
+                            analysisLayers.addLayer(overlay);
+                        } catch (overlayError) {
+                            // Production-ready error logging
+                            if (typeof window.logError === 'function') {
+                                window.logError('Overlay creation failed', overlayError.message);
+                            }
+                        }
                     }
                 });
                 
-                // Add to map if there are authentic overlays
+                // Add to map if there are valid overlays
                 if (analysisLayers.getLayers().length > 0) {
                     const overlayMaps = {
                         "Bitki Örtüsü Analizleri": analysisLayers
                     };
                     L.control.layers(null, overlayMaps).addTo(map);
+                    
+                    // Show success message
+                    setTimeout(() => {
+                        if (validOverlays > 0) {
+                            FarmVision.showNotification(`${validOverlays} analiz katmanı yüklendi.`, 'success');
+                        }
+                    }, 2000);
                 }
             }
         })
         .catch(error => {
-            console.log('Bitki örtüsü analizleri yüklenemedi:', error);
-            // No fallback data - show nothing if authentic data unavailable
+            // Production-ready error handling
+            let errorMessage = 'Analiz verileri yüklenemedi.';
+            
+            if (error.message === 'Request timeout') {
+                errorMessage = 'Bağlantı zaman aşımına uğradı. Lütfen tekrar deneyin.';
+            } else if (error.name === 'NetworkError' || error.message.includes('fetch')) {
+                errorMessage = 'İnternet bağlantınızı kontrol edin ve tekrar deneyin.';
+            } else if (error.message.includes('HTTP error')) {
+                errorMessage = 'Sunucu hatası. Lütfen daha sonra tekrar deneyin.';
+            }
+            
+            FarmVision.showNotification(errorMessage, 'warning');
+            
+            // Production error logging
+            if (typeof window.logError === 'function') {
+                window.logError('Overlay loading failed', {
+                    error: error.message,
+                    url: '/api/vegetation_analyses',
+                    timestamp: new Date().toISOString()
+                });
+            }
+        })
+        .finally(() => {
+            // Remove loading indicator
+            const loadingEl = document.getElementById('map-loading');
+            if (loadingEl) {
+                loadingEl.remove();
+            }
         });
 }
 

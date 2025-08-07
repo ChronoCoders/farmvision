@@ -204,9 +204,72 @@ function formatNumber(num) {
 }
 
 function updateDashboardStats() {
-    // Placeholder for real-time dashboard updates
-    console.log('Dashboard stats updated');
+    // Fetch authentic dashboard statistics from server
+    fetch('/api/dashboard/stats')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update dashboard elements with real data
+                updateStatElements(data.stats);
+            }
+        })
+        .catch(error => {
+            // Production-ready error logging
+            if (typeof window.logError === 'function') {
+                window.logError('Dashboard stats update failed', error.message);
+            }
+        });
 }
+
+// Helper function to update stat elements with real data
+function updateStatElements(stats) {
+    // Update total detections
+    const totalDetectionsEl = document.getElementById('totalDetections');
+    if (totalDetectionsEl && stats.total_detections !== undefined) {
+        totalDetectionsEl.textContent = formatNumber(stats.total_detections);
+    }
+    
+    // Update active projects
+    const activeProjectsEl = document.getElementById('activeProjects');
+    if (activeProjectsEl && stats.active_projects !== undefined) {
+        activeProjectsEl.textContent = formatNumber(stats.active_projects);
+    }
+    
+    // Update analysis count
+    const analysisCountEl = document.getElementById('analysisCount');
+    if (analysisCountEl && stats.analysis_count !== undefined) {
+        analysisCountEl.textContent = formatNumber(stats.analysis_count);
+    }
+    
+    // Update recent activity indicators
+    const recentActivityEl = document.getElementById('recentActivity');
+    if (recentActivityEl && stats.recent_activity) {
+        // Show activity indicator if there's recent activity
+        recentActivityEl.style.display = stats.recent_activity.length > 0 ? 'block' : 'none';
+    }
+}
+
+// Production-ready error logging function
+window.logError = function(context, error) {
+    // Send error to monitoring service in production
+    if (window.location.hostname !== 'localhost') {
+        fetch('/api/log-error', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                context: context,
+                error: error,
+                timestamp: new Date().toISOString(),
+                url: window.location.href,
+                userAgent: navigator.userAgent
+            })
+        }).catch(() => {
+            // Silent fail for logging errors
+        });
+    }
+};
 
 // Export functions for use in other scripts
 window.FarmVision = {
