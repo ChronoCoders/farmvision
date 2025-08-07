@@ -18,7 +18,7 @@ dependsOn = ["install"]
 cmds = ["mkdir -p static/uploads static/results static/detected static/convertor detection_models logs"]
 
 [start]
-cmd = "/opt/venv/bin/gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 main:app"
+cmd = "./start.sh"
 
 [variables]
 PATH = "/opt/venv/bin:$PATH"
