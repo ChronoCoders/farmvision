@@ -36,112 +36,162 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-success fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url_for('main.index') }}">
-                <i class="fas fa-seedling me-2"></i>Farm Vision
+    <!-- Professional Navigation Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark professional-header fixed-top shadow-sm">
+        <div class="container-fluid px-4">
+            <!-- Brand Section -->
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.index') }}">
+                <div class="brand-icon-wrapper">
+                    <i class="fas fa-seedling brand-icon"></i>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">Farm Vision</span>
+                    <small class="brand-subtitle d-none d-md-block">Tarımsal AI Platformu</small>
+                </div>
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <!-- Mobile Toggle Button -->
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
+            <!-- Navigation Menu -->
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    {% if current_user.is_authenticated %}
+                {% if current_user.is_authenticated %}
+                <!-- Primary Navigation -->
+                <ul class="navbar-nav me-auto professional-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.dashboard') }}">
-                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        <a class="nav-link nav-dashboard" href="{{ url_for('main.dashboard') }}">
+                            <i class="fas fa-chart-pie nav-icon"></i>
+                            <span class="nav-text">Dashboard</span>
                         </a>
                     </li>
                     
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-search me-1"></i>AI Tespit
+                        <a class="nav-link dropdown-toggle nav-detection" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-brain nav-icon"></i>
+                            <span class="nav-text">AI Analiz</span>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ url_for('detection.fruit_detection') }}">
-                                <i class="fas fa-apple-alt me-2"></i>Meyve Tespiti
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('detection.leaf_detection') }}">
-                                <i class="fas fa-leaf me-2"></i>Yaprak Hastalık Tespiti
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('detection.tree_detection') }}">
-                                <i class="fas fa-tree me-2"></i>Ağaç Tespiti
-                            </a></li>
-                        </ul>
+                        <div class="dropdown-menu professional-dropdown shadow border-0">
+                            <div class="dropdown-header">
+                                <i class="fas fa-microscope me-2"></i>Tespit Sistemleri
+                            </div>
+                            <a class="dropdown-item" href="{{ url_for('detection.fruit_detection') }}">
+                                <i class="fas fa-apple-alt dropdown-icon"></i>
+                                <div class="dropdown-content">
+                                    <span class="dropdown-title">Meyve Tespiti</span>
+                                    <small class="dropdown-desc">YOLO ile meyve sayımı</small>
+                                </div>
+                            </a>
+                            <a class="dropdown-item" href="{{ url_for('detection.leaf_detection') }}">
+                                <i class="fas fa-leaf dropdown-icon text-success"></i>
+                                <div class="dropdown-content">
+                                    <span class="dropdown-title">Yaprak Hastalığı</span>
+                                    <small class="dropdown-desc">AI hastalık tanısı</small>
+                                </div>
+                            </a>
+                            <a class="dropdown-item" href="{{ url_for('detection.tree_detection') }}">
+                                <i class="fas fa-tree dropdown-icon text-info"></i>
+                                <div class="dropdown-content">
+                                    <span class="dropdown-title">Ağaç Tespiti</span>
+                                    <small class="dropdown-desc">Drone görüntü analizi</small>
+                                </div>
+                            </a>
+                        </div>
                     </li>
                     
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-map me-1"></i>Haritalama
+                        <a class="nav-link dropdown-toggle nav-mapping" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-satellite-dish nav-icon"></i>
+                            <span class="nav-text">Haritalama</span>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ url_for('mapping.vegetation_analysis') }}">
-                                <i class="fas fa-chart-area me-2"></i>Bitki Örtüsü Analizi
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('mapping.interactive_map') }}">
-                                <i class="fas fa-globe me-2"></i>İnteraktif Harita
-                            </a></li>
-                        </ul>
+                        <div class="dropdown-menu professional-dropdown shadow border-0">
+                            <div class="dropdown-header">
+                                <i class="fas fa-globe me-2"></i>Coğrafi Analiz
+                            </div>
+                            <a class="dropdown-item" href="{{ url_for('mapping.vegetation_analysis') }}">
+                                <i class="fas fa-chart-area dropdown-icon text-success"></i>
+                                <div class="dropdown-content">
+                                    <span class="dropdown-title">Bitki Örtüsü</span>
+                                    <small class="dropdown-desc">NDVI, EVI, SAVI analizi</small>
+                                </div>
+                            </a>
+                            <a class="dropdown-item" href="{{ url_for('mapping.interactive_map') }}">
+                                <i class="fas fa-map dropdown-icon text-primary"></i>
+                                <div class="dropdown-content">
+                                    <span class="dropdown-title">İnteraktif Harita</span>
+                                    <small class="dropdown-desc">GeoTIFF görselleştirme</small>
+                                </div>
+                            </a>
+                        </div>
                     </li>
                     
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.projects') }}">
-                            <i class="fas fa-folder me-1"></i>Projeler
+                        <a class="nav-link nav-projects" href="{{ url_for('main.projects') }}">
+                            <i class="fas fa-folder-open nav-icon"></i>
+                            <span class="nav-text">Projeler</span>
                         </a>
                     </li>
                     
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.analytics_dashboard') }}">
-                            <i class="fas fa-chart-line me-1"></i>Analitik
+                        <a class="nav-link nav-reports" href="{{ url_for('main.reports') }}">
+                            <i class="fas fa-chart-line nav-icon"></i>
+                            <span class="nav-text">Raporlar</span>
                         </a>
                     </li>
-                    
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.reports') }}">
-                            <i class="fas fa-file-alt me-1"></i>Raporlar
-                        </a>
-                    </li>
-                    
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.ai_status') }}">
-                            <i class="fas fa-brain me-1"></i>AI Sistem
-                        </a>
-                    </li>
-                    {% endif %}
                 </ul>
                 
+                <!-- User Menu -->
                 <ul class="navbar-nav">
-                    {% if current_user.is_authenticated %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user me-1"></i>{{ current_user.first_name or current_user.username }}
+                    <li class="nav-item dropdown user-dropdown">
+                        <a class="nav-link dropdown-toggle user-link" href="#" role="button" data-bs-toggle="dropdown">
+                            <div class="user-avatar">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            <span class="user-name d-none d-lg-inline">
+                                {{ current_user.first_name or current_user.username }}
+                            </span>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ url_for('auth.profile') }}">
-                                <i class="fas fa-user-edit me-2"></i>Profil
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">
-                                <i class="fas fa-sign-out-alt me-2"></i>Çıkış
-                            </a></li>
-                        </ul>
+                        <div class="dropdown-menu dropdown-menu-end professional-dropdown user-menu shadow border-0">
+                            <div class="dropdown-header text-center">
+                                <div class="user-info">
+                                    <i class="fas fa-user-circle fa-2x mb-2"></i>
+                                    <div class="fw-semibold">{{ current_user.first_name or current_user.username }}</div>
+                                    <small class="text-muted">{{ current_user.email }}</small>
+                                </div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{{ url_for('auth.profile') }}">
+                                <i class="fas fa-user-cog dropdown-icon"></i>
+                                Profil Ayarları
+                            </a>
+                            <a class="dropdown-item" href="{{ url_for('main.ai_status') }}">
+                                <i class="fas fa-brain dropdown-icon"></i>
+                                AI Sistem Durumu
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">
+                                <i class="fas fa-sign-out-alt dropdown-icon"></i>
+                                Çıkış Yap
+                            </a>
+                        </div>
                     </li>
-                    {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('auth.login') }}">
-                            <i class="fas fa-sign-in-alt me-1"></i>Giriş
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('auth.register') }}">
-                            <i class="fas fa-user-plus me-1"></i>Kayıt
-                        </a>
-                    </li>
-                    {% endif %}
                 </ul>
+                {% else %}
+                <!-- Guest Navigation -->
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link btn-outline-light me-2" href="{{ url_for('auth.login') }}">
+                            <i class="fas fa-sign-in-alt me-1"></i>Giriş Yap
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-light text-dark" href="{{ url_for('auth.register') }}">
+                            <i class="fas fa-user-plus me-1"></i>Üye Ol
+                        </a>
+                    </li>
+                </ul>
+                {% endif %}
             </div>
         </div>
     </nav>
