@@ -143,10 +143,9 @@ class VegetationAnalyzer:
     
     def calculate_ndre(self):
         """Calculate NDRE (Normalized Difference Red Edge Index)"""
-        # Mock implementation using available channels
-        b, g, r = cv2.split(self.image.astype(np.float32))
-        ndre = (g - r) / (g + r + 1e-8)
-        return np.clip(ndre, -1, 1)
+        # NDRE requires NIR and Red Edge spectral bands
+        # RGB data cannot provide authentic NDRE calculation
+        raise ValueError("NDRE analizi için NIR ve Red Edge spektral bantları gereklidir. RGB görüntü ile authentic NDRE hesaplaması yapılamaz.")
     
     def calculate_ndwi(self):
         """Calculate NDWI (Normalized Difference Water Index)"""
@@ -192,10 +191,10 @@ class VegetationAnalyzer:
     
     def calculate_bai(self):
         """Calculate BAI (Burn Area Index)"""
-        b, g, r = cv2.split(self.image.astype(np.float32))
-        # Mock BAI calculation
-        bai = 1.0 / ((0.1 - r)**2 + (0.06 - g)**2 + 1e-8)
-        return np.clip(bai, 0, 100)
+        # BAI requires NIR and SWIR spectral bands for authentic calculation
+        # Formula: BAI = 1 / ((0.1 - NIR)² + (0.06 - SWIR)²)
+        # RGB data cannot provide authentic BAI calculation
+        raise ValueError("BAI analizi için NIR ve SWIR spektral bantları gereklidir. RGB görüntü ile authentic BAI hesaplaması yapılamaz.")
     
     def calculate_gndvi(self):
         """Calculate GNDVI (Green NDVI)"""

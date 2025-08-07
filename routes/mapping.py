@@ -17,7 +17,6 @@ VEGETATION_ALGORITHMS = {
     'gli': 'GLI - Green Leaf Index',
     'vari': 'VARI - Visual Atmospheric Resistance Index',
     'ndyi': 'NDYI - Normalized Difference Yellowness Index',
-    'ndre': 'NDRE - Normalized Difference Red Edge Index',
     'ndwi': 'NDWI - Normalized Difference Water Index',
     'ndvi_blue': 'NDVI (Blue) - Blue-based NDVI',
     'endvi': 'ENDVI - Enhanced NDVI',
@@ -25,9 +24,9 @@ VEGETATION_ALGORITHMS = {
     'mpri': 'MPRI - Modified Photochemical Reflectance Index',
     'exg': 'EXG - Excess Green Index',
     'tgi': 'TGI - Triangular Greenness Index',
-    'bai': 'BAI - Burn Area Index',
     'gndvi': 'GNDVI - Green NDVI',
     'savi': 'SAVI - Soil Adjusted Vegetation Index'
+    # Removed NDRE and BAI - require NIR/Red Edge/SWIR spectral bands not available in RGB data
 }
 
 COLORMAPS = {

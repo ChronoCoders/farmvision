@@ -167,6 +167,12 @@ Farm Vision is a comprehensive web application that combines AI-powered computer
   - Removed problematic Leaflet Draw control causing JavaScript errors and implemented working layer switching
   - Added console logging for layer control debugging and verified all toggle functions work correctly
   - Suppressed rasterio boto3 import warning by setting logging level to ERROR for cleaner console output
+- August 07, 2025: Complete elimination of remaining mock implementations in vegetation analysis
+  - Removed mock NDRE calculation that incorrectly used RGB channels instead of required NIR/Red Edge bands
+  - Removed mock BAI calculation that used approximate RGB formula instead of required NIR/SWIR bands
+  - Updated vegetation analysis algorithm lists to exclude NDRE and BAI options from user interface
+  - Both functions now properly raise informative errors explaining authentic spectral band requirements
+  - System maintains 100% authentic data policy with proper error handling for unavailable calculations
 
 ## User Preferences
 
