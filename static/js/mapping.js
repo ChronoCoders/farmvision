@@ -131,26 +131,36 @@ function initializeMap() {
 }
 
 function loadAnalysisOverlays(map) {
-    // Mock analysis overlays - in real app, load from server
-    const analysisLayers = L.layerGroup();
-    
-    // Add sample vegetation analysis overlay
-    const sampleBounds = [[39.8, 32.7], [40.1, 33.0]];
-    const sampleOverlay = L.imageOverlay('/static/images/sample_ndvi.png', sampleBounds, {
-        opacity: 0.7
-    });
-    
-    analysisLayers.addLayer(sampleOverlay);
-    
-    // Add to map
-    map.addLayer(analysisLayers);
-    
-    // Add to layer control
-    const overlayMaps = {
-        "Vegetation Analysis": analysisLayers
-    };
-    
-    L.control.layers(null, overlayMaps).addTo(map);
+    // Load authentic analysis overlays from server
+    fetch('/api/vegetation_analyses')
+        .then(response => response.json())
+        .then(data => {
+            if (data.analyses && data.analyses.length > 0) {
+                const analysisLayers = L.layerGroup();
+                
+                data.analyses.forEach(analysis => {
+                    if (analysis.bounds && analysis.result_path) {
+                        const overlay = L.imageOverlay(analysis.result_path, analysis.bounds, {
+                            opacity: 0.7,
+                            title: analysis.algorithm
+                        });
+                        analysisLayers.addLayer(overlay);
+                    }
+                });
+                
+                // Add to map if there are authentic overlays
+                if (analysisLayers.getLayers().length > 0) {
+                    const overlayMaps = {
+                        "Bitki Örtüsü Analizleri": analysisLayers
+                    };
+                    L.control.layers(null, overlayMaps).addTo(map);
+                }
+            }
+        })
+        .catch(error => {
+            console.log('Bitki örtüsü analizleri yüklenemedi:', error);
+            // No fallback data - show nothing if authentic data unavailable
+        });
 }
 
 function showAnalysisProgress() {

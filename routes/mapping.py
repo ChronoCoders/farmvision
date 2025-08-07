@@ -71,11 +71,11 @@ def vegetation_analysis():
             flash('Dosya seçilmedi.', 'error')
             return redirect(request.url)
         
-        if file and file.filename.lower().endswith(('.tif', '.tiff')):
+        if file and file.filename and file.filename.lower().endswith(('.tif', '.tiff')):
             start_time = time.time()
             
             # Save uploaded file
-            filename = secure_filename(file.filename)
+            filename = secure_filename(file.filename or 'geotiff.tif')
             file_path = save_uploaded_file(file, filename)
             
             try:
@@ -181,7 +181,7 @@ def process_geotiff():
             flash('Dosya seçilmedi.', 'error')
             return redirect(url_for('mapping.geotiff_processing'))
         
-        if file and file.filename.lower().endswith(('.tif', '.tiff')):
+        if file and file.filename and file.filename.lower().endswith(('.tif', '.tiff')):
             # Save uploaded file
             filename = save_uploaded_file(file, app.config['UPLOAD_FOLDER'])
             if not filename:

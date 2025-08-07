@@ -108,7 +108,10 @@ class VegetationAnalyzer:
             
         except Exception as e:
             logging.error(f"GLI calculation error: {e}")
-            return np.zeros(self.image.shape[:2], dtype=np.float64)
+            if hasattr(self, 'image') and self.image is not None:
+                return np.zeros(self.image.shape[:2], dtype=np.float64)
+            else:
+                return np.zeros((100, 100), dtype=np.float64)
     
     def calculate_vari(self):
         """Calculate VARI (Visual Atmospheric Resistance Index) with enhanced error handling"""
@@ -133,7 +136,10 @@ class VegetationAnalyzer:
             
         except Exception as e:
             logging.error(f"VARI calculation error: {e}")
-            return np.zeros(self.image.shape[:2], dtype=np.float64)
+            if hasattr(self, 'image') and self.image is not None:
+                return np.zeros(self.image.shape[:2], dtype=np.float64)
+            else:
+                return np.zeros((100, 100), dtype=np.float64)
     
     def calculate_ndyi(self):
         """Calculate NDYI (Normalized Difference Yellowness Index)"""

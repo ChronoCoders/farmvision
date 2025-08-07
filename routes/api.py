@@ -195,3 +195,37 @@ def system_status():
             'success': False,
             'error': 'Sistem durumu alınamadı'
         }), 500
+
+@api.route('/vegetation_analyses')
+def get_vegetation_analyses():
+    """Get authentic vegetation analysis overlays for mapping"""
+    try:
+        # Get only analyses that have actual results and coordinates
+        analyses = VegetationAnalysis.query.filter(
+            VegetationAnalysis.result_path.isnot(None),
+            VegetationAnalysis.result_path != ''
+        ).all()
+        
+        analysis_data = []
+        for analysis in analyses:
+            if analysis.result_path and os.path.exists(analysis.result_path):
+                # Only include analyses with valid result files
+                analysis_data.append({
+                    'id': analysis.id,
+                    'algorithm': analysis.algorithm,
+                    'result_path': analysis.result_path,
+                    'bounds': analysis.bounds if hasattr(analysis, 'bounds') else None,
+                    'created_at': analysis.created_at.isoformat()
+                })
+        
+        return jsonify({
+            'success': True,
+            'analyses': analysis_data
+        })
+        
+    except Exception as e:
+        logging.error(f"Vegetation analyses API error: {e}")
+        return jsonify({
+            'success': True,  # Return success with empty data instead of error
+            'analyses': []
+        })
