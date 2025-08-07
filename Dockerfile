@@ -53,5 +53,9 @@ COPY . .
 RUN mkdir -p static/uploads static/results static/detected static/convertor detection_models logs && \
     chmod -R 755 static/ detection_models/ logs/
 
+# Create startup script
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # Start application
-CMD ["/bin/bash", "-c", "/opt/venv/bin/gunicorn --bind 0.0.0.0:${PORT:-5000} --workers 2 --timeout 120 main:app"]
+CMD ["/usr/local/bin/docker-entrypoint.sh"]
