@@ -59,7 +59,7 @@ directories_to_create = [
 for directory in directories_to_create:
     try:
         os.makedirs(directory, exist_ok=True)
-        logging.debug(f"Ensured directory exists: {directory}")
+        pass  # Directory created successfully
     except OSError as e:
         logging.error(f"Failed to create directory {directory}: {e}")
         raise
@@ -91,18 +91,17 @@ with app.app_context():
         try:
             if url_prefix:
                 app.register_blueprint(blueprint, url_prefix=url_prefix)
-                logging.debug(f"Registered blueprint: {name} with prefix {url_prefix}")
+                pass  # Blueprint registered
             else:
                 app.register_blueprint(blueprint)
-                logging.debug(f"Registered blueprint: {name}")
+                pass  # Blueprint registered
         except Exception as e:
-            logging.error(f"Failed to register blueprint {name}: {e}")
+            print(f"Failed to register blueprint {name}: {e}")
             raise
     
-    # Create all database tables with error handling
+    # Create database tables
     try:
         db.create_all()
-        logging.info("Database tables created successfully")
     except Exception as e:
-        logging.error(f"Failed to create database tables: {e}")
+        print(f"Failed to create database tables: {e}")
         raise

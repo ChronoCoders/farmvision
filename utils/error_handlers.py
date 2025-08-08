@@ -83,18 +83,14 @@ def validate_app_config():
         raise ValueError(f"Missing required configurations: {missing_configs}")
 
 def setup_logging():
-    """Setup application logging"""
+    """Setup minimal logging for clean output"""
+    import logging
     from app import app
-    if not app.debug:
-        # Create logs directory if it doesn't exist
-        os.makedirs('logs', exist_ok=True)
-        
-        from logging.handlers import RotatingFileHandler
-        file_handler = RotatingFileHandler('logs/agricultural_app.log', maxBytes=10240, backupCount=10)
-        file_handler.setFormatter(logging.Formatter(
-            '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
-        ))
-        file_handler.setLevel(logging.INFO)
-        app.logger.addHandler(file_handler)
-        app.logger.setLevel(logging.INFO)
-        app.logger.info('Agricultural monitoring app startup')
+    
+    # Set minimal logging levels
+    logging.getLogger().setLevel(logging.WARNING)
+    logging.getLogger('matplotlib').setLevel(logging.WARNING) 
+    logging.getLogger('rasterio').setLevel(logging.WARNING)
+    logging.getLogger('urllib3').setLevel(logging.WARNING)
+    logging.getLogger('requests').setLevel(logging.WARNING)
+    logging.getLogger('root').setLevel(logging.WARNING)

@@ -16,29 +16,14 @@ def main():
         port = int(os.environ.get('PORT', 5000))
         host = os.environ.get('HOST', '0.0.0.0')
         
-        # Railway.app specific configuration
-        railway_env = os.environ.get('RAILWAY_ENVIRONMENT')
-        if railway_env:
-            logging.info(f"Railway environment detected: {railway_env}")
-            # Force production settings on Railway
-            if railway_env == 'production':
-                flask_env = 'production'
-                debug_mode = False
+        # Production environment detection
+        if flask_env == 'production':
+            debug_mode = False
         
         # Log startup information
-        logging.info(f"Starting Farm Vision application")
-        logging.info(f"Environment: {flask_env}")
-        logging.info(f"Debug mode: {debug_mode}")
-        logging.info(f"Host: {host}:{port}")
-        logging.info(f"Database: {app.config.get('SQLALCHEMY_DATABASE_URI', 'Not configured')}")
-        
-        # Production-specific configurations
-        if flask_env == 'production':
-            logging.info("Production mode: Using gunicorn for WSGI server")
-            logging.info("Debug mode disabled for security")
-        else:
-            logging.info("Development mode: Using Flask development server")
-            logging.warning("DEBUG mode enabled - DO NOT use in production!")
+        if debug_mode:
+            logging.info(f"Starting Farm Vision - Environment: {flask_env}")
+            logging.info(f"Server: {host}:{port}")
         
         # Start the application
         app.run(

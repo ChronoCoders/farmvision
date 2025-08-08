@@ -22,7 +22,7 @@ try:
             load_dotenv(parent_env)
             logging.info(f"Loaded environment configuration from {parent_env.absolute()}")
         else:
-            logging.warning("No .env file found. Using system environment variables only.")
+            pass  # Quietly use system environment variables
 except ImportError:
     # In production, python-dotenv should be mandatory
     flask_env = os.environ.get('FLASK_ENV', 'development')
@@ -32,7 +32,7 @@ except ImportError:
             "Install with: pip install python-dotenv"
         )
     else:
-        logging.warning("python-dotenv not available. Using system environment variables only.")
+        pass  # Quietly use system environment variables
 
 
 class Config:
@@ -113,7 +113,6 @@ class Config:
         for directory in directories:
             if directory:
                 Path(directory).mkdir(parents=True, exist_ok=True)
-                logging.debug(f"Ensured directory exists: {directory}")
     
     @classmethod
     def setup_logging(cls) -> None:

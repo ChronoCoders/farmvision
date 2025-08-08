@@ -1,1 +1,8 @@
 # Empty requirements for Railway compatibility
+flask
+flask-login
+flask-sqlalchemy
+flask-wtf
+python-dotenv
+sqlalchemy
+werkzeug
