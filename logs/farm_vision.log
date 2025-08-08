@@ -1,0 +1,1296 @@
+2025-08-07 20:53:52,513 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 20:53:52,513 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 20:53:52,513 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 20:53:52,513 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 20:53:52,513 - root - INFO - Initialized Farm Vision with type
+2025-08-07 20:53:52,514 - root - INFO - Environment: development
+2025-08-07 20:53:52,514 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 20:53:52,514 - root - INFO - Upload folder: static/uploads
+2025-08-07 20:53:52,514 - root - INFO - Model path: detection_models
+2025-08-07 20:53:54,925 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 20:53:54,934 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 20:53:54,935 - matplotlib - DEBUG - interactive is False
+2025-08-07 20:53:54,936 - matplotlib - DEBUG - platform is linux
+2025-08-07 20:53:54,990 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 20:53:54,991 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 20:53:55,397 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 20:53:55,398 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 20:53:55,398 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 20:54:16,183 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 20:54:16,183 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 20:54:16,183 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 20:54:16,183 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 20:54:16,183 - root - INFO - Initialized Farm Vision with type
+2025-08-07 20:54:16,183 - root - INFO - Environment: development
+2025-08-07 20:54:16,183 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 20:54:16,183 - root - INFO - Upload folder: static/uploads
+2025-08-07 20:54:16,183 - root - INFO - Model path: detection_models
+2025-08-07 20:54:18,689 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 20:54:18,698 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 20:54:18,699 - matplotlib - DEBUG - interactive is False
+2025-08-07 20:54:18,699 - matplotlib - DEBUG - platform is linux
+2025-08-07 20:54:18,755 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 20:54:18,756 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 20:54:19,124 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 20:54:19,125 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 20:54:19,125 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 20:54:25,445 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 20:54:25,445 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 20:54:25,445 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 20:54:25,445 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 20:54:25,445 - root - INFO - Initialized Farm Vision with type
+2025-08-07 20:54:25,445 - root - INFO - Environment: development
+2025-08-07 20:54:25,446 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 20:54:25,446 - root - INFO - Upload folder: static/uploads
+2025-08-07 20:54:25,446 - root - INFO - Model path: detection_models
+2025-08-07 20:54:27,862 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 20:54:27,870 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 20:54:27,872 - matplotlib - DEBUG - interactive is False
+2025-08-07 20:54:27,872 - matplotlib - DEBUG - platform is linux
+2025-08-07 20:54:27,919 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 20:54:27,920 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 20:54:28,260 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 20:54:28,261 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 20:54:28,261 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 20:54:47,732 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 20:54:47,733 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 20:54:47,733 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 20:54:47,733 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 20:54:47,733 - root - INFO - Initialized Farm Vision with type
+2025-08-07 20:54:47,733 - root - INFO - Environment: development
+2025-08-07 20:54:47,733 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 20:54:47,733 - root - INFO - Upload folder: static/uploads
+2025-08-07 20:54:47,733 - root - INFO - Model path: detection_models
+2025-08-07 20:54:50,111 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 20:54:50,121 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 20:54:50,122 - matplotlib - DEBUG - interactive is False
+2025-08-07 20:54:50,122 - matplotlib - DEBUG - platform is linux
+2025-08-07 20:54:50,172 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 20:54:50,173 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 20:54:50,519 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 20:54:50,520 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 20:54:50,520 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 20:55:15,584 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 20:55:15,585 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 20:55:15,585 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 20:55:15,585 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 20:55:15,585 - root - INFO - Initialized Farm Vision with type
+2025-08-07 20:55:15,585 - root - INFO - Environment: development
+2025-08-07 20:55:15,585 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 20:55:15,585 - root - INFO - Upload folder: static/uploads
+2025-08-07 20:55:15,585 - root - INFO - Model path: detection_models
+2025-08-07 20:55:18,221 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 20:55:18,233 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 20:55:18,233 - matplotlib - DEBUG - interactive is False
+2025-08-07 20:55:18,234 - matplotlib - DEBUG - platform is linux
+2025-08-07 20:55:18,287 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 20:55:18,288 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 20:55:18,643 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 20:55:18,644 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 20:55:18,644 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 20:57:03,684 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 20:57:03,684 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 20:57:03,684 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 20:57:03,685 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 20:57:03,685 - root - INFO - Initialized Farm Vision with type
+2025-08-07 20:57:03,685 - root - INFO - Environment: development
+2025-08-07 20:57:03,685 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 20:57:03,685 - root - INFO - Upload folder: static/uploads
+2025-08-07 20:57:03,685 - root - INFO - Model path: detection_models
+2025-08-07 20:57:06,380 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 20:57:06,390 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 20:57:06,391 - matplotlib - DEBUG - interactive is False
+2025-08-07 20:57:06,392 - matplotlib - DEBUG - platform is linux
+2025-08-07 20:57:06,443 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 20:57:06,444 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 20:57:06,796 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 20:57:06,797 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 20:57:06,797 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 20:57:42,610 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 20:57:42,610 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 20:57:42,610 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 20:57:42,610 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 20:57:42,610 - root - INFO - Initialized Farm Vision with type
+2025-08-07 20:57:42,610 - root - INFO - Environment: development
+2025-08-07 20:57:42,610 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 20:57:42,610 - root - INFO - Upload folder: static/uploads
+2025-08-07 20:57:42,611 - root - INFO - Model path: detection_models
+2025-08-07 20:57:42,611 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 20:57:45,176 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 20:57:45,185 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 20:57:45,186 - matplotlib - DEBUG - interactive is False
+2025-08-07 20:57:45,186 - matplotlib - DEBUG - platform is linux
+2025-08-07 20:57:45,239 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 20:57:45,240 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 20:57:45,620 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 20:57:45,621 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 20:57:45,621 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 20:59:48,700 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 20:59:48,700 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 20:59:48,700 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 20:59:48,700 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 20:59:48,700 - root - INFO - Initialized Farm Vision with type
+2025-08-07 20:59:48,700 - root - INFO - Environment: development
+2025-08-07 20:59:48,701 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 20:59:48,701 - root - INFO - Upload folder: static/uploads
+2025-08-07 20:59:48,701 - root - INFO - Model path: detection_models
+2025-08-07 20:59:48,701 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 20:59:51,682 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 20:59:51,693 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 20:59:51,694 - matplotlib - DEBUG - interactive is False
+2025-08-07 20:59:51,694 - matplotlib - DEBUG - platform is linux
+2025-08-07 20:59:51,758 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 20:59:51,759 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 20:59:52,164 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 20:59:52,166 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 20:59:52,166 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:00:30,493 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:00:30,501 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:00:30,501 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:00:30,502 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:00:30,502 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:00:30,502 - root - INFO - Environment: development
+2025-08-07 21:00:30,502 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:00:30,502 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:00:30,502 - root - INFO - Model path: detection_models
+2025-08-07 21:00:30,504 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:00:33,448 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:00:33,458 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:00:33,460 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:00:33,460 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:00:33,523 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:00:33,524 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:00:33,922 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:00:33,924 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:00:33,924 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:00:35,377 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:00:35,377 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:00:35,377 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:00:35,377 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:00:35,378 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:00:35,378 - root - INFO - Environment: development
+2025-08-07 21:00:35,378 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:00:35,378 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:00:35,378 - root - INFO - Model path: detection_models
+2025-08-07 21:00:35,378 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:00:38,025 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:00:38,034 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:00:38,035 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:00:38,035 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:00:38,091 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:00:38,092 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:00:38,437 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:00:38,438 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:00:38,439 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:01:31,341 - root - INFO - YOLO Inference initialized on cpu
+2025-08-07 21:04:20,648 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:04:20,649 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:04:20,649 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:04:20,649 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:04:20,649 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:04:20,649 - root - INFO - Environment: development
+2025-08-07 21:04:20,649 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:04:20,649 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:04:20,649 - root - INFO - Model path: detection_models
+2025-08-07 21:04:20,650 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:04:23,046 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:04:23,058 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:04:23,059 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:04:23,059 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:04:23,114 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:04:23,115 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:04:23,463 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:04:23,464 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:04:23,464 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:34:30,372 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:34:30,372 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:34:30,372 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:34:30,372 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:34:30,372 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:34:30,372 - root - INFO - Environment: development
+2025-08-07 21:34:30,372 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:34:30,373 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:34:30,373 - root - INFO - Model path: detection_models
+2025-08-07 21:34:30,373 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:34:36,178 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:34:36,201 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:34:36,203 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:34:36,203 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:34:36,305 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:34:36,308 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:34:36,850 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:34:36,851 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:34:36,851 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:34:51,809 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:34:51,810 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:34:51,810 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:34:51,810 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:34:51,810 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:34:51,810 - root - INFO - Environment: development
+2025-08-07 21:34:51,810 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:34:51,810 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:34:51,810 - root - INFO - Model path: detection_models
+2025-08-07 21:34:51,811 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:34:54,789 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:34:54,802 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:34:54,803 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:34:54,804 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:34:54,863 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:34:54,865 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:34:55,265 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:34:55,266 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:34:55,266 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:35:08,021 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:35:08,024 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:35:08,025 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:35:08,025 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:35:08,026 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:35:08,026 - root - INFO - Environment: development
+2025-08-07 21:35:08,026 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:35:08,026 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:35:08,026 - root - INFO - Model path: detection_models
+2025-08-07 21:35:08,026 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:35:11,607 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:35:11,620 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:35:11,621 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:35:11,622 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:35:11,716 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:35:11,718 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:35:12,293 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:35:12,294 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:35:12,294 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:35:16,050 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:35:16,050 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:35:16,050 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:35:16,050 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:35:16,051 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:35:16,051 - root - INFO - Environment: development
+2025-08-07 21:35:16,051 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:35:16,051 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:35:16,051 - root - INFO - Model path: detection_models
+2025-08-07 21:35:16,051 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:35:19,334 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:35:19,348 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:35:19,349 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:35:19,349 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:35:19,431 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:35:19,432 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:35:19,912 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:35:19,913 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:35:19,914 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:35:32,851 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:35:32,851 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:35:32,851 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:35:32,851 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:35:32,851 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:35:32,851 - root - INFO - Environment: development
+2025-08-07 21:35:32,851 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:35:32,852 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:35:32,852 - root - INFO - Model path: detection_models
+2025-08-07 21:35:32,852 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:35:36,020 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:35:36,033 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:35:36,034 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:35:36,034 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:35:36,102 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:35:36,103 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:35:36,550 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:35:36,551 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:35:36,552 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:35:53,222 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:35:53,222 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:35:53,222 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:35:53,222 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:35:53,223 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:35:53,223 - root - INFO - Environment: development
+2025-08-07 21:35:53,223 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:35:53,223 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:35:53,223 - root - INFO - Model path: detection_models
+2025-08-07 21:35:53,223 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:35:56,231 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:35:56,240 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:35:56,241 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:35:56,241 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:35:56,292 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:35:56,293 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:35:56,719 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:35:56,720 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:35:56,720 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:36:11,402 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:36:11,402 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:36:11,402 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:36:11,402 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:36:11,402 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:36:11,403 - root - INFO - Environment: development
+2025-08-07 21:36:11,403 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:36:11,403 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:36:11,403 - root - INFO - Model path: detection_models
+2025-08-07 21:36:11,403 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:36:14,306 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:36:14,316 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:36:14,319 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:36:14,319 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:36:14,404 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:36:14,406 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:36:14,885 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:36:14,886 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:36:14,886 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:36:22,447 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:36:22,447 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:36:22,447 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:36:22,447 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:36:22,448 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:36:22,448 - root - INFO - Environment: development
+2025-08-07 21:36:22,448 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:36:22,448 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:36:22,448 - root - INFO - Model path: detection_models
+2025-08-07 21:36:22,448 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:36:25,133 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:36:25,143 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:36:25,144 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:36:25,144 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:36:25,202 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:36:25,203 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:36:26,186 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:36:26,186 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:36:26,186 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:36:26,187 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:36:26,187 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:36:26,187 - root - INFO - Environment: development
+2025-08-07 21:36:26,187 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:36:26,187 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:36:26,187 - root - INFO - Model path: detection_models
+2025-08-07 21:36:26,187 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:36:29,009 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:36:29,021 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:36:29,022 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:36:29,023 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:36:29,077 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:36:29,078 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:36:29,483 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:36:29,484 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:36:29,484 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:37:10,563 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:37:10,564 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:37:10,564 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:37:10,564 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:37:10,565 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:37:10,565 - root - INFO - Environment: development
+2025-08-07 21:37:10,565 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:37:10,565 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:37:10,565 - root - INFO - Model path: detection_models
+2025-08-07 21:37:10,565 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:37:13,239 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:37:13,252 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:37:13,253 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:37:13,253 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:37:13,311 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:37:13,312 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:37:13,675 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:37:13,676 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:37:13,677 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:37:23,991 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:37:23,991 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:37:23,991 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:37:23,991 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:37:23,991 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:37:23,991 - root - INFO - Environment: development
+2025-08-07 21:37:23,991 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:37:23,992 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:37:23,992 - root - INFO - Model path: detection_models
+2025-08-07 21:37:23,992 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:37:26,470 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:37:26,479 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:37:26,480 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:37:26,480 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:37:26,535 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:37:26,536 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:37:26,919 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:37:26,920 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:37:26,920 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:38:15,791 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:38:15,791 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:38:15,791 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:38:15,791 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:38:15,792 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:38:15,792 - root - INFO - Environment: development
+2025-08-07 21:38:15,792 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:38:15,792 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:38:15,792 - root - INFO - Model path: detection_models
+2025-08-07 21:38:15,792 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:38:18,467 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:38:18,480 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:38:18,482 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:38:18,482 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:38:18,552 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:38:18,553 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:38:18,960 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:38:18,961 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:38:18,961 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:38:23,449 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:38:23,449 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:38:23,449 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:38:23,449 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:38:23,450 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:38:23,450 - root - INFO - Environment: development
+2025-08-07 21:38:23,450 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:38:23,450 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:38:23,450 - root - INFO - Model path: detection_models
+2025-08-07 21:38:23,450 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:38:27,217 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:38:27,247 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:38:27,249 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:38:27,250 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:38:27,343 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:38:27,344 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:38:27,912 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:38:27,913 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:38:27,913 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:38:32,413 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:38:32,413 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:38:32,413 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:38:32,413 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:38:32,413 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:38:32,413 - root - INFO - Environment: development
+2025-08-07 21:38:32,414 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:38:32,414 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:38:32,414 - root - INFO - Model path: detection_models
+2025-08-07 21:38:32,414 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:38:35,440 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:38:35,451 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:38:35,454 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:38:35,455 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:38:35,518 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:38:35,519 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:38:35,981 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:38:35,982 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:38:35,983 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:38:39,366 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:38:39,366 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:38:39,366 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:38:39,366 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:38:39,366 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:38:39,366 - root - INFO - Environment: development
+2025-08-07 21:38:39,367 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:38:39,367 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:38:39,367 - root - INFO - Model path: detection_models
+2025-08-07 21:38:39,367 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:38:42,100 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:38:42,111 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:38:42,112 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:38:42,112 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:38:42,168 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:38:42,169 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:38:42,526 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:38:42,527 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:38:42,527 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:38:46,890 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:38:46,890 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:38:46,890 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:38:46,890 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:38:46,891 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:38:46,891 - root - INFO - Environment: development
+2025-08-07 21:38:46,891 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:38:46,891 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:38:46,891 - root - INFO - Model path: detection_models
+2025-08-07 21:38:46,891 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:38:49,455 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:38:49,465 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:38:49,467 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:38:49,467 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:38:49,520 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:38:49,521 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:38:49,887 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:38:49,888 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:38:49,889 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:43:31,039 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:43:31,040 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:43:31,040 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:43:31,041 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:43:31,041 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:43:31,042 - root - INFO - Environment: development
+2025-08-07 21:43:31,042 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:43:31,043 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:43:31,043 - root - INFO - Model path: detection_models
+2025-08-07 21:43:31,043 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:43:34,256 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:43:34,268 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:43:34,269 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:43:34,269 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:43:34,333 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:43:34,334 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:43:34,768 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:43:34,770 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:43:34,770 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:43:44,590 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:43:44,590 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:43:44,590 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:43:44,590 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:43:44,590 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:43:44,590 - root - INFO - Environment: development
+2025-08-07 21:43:44,591 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:43:44,591 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:43:44,591 - root - INFO - Model path: detection_models
+2025-08-07 21:43:44,591 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:43:47,290 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:43:47,300 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:43:47,301 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:43:47,301 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:43:47,362 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:43:47,363 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:43:47,732 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:43:47,733 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:43:47,733 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:44:03,189 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:44:03,189 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:44:03,189 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:44:03,189 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:44:03,190 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:44:03,190 - root - INFO - Environment: development
+2025-08-07 21:44:03,190 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:44:03,190 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:44:03,190 - root - INFO - Model path: detection_models
+2025-08-07 21:44:03,190 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:44:05,746 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:44:05,757 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:44:05,758 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:44:05,758 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:44:05,814 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:44:05,815 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:44:06,179 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:44:06,180 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:44:06,180 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:44:39,924 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:44:39,924 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:44:39,925 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:44:39,925 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:44:39,925 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:44:39,925 - root - INFO - Environment: development
+2025-08-07 21:44:39,925 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:44:39,925 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:44:39,925 - root - INFO - Model path: detection_models
+2025-08-07 21:44:39,925 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:44:42,700 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:44:42,709 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:44:42,710 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:44:42,710 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:44:42,764 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:44:42,765 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:44:43,137 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:44:43,138 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:44:43,138 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:44:44,677 - root - INFO - YOLO Inference initialized on cpu
+2025-08-07 21:44:53,437 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:44:53,437 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:44:53,437 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:44:53,438 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:44:53,438 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:44:53,438 - root - INFO - Environment: development
+2025-08-07 21:44:53,438 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:44:53,438 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:44:53,438 - root - INFO - Model path: detection_models
+2025-08-07 21:44:53,438 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:44:56,003 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:44:56,014 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:44:56,015 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:44:56,015 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:44:56,066 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:44:56,067 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:44:56,422 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:44:56,423 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:44:56,423 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:45:06,884 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:45:06,884 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:45:06,885 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:45:06,885 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:45:06,885 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:45:06,885 - root - INFO - Environment: development
+2025-08-07 21:45:06,885 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:45:06,885 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:45:06,885 - root - INFO - Model path: detection_models
+2025-08-07 21:45:06,885 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:45:09,571 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:45:09,581 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:45:09,582 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:45:09,582 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:45:09,632 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:45:09,633 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:45:09,985 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:45:09,986 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:45:09,986 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:45:18,320 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:45:18,320 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:45:18,320 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:45:18,321 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:45:18,321 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:45:18,321 - root - INFO - Environment: development
+2025-08-07 21:45:18,321 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:45:18,321 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:45:18,321 - root - INFO - Model path: detection_models
+2025-08-07 21:45:18,321 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:45:21,187 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:45:21,196 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:45:21,197 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:45:21,197 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:45:21,256 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:45:21,258 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:45:21,625 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:45:21,626 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:45:21,626 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:45:43,820 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:45:43,820 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:45:43,821 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:45:43,821 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:45:43,821 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:45:43,821 - root - INFO - Environment: development
+2025-08-07 21:45:43,821 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:45:43,821 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:45:43,821 - root - INFO - Model path: detection_models
+2025-08-07 21:45:43,821 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:45:46,402 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:45:46,412 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:45:46,413 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:45:46,413 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:45:46,469 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:45:46,470 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:45:46,823 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:45:46,824 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:45:46,824 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:50:01,911 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:50:01,911 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:50:01,911 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:50:01,911 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:50:01,911 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:50:01,911 - root - INFO - Environment: development
+2025-08-07 21:50:01,911 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:50:01,911 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:50:01,911 - root - INFO - Model path: detection_models
+2025-08-07 21:50:01,912 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:50:04,464 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:50:04,473 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:50:04,474 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:50:04,474 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:50:04,525 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:50:04,526 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:50:04,924 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:50:04,926 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:50:04,926 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:51:42,992 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:51:42,992 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:51:42,992 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:51:42,992 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:51:42,993 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:51:42,993 - root - INFO - Environment: development
+2025-08-07 21:51:42,993 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:51:42,993 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:51:42,993 - root - INFO - Model path: detection_models
+2025-08-07 21:51:42,993 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:51:45,531 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:51:45,540 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:51:45,542 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:51:45,542 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:51:45,596 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:51:45,597 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:51:45,957 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:51:45,958 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:51:45,958 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:52:28,761 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:52:28,762 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:52:28,762 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:52:28,762 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:52:28,763 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:52:28,763 - root - INFO - Environment: development
+2025-08-07 21:52:28,763 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:52:28,763 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:52:28,763 - root - INFO - Model path: detection_models
+2025-08-07 21:52:28,763 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:52:31,617 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:52:31,627 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:52:31,628 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:52:31,628 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:52:31,679 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:52:31,680 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:52:32,103 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:52:32,104 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:52:32,104 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:54:52,284 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:54:52,284 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:54:52,284 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:54:52,284 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:54:52,284 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:54:52,284 - root - INFO - Environment: development
+2025-08-07 21:54:52,284 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:54:52,284 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:54:52,284 - root - INFO - Model path: detection_models
+2025-08-07 21:54:52,285 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:54:55,382 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:54:55,394 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:54:55,395 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:54:55,396 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:54:55,461 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:54:55,462 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:54:55,878 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:54:55,880 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:54:55,880 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:55:58,069 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:55:58,070 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:55:58,070 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:55:58,071 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:55:58,071 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:55:58,071 - root - INFO - Environment: development
+2025-08-07 21:55:58,071 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:55:58,071 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:55:58,071 - root - INFO - Model path: detection_models
+2025-08-07 21:55:58,071 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:56:01,086 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:56:01,102 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:56:01,104 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:56:01,104 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:56:01,180 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:56:01,182 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:56:01,692 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:56:01,694 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:56:01,694 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 21:56:27,918 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 21:56:27,918 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 21:56:27,918 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 21:56:27,918 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 21:56:27,918 - root - INFO - Initialized Farm Vision with type
+2025-08-07 21:56:27,918 - root - INFO - Environment: development
+2025-08-07 21:56:27,918 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 21:56:27,918 - root - INFO - Upload folder: static/uploads
+2025-08-07 21:56:27,918 - root - INFO - Model path: detection_models
+2025-08-07 21:56:27,918 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 21:56:30,657 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 21:56:30,668 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 21:56:30,669 - matplotlib - DEBUG - interactive is False
+2025-08-07 21:56:30,669 - matplotlib - DEBUG - platform is linux
+2025-08-07 21:56:30,725 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 21:56:30,726 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 21:56:31,094 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 21:56:31,095 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 21:56:31,095 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 22:00:02,680 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 22:00:02,680 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 22:00:02,681 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 22:00:02,681 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 22:00:02,681 - root - INFO - Initialized Farm Vision with type
+2025-08-07 22:00:02,681 - root - INFO - Environment: development
+2025-08-07 22:00:02,681 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 22:00:02,681 - root - INFO - Upload folder: static/uploads
+2025-08-07 22:00:02,681 - root - INFO - Model path: detection_models
+2025-08-07 22:00:02,681 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 22:00:05,615 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 22:00:05,628 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 22:00:05,632 - matplotlib - DEBUG - interactive is False
+2025-08-07 22:00:05,632 - matplotlib - DEBUG - platform is linux
+2025-08-07 22:00:05,706 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 22:00:05,707 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 22:00:06,086 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 22:00:06,088 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 22:00:06,088 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 22:00:09,421 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 22:00:09,421 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 22:00:09,421 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 22:00:09,421 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 22:00:09,422 - root - INFO - Initialized Farm Vision with type
+2025-08-07 22:00:09,422 - root - INFO - Environment: development
+2025-08-07 22:00:09,422 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 22:00:09,422 - root - INFO - Upload folder: static/uploads
+2025-08-07 22:00:09,422 - root - INFO - Model path: detection_models
+2025-08-07 22:00:09,422 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 22:00:09,456 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 22:00:09,456 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 22:00:09,457 - root - DEBUG - Ensured directory exists: static/detected
+2025-08-07 22:00:09,457 - root - DEBUG - Ensured directory exists: static/convertor
+2025-08-07 22:00:11,893 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 22:00:11,902 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 22:00:11,903 - matplotlib - DEBUG - interactive is False
+2025-08-07 22:00:11,903 - matplotlib - DEBUG - platform is linux
+2025-08-07 22:00:11,951 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 22:00:11,952 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 22:00:12,310 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 22:00:12,311 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 22:00:12,312 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 22:00:12,330 - root - DEBUG - Registered blueprint: main
+2025-08-07 22:00:12,333 - root - DEBUG - Registered blueprint: detection with prefix /detection
+2025-08-07 22:00:12,337 - root - DEBUG - Registered blueprint: mapping with prefix /mapping
+2025-08-07 22:00:12,338 - root - DEBUG - Registered blueprint: auth with prefix /auth
+2025-08-07 22:00:12,341 - root - DEBUG - Registered blueprint: api
+2025-08-07 22:00:13,573 - root - INFO - Database tables created successfully
+2025-08-07 22:00:22,719 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 22:00:22,719 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 22:00:22,719 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 22:00:22,720 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 22:00:22,720 - root - INFO - Initialized Farm Vision with type
+2025-08-07 22:00:22,720 - root - INFO - Environment: development
+2025-08-07 22:00:22,720 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 22:00:22,720 - root - INFO - Upload folder: static/uploads
+2025-08-07 22:00:22,720 - root - INFO - Model path: detection_models
+2025-08-07 22:00:22,720 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 22:00:22,755 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 22:00:22,755 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 22:00:22,755 - root - DEBUG - Ensured directory exists: static/detected
+2025-08-07 22:00:22,755 - root - DEBUG - Ensured directory exists: static/convertor
+2025-08-07 22:00:25,432 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 22:00:25,443 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 22:00:25,444 - matplotlib - DEBUG - interactive is False
+2025-08-07 22:00:25,444 - matplotlib - DEBUG - platform is linux
+2025-08-07 22:00:25,505 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 22:00:25,506 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 22:00:25,906 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 22:00:25,907 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 22:00:25,908 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 22:00:25,925 - root - DEBUG - Registered blueprint: main
+2025-08-07 22:00:25,929 - root - DEBUG - Registered blueprint: detection with prefix /detection
+2025-08-07 22:00:25,932 - root - DEBUG - Registered blueprint: mapping with prefix /mapping
+2025-08-07 22:00:25,934 - root - DEBUG - Registered blueprint: auth with prefix /auth
+2025-08-07 22:00:25,937 - root - DEBUG - Registered blueprint: api
+2025-08-07 22:00:27,131 - root - INFO - Database tables created successfully
+2025-08-07 22:01:29,140 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 22:01:29,140 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 22:01:29,140 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 22:01:29,141 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 22:01:29,141 - root - INFO - Initialized Farm Vision with type
+2025-08-07 22:01:29,141 - root - INFO - Environment: development
+2025-08-07 22:01:29,141 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 22:01:29,142 - root - INFO - Upload folder: static/uploads
+2025-08-07 22:01:29,142 - root - INFO - Model path: detection_models
+2025-08-07 22:01:29,143 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 22:01:29,181 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 22:01:29,181 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 22:01:29,181 - root - DEBUG - Ensured directory exists: static/detected
+2025-08-07 22:01:29,181 - root - DEBUG - Ensured directory exists: static/convertor
+2025-08-07 22:01:31,734 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 22:01:31,745 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 22:01:31,746 - matplotlib - DEBUG - interactive is False
+2025-08-07 22:01:31,746 - matplotlib - DEBUG - platform is linux
+2025-08-07 22:01:31,797 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 22:01:31,799 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 22:01:32,186 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 22:01:32,187 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 22:01:32,187 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 22:01:32,206 - root - DEBUG - Registered blueprint: main
+2025-08-07 22:01:32,208 - root - DEBUG - Registered blueprint: detection with prefix /detection
+2025-08-07 22:01:32,211 - root - DEBUG - Registered blueprint: mapping with prefix /mapping
+2025-08-07 22:01:32,212 - root - DEBUG - Registered blueprint: auth with prefix /auth
+2025-08-07 22:01:32,215 - root - DEBUG - Registered blueprint: api
+2025-08-07 22:01:33,435 - root - INFO - Database tables created successfully
+2025-08-07 22:01:36,504 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 22:01:36,505 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 22:01:36,505 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 22:01:36,505 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 22:01:36,505 - root - INFO - Initialized Farm Vision with type
+2025-08-07 22:01:36,505 - root - INFO - Environment: development
+2025-08-07 22:01:36,505 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 22:01:36,505 - root - INFO - Upload folder: static/uploads
+2025-08-07 22:01:36,505 - root - INFO - Model path: detection_models
+2025-08-07 22:01:36,505 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 22:01:36,541 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 22:01:36,541 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 22:01:36,541 - root - DEBUG - Ensured directory exists: static/detected
+2025-08-07 22:01:36,542 - root - DEBUG - Ensured directory exists: static/convertor
+2025-08-07 22:01:39,038 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 22:01:39,052 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 22:01:39,054 - matplotlib - DEBUG - interactive is False
+2025-08-07 22:01:39,054 - matplotlib - DEBUG - platform is linux
+2025-08-07 22:01:39,109 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 22:01:39,110 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 22:01:39,478 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 22:01:39,479 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 22:01:39,479 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 22:01:39,497 - root - DEBUG - Registered blueprint: main
+2025-08-07 22:01:39,500 - root - DEBUG - Registered blueprint: detection with prefix /detection
+2025-08-07 22:01:39,503 - root - DEBUG - Registered blueprint: mapping with prefix /mapping
+2025-08-07 22:01:39,504 - root - DEBUG - Registered blueprint: auth with prefix /auth
+2025-08-07 22:01:39,507 - root - DEBUG - Registered blueprint: api
+2025-08-07 22:01:40,711 - root - INFO - Database tables created successfully
+2025-08-07 22:01:46,671 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 22:01:46,671 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 22:01:46,671 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 22:01:46,671 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 22:01:46,672 - root - INFO - Initialized Farm Vision with type
+2025-08-07 22:01:46,672 - root - INFO - Environment: development
+2025-08-07 22:01:46,672 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 22:01:46,672 - root - INFO - Upload folder: static/uploads
+2025-08-07 22:01:46,672 - root - INFO - Model path: detection_models
+2025-08-07 22:01:46,672 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 22:01:46,709 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 22:01:46,709 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 22:01:46,709 - root - DEBUG - Ensured directory exists: static/detected
+2025-08-07 22:01:46,709 - root - DEBUG - Ensured directory exists: static/convertor
+2025-08-07 22:01:49,497 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 22:01:49,508 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 22:01:49,509 - matplotlib - DEBUG - interactive is False
+2025-08-07 22:01:49,509 - matplotlib - DEBUG - platform is linux
+2025-08-07 22:01:49,569 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 22:01:49,570 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 22:01:50,045 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 22:01:50,046 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 22:01:50,046 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 22:01:50,063 - root - DEBUG - Registered blueprint: main
+2025-08-07 22:01:50,065 - root - DEBUG - Registered blueprint: detection with prefix /detection
+2025-08-07 22:01:50,069 - root - DEBUG - Registered blueprint: mapping with prefix /mapping
+2025-08-07 22:01:50,071 - root - DEBUG - Registered blueprint: auth with prefix /auth
+2025-08-07 22:01:50,075 - root - DEBUG - Registered blueprint: api
+2025-08-07 22:01:51,288 - root - INFO - Database tables created successfully
+2025-08-07 22:05:58,944 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 22:05:58,944 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 22:05:58,944 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 22:05:58,945 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 22:05:58,945 - root - INFO - Initialized Farm Vision with type
+2025-08-07 22:05:58,945 - root - INFO - Environment: development
+2025-08-07 22:05:58,945 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 22:05:58,945 - root - INFO - Upload folder: static/uploads
+2025-08-07 22:05:58,945 - root - INFO - Model path: detection_models
+2025-08-07 22:05:58,945 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 22:05:58,979 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 22:05:58,979 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 22:05:58,979 - root - DEBUG - Ensured directory exists: static/detected
+2025-08-07 22:05:58,979 - root - DEBUG - Ensured directory exists: static/convertor
+2025-08-07 22:06:01,500 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 22:06:01,511 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 22:06:01,512 - matplotlib - DEBUG - interactive is False
+2025-08-07 22:06:01,512 - matplotlib - DEBUG - platform is linux
+2025-08-07 22:06:01,567 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 22:06:01,568 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 22:06:01,951 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 22:06:01,952 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 22:06:01,952 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 22:06:01,969 - root - DEBUG - Registered blueprint: main
+2025-08-07 22:06:01,971 - root - DEBUG - Registered blueprint: detection with prefix /detection
+2025-08-07 22:06:01,974 - root - DEBUG - Registered blueprint: mapping with prefix /mapping
+2025-08-07 22:06:01,976 - root - DEBUG - Registered blueprint: auth with prefix /auth
+2025-08-07 22:06:01,979 - root - DEBUG - Registered blueprint: api
+2025-08-07 22:06:03,564 - root - INFO - Database tables created successfully
+2025-08-07 22:06:51,275 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 22:06:51,275 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 22:06:51,276 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 22:06:51,276 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 22:06:51,276 - root - INFO - Initialized Farm Vision with type
+2025-08-07 22:06:51,276 - root - INFO - Environment: development
+2025-08-07 22:06:51,276 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 22:06:51,276 - root - INFO - Upload folder: static/uploads
+2025-08-07 22:06:51,277 - root - INFO - Model path: detection_models
+2025-08-07 22:06:51,277 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 22:06:51,321 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 22:06:51,321 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 22:06:51,322 - root - DEBUG - Ensured directory exists: static/detected
+2025-08-07 22:06:51,322 - root - DEBUG - Ensured directory exists: static/convertor
+2025-08-07 22:06:54,333 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 22:06:54,344 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 22:06:54,345 - matplotlib - DEBUG - interactive is False
+2025-08-07 22:06:54,345 - matplotlib - DEBUG - platform is linux
+2025-08-07 22:06:54,403 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 22:06:54,404 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 22:06:54,794 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 22:06:54,795 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 22:06:54,795 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 22:06:54,812 - root - DEBUG - Registered blueprint: main
+2025-08-07 22:06:54,814 - root - DEBUG - Registered blueprint: detection with prefix /detection
+2025-08-07 22:06:54,817 - root - DEBUG - Registered blueprint: mapping with prefix /mapping
+2025-08-07 22:06:54,819 - root - DEBUG - Registered blueprint: auth with prefix /auth
+2025-08-07 22:06:54,822 - root - DEBUG - Registered blueprint: api
+2025-08-07 22:06:56,464 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 22:06:56,464 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 22:06:56,464 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 22:06:56,464 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 22:06:56,464 - root - INFO - Initialized Farm Vision with DevelopmentConfig
+2025-08-07 22:06:56,464 - root - INFO - Environment: development
+2025-08-07 22:06:56,464 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 22:06:56,465 - root - INFO - Upload folder: static/uploads
+2025-08-07 22:06:56,465 - root - INFO - Model path: detection_models
+2025-08-07 22:06:56,465 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 22:06:56,508 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 22:06:56,509 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 22:06:56,509 - root - DEBUG - Ensured directory exists: static/detected
+2025-08-07 22:06:56,510 - root - DEBUG - Ensured directory exists: static/convertor
+2025-08-07 22:06:59,347 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 22:06:59,356 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 22:06:59,357 - matplotlib - DEBUG - interactive is False
+2025-08-07 22:06:59,357 - matplotlib - DEBUG - platform is linux
+2025-08-07 22:06:59,410 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 22:06:59,411 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 22:06:59,798 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 22:06:59,799 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 22:06:59,799 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 22:06:59,819 - root - DEBUG - Registered blueprint: main
+2025-08-07 22:06:59,822 - root - DEBUG - Registered blueprint: detection with prefix /detection
+2025-08-07 22:06:59,826 - root - DEBUG - Registered blueprint: mapping with prefix /mapping
+2025-08-07 22:06:59,827 - root - DEBUG - Registered blueprint: auth with prefix /auth
+2025-08-07 22:06:59,831 - root - DEBUG - Registered blueprint: api
+2025-08-07 22:07:01,071 - root - INFO - Database tables created successfully
+2025-08-07 22:50:46,032 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 22:50:46,035 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 22:50:46,035 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 22:50:46,035 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 22:50:46,035 - root - INFO - Initialized Farm Vision with DevelopmentConfig
+2025-08-07 22:50:46,035 - root - INFO - Environment: development
+2025-08-07 22:50:46,035 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 22:50:46,035 - root - INFO - Upload folder: static/uploads
+2025-08-07 22:50:46,035 - root - INFO - Model path: detection_models
+2025-08-07 22:50:46,035 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 22:50:46,116 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 22:50:46,116 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 22:50:46,117 - root - DEBUG - Ensured directory exists: static/detected
+2025-08-07 22:50:46,117 - root - DEBUG - Ensured directory exists: static/convertor
+2025-08-07 22:50:50,014 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 22:50:50,023 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 22:50:50,024 - matplotlib - DEBUG - interactive is False
+2025-08-07 22:50:50,024 - matplotlib - DEBUG - platform is linux
+2025-08-07 22:50:50,072 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 22:50:50,074 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 22:50:50,451 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 22:50:50,452 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 22:50:50,452 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 22:50:50,477 - root - DEBUG - Registered blueprint: main
+2025-08-07 22:50:50,480 - root - DEBUG - Registered blueprint: detection with prefix /detection
+2025-08-07 22:50:50,483 - root - DEBUG - Registered blueprint: mapping with prefix /mapping
+2025-08-07 22:50:50,484 - root - DEBUG - Registered blueprint: auth with prefix /auth
+2025-08-07 22:50:50,487 - root - DEBUG - Registered blueprint: api
+2025-08-07 22:50:51,745 - root - INFO - Database tables created successfully
+2025-08-07 23:02:44,354 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 23:02:44,354 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 23:02:44,354 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 23:02:44,355 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 23:02:44,355 - root - INFO - Initialized Farm Vision with DevelopmentConfig
+2025-08-07 23:02:44,355 - root - INFO - Environment: development
+2025-08-07 23:02:44,355 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 23:02:44,355 - root - INFO - Upload folder: static/uploads
+2025-08-07 23:02:44,355 - root - INFO - Model path: detection_models
+2025-08-07 23:02:44,355 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 23:02:44,389 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 23:02:44,389 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 23:02:44,389 - root - DEBUG - Ensured directory exists: static/detected
+2025-08-07 23:02:44,389 - root - DEBUG - Ensured directory exists: static/convertor
+2025-08-07 23:02:48,074 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 23:02:48,084 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 23:02:48,085 - matplotlib - DEBUG - interactive is False
+2025-08-07 23:02:48,085 - matplotlib - DEBUG - platform is linux
+2025-08-07 23:02:48,135 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 23:02:48,136 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 23:02:48,488 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 23:02:48,489 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 23:02:48,490 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 23:02:48,504 - root - DEBUG - Registered blueprint: main
+2025-08-07 23:02:48,506 - root - DEBUG - Registered blueprint: detection with prefix /detection
+2025-08-07 23:02:48,509 - root - DEBUG - Registered blueprint: mapping with prefix /mapping
+2025-08-07 23:02:48,511 - root - DEBUG - Registered blueprint: auth with prefix /auth
+2025-08-07 23:02:48,514 - root - DEBUG - Registered blueprint: api
+2025-08-07 23:02:49,775 - root - INFO - Database tables created successfully
+2025-08-07 23:20:11,905 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 23:20:11,906 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 23:20:11,906 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 23:20:11,906 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 23:20:11,906 - root - INFO - Initialized Farm Vision with DevelopmentConfig
+2025-08-07 23:20:11,906 - root - INFO - Environment: development
+2025-08-07 23:20:11,906 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 23:20:11,906 - root - INFO - Upload folder: static/uploads
+2025-08-07 23:20:11,906 - root - INFO - Model path: detection_models
+2025-08-07 23:20:11,906 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 23:20:12,005 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 23:20:12,006 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 23:20:12,007 - root - DEBUG - Ensured directory exists: static/detected
+2025-08-07 23:20:12,007 - root - DEBUG - Ensured directory exists: static/convertor
+2025-08-07 23:20:16,713 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 23:20:16,733 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 23:20:16,734 - matplotlib - DEBUG - interactive is False
+2025-08-07 23:20:16,735 - matplotlib - DEBUG - platform is linux
+2025-08-07 23:20:16,829 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 23:20:16,832 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 23:20:17,281 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 23:20:17,282 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 23:20:17,282 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 23:20:17,311 - root - DEBUG - Registered blueprint: main
+2025-08-07 23:20:17,314 - root - DEBUG - Registered blueprint: detection with prefix /detection
+2025-08-07 23:20:17,317 - root - DEBUG - Registered blueprint: mapping with prefix /mapping
+2025-08-07 23:20:17,318 - root - DEBUG - Registered blueprint: auth with prefix /auth
+2025-08-07 23:20:17,321 - root - DEBUG - Registered blueprint: api
+2025-08-07 23:20:18,895 - root - INFO - Database tables created successfully
+2025-08-07 23:36:54,207 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 23:36:54,213 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 23:36:54,213 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 23:36:54,213 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 23:36:54,213 - root - INFO - Initialized Farm Vision with DevelopmentConfig
+2025-08-07 23:36:54,214 - root - INFO - Environment: development
+2025-08-07 23:36:54,214 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 23:36:54,214 - root - INFO - Upload folder: static/uploads
+2025-08-07 23:36:54,214 - root - INFO - Model path: detection_models
+2025-08-07 23:36:54,214 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 23:36:54,256 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 23:36:54,256 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 23:36:54,256 - root - DEBUG - Ensured directory exists: static/detected
+2025-08-07 23:36:54,256 - root - DEBUG - Ensured directory exists: static/convertor
+2025-08-07 23:36:57,108 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 23:36:57,121 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 23:36:57,127 - matplotlib - DEBUG - interactive is False
+2025-08-07 23:36:57,127 - matplotlib - DEBUG - platform is linux
+2025-08-07 23:36:57,195 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 23:36:57,196 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 23:36:57,605 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 23:36:57,606 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 23:36:57,606 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 23:36:57,625 - root - DEBUG - Registered blueprint: main
+2025-08-07 23:36:57,627 - root - DEBUG - Registered blueprint: detection with prefix /detection
+2025-08-07 23:36:57,629 - root - DEBUG - Registered blueprint: mapping with prefix /mapping
+2025-08-07 23:36:57,631 - root - DEBUG - Registered blueprint: auth with prefix /auth
+2025-08-07 23:36:57,635 - root - DEBUG - Registered blueprint: api
+2025-08-07 23:36:59,173 - root - INFO - Database tables created successfully
+2025-08-07 23:49:27,835 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 23:49:27,835 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 23:49:27,836 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-07 23:49:27,836 - root - DEBUG - Ensured directory exists: logs
+2025-08-07 23:49:27,836 - root - INFO - Initialized Farm Vision with DevelopmentConfig
+2025-08-07 23:49:27,836 - root - INFO - Environment: development
+2025-08-07 23:49:27,836 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-07 23:49:27,836 - root - INFO - Upload folder: static/uploads
+2025-08-07 23:49:27,836 - root - INFO - Model path: detection_models
+2025-08-07 23:49:27,836 - root - INFO - SECRET_KEY configured: Yes
+2025-08-07 23:49:27,993 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-07 23:49:27,994 - root - DEBUG - Ensured directory exists: static/results
+2025-08-07 23:49:27,994 - root - DEBUG - Ensured directory exists: static/detected
+2025-08-07 23:49:27,994 - root - DEBUG - Ensured directory exists: static/convertor
+2025-08-07 23:49:35,134 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-07 23:49:35,153 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-07 23:49:35,154 - matplotlib - DEBUG - interactive is False
+2025-08-07 23:49:35,154 - matplotlib - DEBUG - platform is linux
+2025-08-07 23:49:35,238 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-07 23:49:35,240 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-07 23:49:36,045 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-07 23:49:36,046 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-07 23:49:36,047 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-07 23:49:36,133 - root - DEBUG - Registered blueprint: main
+2025-08-07 23:49:36,135 - root - DEBUG - Registered blueprint: detection with prefix /detection
+2025-08-07 23:49:36,137 - root - DEBUG - Registered blueprint: mapping with prefix /mapping
+2025-08-07 23:49:36,139 - root - DEBUG - Registered blueprint: auth with prefix /auth
+2025-08-07 23:49:36,141 - root - DEBUG - Registered blueprint: api
+2025-08-07 23:49:37,730 - root - INFO - Database tables created successfully
+2025-08-08 00:01:23,110 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-08 00:01:23,110 - root - DEBUG - Ensured directory exists: static/results
+2025-08-08 00:01:23,110 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-08 00:01:23,110 - root - DEBUG - Ensured directory exists: logs
+2025-08-08 00:01:23,111 - root - INFO - Initialized Farm Vision with DevelopmentConfig
+2025-08-08 00:01:23,111 - root - INFO - Environment: development
+2025-08-08 00:01:23,111 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-08 00:01:23,111 - root - INFO - Upload folder: static/uploads
+2025-08-08 00:01:23,111 - root - INFO - Model path: detection_models
+2025-08-08 00:01:23,111 - root - INFO - SECRET_KEY configured: Yes
+2025-08-08 00:01:23,147 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-08 00:01:23,147 - root - DEBUG - Ensured directory exists: static/results
+2025-08-08 00:01:23,148 - root - DEBUG - Ensured directory exists: static/detected
+2025-08-08 00:01:23,148 - root - DEBUG - Ensured directory exists: static/convertor
+2025-08-08 00:01:25,666 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-08 00:01:25,676 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-08 00:01:25,677 - matplotlib - DEBUG - interactive is False
+2025-08-08 00:01:25,677 - matplotlib - DEBUG - platform is linux
+2025-08-08 00:01:25,727 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-08 00:01:25,728 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-08 00:01:26,077 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-08 00:01:26,078 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-08 00:01:26,078 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-08 00:01:26,094 - root - DEBUG - Registered blueprint: main
+2025-08-08 00:01:26,097 - root - DEBUG - Registered blueprint: detection with prefix /detection
+2025-08-08 00:01:26,099 - root - DEBUG - Registered blueprint: mapping with prefix /mapping
+2025-08-08 00:01:26,100 - root - DEBUG - Registered blueprint: auth with prefix /auth
+2025-08-08 00:01:26,103 - root - DEBUG - Registered blueprint: api
+2025-08-08 00:01:27,633 - root - INFO - Database tables created successfully
+2025-08-08 00:03:09,600 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-08 00:03:09,601 - root - DEBUG - Ensured directory exists: static/results
+2025-08-08 00:03:09,601 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-08 00:03:09,601 - root - DEBUG - Ensured directory exists: logs
+2025-08-08 00:03:09,601 - root - INFO - Initialized Farm Vision with DevelopmentConfig
+2025-08-08 00:03:09,601 - root - INFO - Environment: development
+2025-08-08 00:03:09,601 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-08 00:03:09,601 - root - INFO - Upload folder: static/uploads
+2025-08-08 00:03:09,601 - root - INFO - Model path: detection_models
+2025-08-08 00:03:09,602 - root - INFO - SECRET_KEY configured: Yes
+2025-08-08 00:03:09,636 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-08 00:03:09,636 - root - DEBUG - Ensured directory exists: static/results
+2025-08-08 00:03:09,636 - root - DEBUG - Ensured directory exists: static/detected
+2025-08-08 00:03:09,636 - root - DEBUG - Ensured directory exists: static/convertor
+2025-08-08 00:03:12,294 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-08 00:03:12,309 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-08 00:03:12,311 - matplotlib - DEBUG - interactive is False
+2025-08-08 00:03:12,311 - matplotlib - DEBUG - platform is linux
+2025-08-08 00:03:12,388 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-08 00:03:12,390 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-08 00:03:12,822 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-08 00:03:12,823 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-08 00:03:12,824 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-08 00:03:12,841 - root - DEBUG - Registered blueprint: main
+2025-08-08 00:03:12,843 - root - DEBUG - Registered blueprint: detection with prefix /detection
+2025-08-08 00:03:12,846 - root - DEBUG - Registered blueprint: mapping with prefix /mapping
+2025-08-08 00:03:12,848 - root - DEBUG - Registered blueprint: auth with prefix /auth
+2025-08-08 00:03:12,852 - root - DEBUG - Registered blueprint: api
+2025-08-08 00:03:16,390 - root - INFO - Database tables created successfully
+2025-08-08 00:03:19,563 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-08 00:03:19,564 - root - DEBUG - Ensured directory exists: static/results
+2025-08-08 00:03:19,564 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-08 00:03:19,564 - root - DEBUG - Ensured directory exists: logs
+2025-08-08 00:03:19,564 - root - INFO - Initialized Farm Vision with DevelopmentConfig
+2025-08-08 00:03:19,564 - root - INFO - Environment: development
+2025-08-08 00:03:19,564 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-08 00:03:19,565 - root - INFO - Upload folder: static/uploads
+2025-08-08 00:03:19,565 - root - INFO - Model path: detection_models
+2025-08-08 00:03:19,565 - root - INFO - SECRET_KEY configured: Yes
+2025-08-08 00:03:19,604 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-08 00:03:19,604 - root - DEBUG - Ensured directory exists: static/results
+2025-08-08 00:03:19,604 - root - DEBUG - Ensured directory exists: static/detected
+2025-08-08 00:03:19,604 - root - DEBUG - Ensured directory exists: static/convertor
+2025-08-08 00:03:22,454 - matplotlib - DEBUG - matplotlib data path: /home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/matplotlib/mpl-data
+2025-08-08 00:03:22,469 - matplotlib - DEBUG - CONFIGDIR=/home/runner/workspace/.config/matplotlib
+2025-08-08 00:03:22,470 - matplotlib - DEBUG - interactive is False
+2025-08-08 00:03:22,470 - matplotlib - DEBUG - platform is linux
+2025-08-08 00:03:22,530 - matplotlib - DEBUG - CACHEDIR=/home/runner/workspace/.cache/matplotlib
+2025-08-08 00:03:22,531 - matplotlib.font_manager - DEBUG - Using fontManager instance from /home/runner/workspace/.cache/matplotlib/fontlist-v390.json
+2025-08-08 00:03:22,894 - rasterio.session - DEBUG - Could not import boto3, continuing with reduced functionality.
+2025-08-08 00:03:22,894 - rasterio.env - DEBUG - GDAL data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/gdal_data'.
+2025-08-08 00:03:22,895 - rasterio.env - DEBUG - PROJ data found in package: path='/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/rasterio/proj_data'.
+2025-08-08 00:03:22,910 - root - DEBUG - Registered blueprint: main
+2025-08-08 00:03:22,913 - root - DEBUG - Registered blueprint: detection with prefix /detection
+2025-08-08 00:03:22,916 - root - DEBUG - Registered blueprint: mapping with prefix /mapping
+2025-08-08 00:03:22,918 - root - DEBUG - Registered blueprint: auth with prefix /auth
+2025-08-08 00:03:22,922 - root - DEBUG - Registered blueprint: api
+2025-08-08 00:03:24,136 - root - INFO - Database tables created successfully
+2025-08-08 00:09:05,292 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-08 00:09:05,292 - root - DEBUG - Ensured directory exists: static/results
+2025-08-08 00:09:05,297 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-08 00:09:05,297 - root - DEBUG - Ensured directory exists: logs
+2025-08-08 00:09:05,297 - root - INFO - Initialized Farm Vision with DevelopmentConfig
+2025-08-08 00:09:05,297 - root - INFO - Environment: development
+2025-08-08 00:09:05,297 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-08 00:09:05,297 - root - INFO - Upload folder: static/uploads
+2025-08-08 00:09:05,297 - root - INFO - Model path: detection_models
+2025-08-08 00:09:05,297 - root - INFO - SECRET_KEY configured: Yes
+2025-08-08 00:09:09,796 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-08 00:09:09,797 - root - DEBUG - Ensured directory exists: static/results
+2025-08-08 00:09:09,797 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-08 00:09:09,797 - root - DEBUG - Ensured directory exists: logs
+2025-08-08 00:09:09,798 - root - INFO - Initialized Farm Vision with DevelopmentConfig
+2025-08-08 00:09:09,798 - root - INFO - Environment: development
+2025-08-08 00:09:09,798 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-08 00:09:09,798 - root - INFO - Upload folder: static/uploads
+2025-08-08 00:09:09,798 - root - INFO - Model path: detection_models
+2025-08-08 00:09:09,799 - root - INFO - SECRET_KEY configured: Yes
+2025-08-08 00:09:31,377 - root - DEBUG - Ensured directory exists: static/uploads
+2025-08-08 00:09:31,378 - root - DEBUG - Ensured directory exists: static/results
+2025-08-08 00:09:31,378 - root - DEBUG - Ensured directory exists: detection_models
+2025-08-08 00:09:31,379 - root - DEBUG - Ensured directory exists: logs
+2025-08-08 00:09:31,379 - root - INFO - Initialized Farm Vision with DevelopmentConfig
+2025-08-08 00:09:31,379 - root - INFO - Environment: development
+2025-08-08 00:09:31,379 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-08 00:09:31,379 - root - INFO - Upload folder: static/uploads
+2025-08-08 00:09:31,379 - root - INFO - Model path: detection_models
+2025-08-08 00:09:31,379 - root - INFO - SECRET_KEY configured: Yes
+2025-08-08 00:09:48,797 - root - INFO - Initialized Farm Vision with DevelopmentConfig
+2025-08-08 00:09:48,797 - root - INFO - Environment: development
+2025-08-08 00:09:48,797 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-08 00:09:48,797 - root - INFO - Upload folder: static/uploads
+2025-08-08 00:09:48,798 - root - INFO - Model path: detection_models
+2025-08-08 00:09:48,798 - root - INFO - SECRET_KEY configured: Yes
+2025-08-08 00:14:49,114 - root - INFO - Initialized Farm Vision with DevelopmentConfig
+2025-08-08 00:14:49,114 - root - INFO - Environment: development
+2025-08-08 00:14:49,114 - root - INFO - Database: postgresql://neondb_owner:npg_LI6fgFEdHyD1@ep-summer-sun-aeqdqfly.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+2025-08-08 00:14:49,114 - root - INFO - Upload folder: static/uploads
+2025-08-08 00:14:49,114 - root - INFO - Model path: detection_models
+2025-08-08 00:14:49,114 - root - INFO - SECRET_KEY configured: Yes
