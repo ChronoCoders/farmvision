@@ -2,7 +2,7 @@
 
 # Site settings
 title: FarmVision
-description: AI-powered agricultural analysis platform with YOLOv8 object detection, drone image processing, and real-time monitoring for precision farming.
+description: AI-powered agricultural analysis platform with YOLOv7 object detection, drone image processing, and real-time monitoring for precision farming.
 url: "https://chronocoders.github.io"
 baseurl: "/farmvision"
 
