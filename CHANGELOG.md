@@ -166,6 +166,6 @@ Example entry format:
 
 ## Links
 
-- [Repository](https://github.com/yourusername/farmvision)
-- [Issue Tracker](https://github.com/yourusername/farmvision/issues)
-- [Documentation](https://github.com/yourusername/farmvision/wiki)
+- [Repository](https://github.com/ChronoCoders/farmvision)
+- [Issue Tracker](https://github.com/ChronoCoders/farmvision/issues)
+- [Documentation](https://github.com/ChronoCoders/farmvision/wiki)

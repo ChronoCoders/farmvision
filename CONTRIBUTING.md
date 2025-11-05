@@ -78,7 +78,7 @@ Add any other context or screenshots about the feature request here.
 
 1. **Fork the Repository**
    ```bash
-   git clone https://github.com/yourusername/farmvision.git
+   git clone https://github.com/ChronoCoders/farmvision.git
    cd farmvision
    ```
 
@@ -320,7 +320,7 @@ def process_drone_image(image_path: str, model_name: str = "yolov8n") -> Dict[st
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/farmvision.git
+git clone https://github.com/ChronoCoders/farmvision.git
 cd farmvision
 
 # Create virtual environment
@@ -399,7 +399,7 @@ farmvision/
 
 ## Getting Help
 
-- **Documentation**: Check the [README.md](README.md) and [Wiki](https://github.com/yourusername/farmvision/wiki)
+- **Documentation**: Check the [README.md](README.md) and [Wiki](https://github.com/ChronoCoders/farmvision/wiki)
 - **Issues**: Search existing issues or create a new one
 - **Discussions**: Use GitHub Discussions for questions
 - **Email**: Contact the maintainers at support@farmvision.com

@@ -40,7 +40,7 @@ FarmVision, drone görüntü işleme ve YOLOv8 tabanlı nesne tespiti teknolojil
 ### 1. Depoyu Klonlayın
 
 ```bash
-git clone https://github.com/kullaniciadi/farmvision.git
+git clone https://github.com/ChronoCoders/farmvision.git
 cd farmvision
 ```
 

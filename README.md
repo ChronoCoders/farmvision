@@ -38,7 +38,7 @@ FarmVision is an advanced agricultural intelligence platform that combines drone
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/farmvision.git
+git clone https://github.com/ChronoCoders/farmvision.git
 cd farmvision
 ```
 
