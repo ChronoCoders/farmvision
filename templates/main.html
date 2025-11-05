@@ -1,0 +1,40 @@
+{% extends 'header.html' %}
+{% block body %}
+      {% load static %}
+      {% include 'menu.html' %}
+      {% include 'navbar.html' with picture=userss.picture %}
+
+
+
+<div id="wrapper">
+      <div class="main-content">
+            {% if error %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                  <strong>Hata!</strong> {{ error }}
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Kapat">
+                        <span aria-hidden="true">&times;</span>
+                  </button>
+            </div>
+            {% endif %}
+            <div class="row small-spacing">
+{% include 'form.html' %}
+
+
+{% include 'chart.html' %}
+
+{% if response != None %}
+
+{% include 'upload.html' with  image=response.image image_detection=response.image_detection%}
+{% include 'footer.html' with  kilo=response.kilo count=response.count toplam_ceki=response.toplam_ceki time=response.time  %}
+{% else %}
+
+
+
+{% include 'footer.html' %}
+</div>
+
+      </div>
+      <!-- /.main-content -->
+</div><!--/#wrapper -->
+{% endif %}
+{% endblock %}

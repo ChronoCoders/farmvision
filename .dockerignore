@@ -1,0 +1,125 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+docker-compose.yml
+docker-compose.override.yml
+.dockerignore
+
+# Database
+*.sqlite3
+*.db
+db.sqlite3
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Documentation
+README.md
+CHANGELOG.md
+CONTRIBUTING.md
+LICENSE
+docs/
+*.md
+
+# Tests
+tests/
+test_*.py
+*_test.py
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+Jenkinsfile
+
+# Logs
+logs/
+*.log
+
+# Media and Static (built during container runtime)
+media/
+staticfiles/
+static/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+
+# Machine Learning Models (too large)
+models/
+weights/
+checkpoints/
+*.pt
+*.pth
+*.onnx
+*.engine
+
+# Data files
+data/
+datasets/
+*.csv
+*.xlsx
+
+# Images (uploaded at runtime)
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.tiff
+*.tif
+
+# Results
+results/
+outputs/
+
+# WebODM (if submodule or large)
+WebODM/
+
+# Pre-commit
+.pre-commit-config.yaml
+
+# Node modules
+node_modules/
+
+# Coverage
+.coverage
+htmlcov/

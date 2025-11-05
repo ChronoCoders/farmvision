@@ -1,0 +1,382 @@
+# -*- coding: utf-8 -*-
+from pathlib import Path
+import os
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+import sys
+import io
+
+# Configure stdout/stderr for UTF-8 encoding on Windows to handle Turkish characters
+if sys.platform == "win32":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+
+ENVIRONMENT = os.environ.get("DJANGO_ENVIRONMENT", "development")
+IS_DEVELOPMENT = ENVIRONMENT == "development"
+
+DEBUG = IS_DEVELOPMENT and os.environ.get("DJANGO_DEBUG", "True") == "True"
+
+if not IS_DEVELOPMENT and DEBUG:
+    raise ValueError("DEBUG cannot be True in non-development environments")
+
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
+
+if not SECRET_KEY:
+    if IS_DEVELOPMENT:
+        SECRET_KEY = (
+            "django-insecure-skit=zl3tcyh6*-zoxegu%@4*5k)-k5jnt(1fzfqyt4@jl%a%9"
+        )
+    else:
+        raise ValueError(
+            "DJANGO_SECRET_KEY environment variable must be set in production"
+        )
+
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"
+
+INSTALLED_APPS = [
+    "yolowebapp2",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "corsheaders",
+    "rest_framework",
+    "drf_spectacular",
+    "django_filters",
+    "detection.apps.DetectionConfig",
+    "dron_map.apps.DronMapConfig",
+    "fontawesomefree",
+]
+
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "csp.middleware.CSPMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
+
+PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+    "django.contrib.auth.hashers.Argon2PasswordHasher",
+    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
+    "django.contrib.auth.hashers.ScryptPasswordHasher",
+]
+
+ROOT_URLCONF = "yolowebapp2.urls"
+
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+        },
+    },
+]
+
+WSGI_APPLICATION = "yolowebapp2.wsgi.application"
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
+]
+
+LANGUAGE_CODE = "tr-tr"
+TIME_ZONE = "UTC"
+USE_I18N = True
+USE_TZ = True
+
+LOGIN_URL = "/admin/login/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = 524288000
+DATA_UPLOAD_MAX_MEMORY_SIZE = 524288000
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000
+MAX_UPLOAD_SIZE = 524288000
+
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+CSRF_COOKIE_SECURE = not DEBUG and not IS_DEVELOPMENT
+SESSION_COOKIE_SECURE = not DEBUG and not IS_DEVELOPMENT
+SECURE_SSL_REDIRECT = not DEBUG and not IS_DEVELOPMENT
+
+if not DEBUG and not IS_DEVELOPMENT:
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'")
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")
+CSP_IMG_SRC = ("'self'", "data:", "https:")
+CSP_FONT_SRC = ("'self'", "data:")
+CSP_CONNECT_SRC = ("'self'",)
+
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+if not DEBUG and not IS_DEVELOPMENT:
+    STATICFILES_STORAGE = "yolowebapp2.storage.IgnoreDuplicatesStaticFilesStorage"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+    ],
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "10/hour",
+        "user": "100/hour",
+    },
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 50,
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "FarmVision API",
+    "DESCRIPTION": "AI-powered agricultural detection and mapping system",
+    "VERSION": "2.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
+    "SERVE_PERMISSIONS": ["rest_framework.permissions.AllowAny"],
+}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "[{levelname}] {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "[{levelname}] {asctime} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "django.log"),
+            "formatter": "verbose",
+            "encoding": "utf-8",  # Write log file in UTF-8
+        },
+        "console": {
+            "level": "WARNING",  # Only show warnings and errors in console
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+            "stream": sys.stderr,  # Use UTF-8 wrapped stream
+        },
+    },
+    "root": {
+        "handlers": ["file", "console"],
+        "level": "INFO",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file", "console"],
+            "level": "WARNING",  # Reduced verbosity
+            "propagate": False,
+        },
+        "django.request": {
+            "handlers": ["file", "console"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        "django.server": {
+            "handlers": ["file", "console"],
+            "level": "WARNING",  # Only show warnings/errors from dev server
+            "propagate": False,
+        },
+        "detection": {
+            "handlers": ["file", "console"],
+            "level": "WARNING",  # Reduced verbosity
+            "propagate": False,
+        },
+        "dron_map": {
+            "handlers": ["file", "console"],
+            "level": "WARNING",  # Reduced verbosity
+            "propagate": False,
+        },
+    },
+}
+
+# CORS Configuration
+if IS_DEVELOPMENT:
+    # Development: Allow all origins for easier testing
+    CORS_ALLOW_ALL_ORIGINS = True
+    CORS_ALLOW_CREDENTIALS = True
+else:
+    # Production: Use whitelist from environment variable
+    cors_origins = os.environ.get("CORS_ALLOWED_ORIGINS", "")
+    if cors_origins:
+        CORS_ALLOWED_ORIGINS = cors_origins.split(",")
+    else:
+        # Default to empty list in production for security
+        CORS_ALLOWED_ORIGINS = []
+
+    CORS_ALLOW_CREDENTIALS = True
+
+# CORS settings that apply to both environments
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
+# ==============================================================================
+# CELERY CONFIGURATION
+# ==============================================================================
+
+# Celery broker URL (Redis)
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
+
+# Celery result backend (Redis)
+CELERY_RESULT_BACKEND = os.environ.get(
+    "CELERY_RESULT_BACKEND", "redis://localhost:6379/0"
+)
+
+# Celery task serializer
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_ACCEPT_CONTENT = ["json"]
+
+# Celery timezone
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_ENABLE_UTC = True
+
+# Celery task results
+CELERY_RESULT_EXPIRES = 3600  # Results expire after 1 hour
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60  # Hard time limit: 30 minutes
+CELERY_TASK_SOFT_TIME_LIMIT = 25 * 60  # Soft time limit: 25 minutes
+
+# Celery worker configuration
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1  # Process one task at a time (for ML tasks)
+CELERY_WORKER_MAX_TASKS_PER_CHILD = (
+    10  # Restart worker after 10 tasks (memory management)
+)
+
+# Task routes (optional - for future scaling)
+CELERY_TASK_ROUTES = {
+    "detection.tasks.*": {"queue": "detection"},
+    "dron_map.tasks.*": {"queue": "mapping"},
+}
+
+# Celery beat schedule (optional - for periodic tasks)
+CELERY_BEAT_SCHEDULE = {
+    "check-model-degradation-daily": {
+        "task": "detection.tasks.check_model_health",
+        "schedule": 86400.0,  # Every 24 hours
+    },
+}
+
+# Redis connection pool settings
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    "visibility_timeout": 3600,  # 1 hour
+    "max_connections": 50,
+}
+
+# Task result extended
+CELERY_RESULT_EXTENDED = True
+
+# ==============================================================================
+# REDIS CACHE CONFIGURATION
+# ==============================================================================
+
+# Redis cache backend for detection result caching
+# If Redis is not available, it will fall back gracefully due to IGNORE_EXCEPTIONS
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": os.environ.get("REDIS_CACHE_URL", "redis://localhost:6379/1"),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "SOCKET_CONNECT_TIMEOUT": 5,
+            "SOCKET_TIMEOUT": 5,
+            "CONNECTION_POOL_KWARGS": {
+                "max_connections": 50,
+                "retry_on_timeout": True,
+            },
+            "IGNORE_EXCEPTIONS": True,  # Don't break if Redis is unavailable
+        },
+        "KEY_PREFIX": "farmvision",
+        "TIMEOUT": 86400,  # Default cache timeout: 24 hours
+    }
+}
+
+# Alternative: Use dummy cache if Redis is not available
+# Uncomment the following to disable Redis completely:
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+#     }
+# }
+
+# Cache key format for predictions
+PREDICTION_CACHE_KEY_FORMAT = "prediction:{image_hash}:{fruit_type}"
+PREDICTION_CACHE_TIMEOUT = 86400  # 24 hours
