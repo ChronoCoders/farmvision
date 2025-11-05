@@ -1,0 +1,56 @@
+# GitHub Pages Configuration for FarmVision
+
+# Site settings
+title: FarmVision
+description: AI-powered agricultural analysis platform with YOLOv8 object detection, drone image processing, and real-time monitoring for precision farming.
+url: "https://chronocoders.github.io"
+baseurl: "/farmvision"
+
+# Repository
+repository: ChronoCoders/farmvision
+
+# Author
+author:
+  name: ChronoCoders
+  email: support@farmvision.com
+
+# Build settings
+markdown: kramdown
+theme: null
+
+# Exclude from processing
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+
+# Include
+include:
+  - _config.yml
+
+# Plugins
+plugins:
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# SEO settings
+lang: en_US
+logo: /assets/logo.png
+
+# Social
+social:
+  name: FarmVision
+  links:
+    - https://github.com/ChronoCoders/farmvision
+
+# Google Analytics (optional)
+# google_analytics: UA-XXXXXXXXX-X
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default

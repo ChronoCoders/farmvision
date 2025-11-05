@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-powered agricultural analysis platform with YOLOv8 object detection, drone image processing, and real-time monitoring for precision farming.">
+    <meta name="keywords" content="agriculture, AI, machine learning, YOLOv8, drone, precision farming, object detection">
+    <meta name="author" content="ChronoCoders">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://chronocoders.github.io/farmvision/">
+    <meta property="og:title" content="FarmVision - AI-Powered Agricultural Analysis">
+    <meta property="og:description" content="Transform your farm with AI-powered drone image analysis and real-time monitoring.">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://chronocoders.github.io/farmvision/">
+    <meta property="twitter:title" content="FarmVision - AI-Powered Agricultural Analysis">
+    <meta property="twitter:description" content="Transform your farm with AI-powered drone image analysis and real-time monitoring.">
+
+    <title>FarmVision - AI-Powered Agricultural Analysis Platform</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🌾</text></svg>">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <span class="logo-icon">🌾</span>
+                    <span class="logo-text">FarmVision</span>
+                </div>
+                <ul class="nav-menu" id="nav-menu">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#technology">Technology</a></li>
+                    <li><a href="#demo">Demo</a></li>
+                    <li><a href="#installation">Installation</a></li>
+                    <li><a href="#documentation">Docs</a></li>
+                    <li><a href="https://github.com/ChronoCoders/farmvision" target="_blank">GitHub</a></li>
+                </ul>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-background"></div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="badge-icon">✨</span>
+                    Open Source · MIT License · v1.0.0
+                </div>
+                <h1 class="hero-title">
+                    AI-Powered Agricultural Analysis
+                </h1>
+                <p class="hero-subtitle">
+                    Transform your farm with cutting-edge AI technology. Analyze drone imagery, detect objects with YOLOv8, and monitor your operations in real-time.
+                </p>
+                <div class="hero-buttons">
+                    <a href="https://github.com/ChronoCoders/farmvision" class="btn btn-primary">
+                        <i class="fab fa-github"></i> Get Started
+                    </a>
+                    <a href="#demo" class="btn btn-secondary">
+                        <i class="fas fa-play"></i> Watch Demo
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <div class="stat-value">1.0.0</div>
+                        <div class="stat-label">Latest Version</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">MIT</div>
+                        <div class="stat-label">License</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">Open Source</div>
+                        <div class="stat-label">100% Free</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Features</span>
+                <h2 class="section-title">Everything You Need for Precision Farming</h2>
+                <p class="section-subtitle">Powerful features designed to help you make data-driven decisions</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-helicopter"></i>
+                    </div>
+                    <h3>Drone Project Management</h3>
+                    <p>Organize and manage drone survey projects with ease. Upload, process, and analyze aerial imagery in one place.</p>
+                    <ul class="feature-list">
+                        <li>✓ CRUD operations</li>
+                        <li>✓ Multi-format support (JPEG, PNG, TIFF)</li>
+                        <li>✓ Automatic organization</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>AI Object Detection</h3>
+                    <p>Leverage YOLOv8 for state-of-the-art object detection. Identify crops, pests, diseases, and more with high accuracy.</p>
+                    <ul class="feature-list">
+                        <li>✓ YOLOv8 integration</li>
+                        <li>✓ Batch processing</li>
+                        <li>✓ Custom model support</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-map"></i>
+                    </div>
+                    <h3>Orthophoto Processing</h3>
+                    <p>Generate high-quality orthophotos from drone imagery using WebODM integration for precise field mapping.</p>
+                    <ul class="feature-list">
+                        <li>✓ WebODM integration</li>
+                        <li>✓ Georeferencing</li>
+                        <li>✓ GeoTIFF export</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Real-Time Monitoring</h3>
+                    <p>Monitor system performance with comprehensive dashboards. Track CPU, GPU, memory, and more.</p>
+                    <ul class="feature-list">
+                        <li>✓ Live metrics</li>
+                        <li>✓ Resource tracking</li>
+                        <li>✓ Model status</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>RESTful API</h3>
+                    <p>Comprehensive API for integration with your existing systems. Full documentation with Swagger and ReDoc.</p>
+                    <ul class="feature-list">
+                        <li>✓ Token authentication</li>
+                        <li>✓ Full CRUD operations</li>
+                        <li>✓ Interactive docs</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fab fa-docker"></i>
+                    </div>
+                    <h3>Easy Deployment</h3>
+                    <p>Production-ready Docker configuration. Deploy in minutes with docker-compose.</p>
+                    <ul class="feature-list">
+                        <li>✓ Docker & Compose</li>
+                        <li>✓ Nginx included</li>
+                        <li>✓ Auto-scaling ready</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technology Stack -->
+    <section class="technology" id="technology">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Technology</span>
+                <h2 class="section-title">Built with Modern Technology</h2>
+                <p class="section-subtitle">Powered by industry-leading frameworks and tools</p>
+            </div>
+            <div class="tech-grid">
+                <div class="tech-category">
+                    <h3>Backend</h3>
+                    <div class="tech-items">
+                        <div class="tech-item">
+                            <i class="fab fa-python"></i>
+                            <span>Django 4.2</span>
+                        </div>
+                        <div class="tech-item">
+                            <i class="fas fa-database"></i>
+                            <span>PostgreSQL</span>
+                        </div>
+                        <div class="tech-item">
+                            <i class="fas fa-memory"></i>
+                            <span>Redis</span>
+                        </div>
+                        <div class="tech-item">
+                            <i class="fas fa-tasks"></i>
+                            <span>Celery</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tech-category">
+                    <h3>AI / ML</h3>
+                    <div class="tech-items">
+                        <div class="tech-item">
+                            <i class="fas fa-robot"></i>
+                            <span>YOLOv8</span>
+                        </div>
+                        <div class="tech-item">
+                            <i class="fas fa-fire"></i>
+                            <span>PyTorch</span>
+                        </div>
+                        <div class="tech-item">
+                            <i class="fas fa-eye"></i>
+                            <span>OpenCV</span>
+                        </div>
+                        <div class="tech-item">
+                            <i class="fas fa-microchip"></i>
+                            <span>CUDA</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tech-category">
+                    <h3>GIS</h3>
+                    <div class="tech-items">
+                        <div class="tech-item">
+                            <i class="fas fa-globe"></i>
+                            <span>GDAL</span>
+                        </div>
+                        <div class="tech-item">
+                            <i class="fas fa-layer-group"></i>
+                            <span>Rasterio</span>
+                        </div>
+                        <div class="tech-item">
+                            <i class="fas fa-helicopter"></i>
+                            <span>WebODM</span>
+                        </div>
+                        <div class="tech-item">
+                            <i class="fas fa-map-marked-alt"></i>
+                            <span>PostGIS</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tech-category">
+                    <h3>DevOps</h3>
+                    <div class="tech-items">
+                        <div class="tech-item">
+                            <i class="fab fa-docker"></i>
+                            <span>Docker</span>
+                        </div>
+                        <div class="tech-item">
+                            <i class="fas fa-server"></i>
+                            <span>Nginx</span>
+                        </div>
+                        <div class="tech-item">
+                            <i class="fab fa-github"></i>
+                            <span>GitHub Actions</span>
+                        </div>
+                        <div class="tech-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Security</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="demo" id="demo">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Demo</span>
+                <h2 class="section-title">See FarmVision in Action</h2>
+                <p class="section-subtitle">Watch how FarmVision transforms agricultural data analysis</p>
+            </div>
+            <div class="demo-content">
+                <div class="demo-placeholder">
+                    <i class="fas fa-play-circle"></i>
+                    <p>Interactive demo coming soon</p>
+                    <a href="https://github.com/ChronoCoders/farmvision#usage" class="btn btn-primary">View Screenshots</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation Section -->
+    <section class="installation" id="installation">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Quick Start</span>
+                <h2 class="section-title">Get Started in Minutes</h2>
+                <p class="section-subtitle">Choose your preferred installation method</p>
+            </div>
+            <div class="installation-tabs">
+                <div class="tabs">
+                    <button class="tab active" data-tab="docker">
+                        <i class="fab fa-docker"></i> Docker
+                    </button>
+                    <button class="tab" data-tab="manual">
+                        <i class="fas fa-terminal"></i> Manual
+                    </button>
+                    <button class="tab" data-tab="github">
+                        <i class="fab fa-github"></i> From Source
+                    </button>
+                </div>
+
+                <div class="tab-content active" id="docker">
+                    <div class="code-block">
+                        <pre><code># Clone repository
+git clone https://github.com/ChronoCoders/farmvision.git
+cd farmvision
+
+# Start with Docker Compose
+docker-compose up -d
+
+# Run migrations
+docker-compose exec web python manage.py migrate
+
+# Create superuser
+docker-compose exec web python manage.py createsuperuser
+
+# Access at http://localhost:8000</code></pre>
+                        <button class="copy-btn" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="manual">
+                    <div class="code-block">
+                        <pre><code># Clone repository
+git clone https://github.com/ChronoCoders/farmvision.git
+cd farmvision
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure environment
+cp .env.example .env
+# Edit .env with your settings
+
+# Run migrations
+python manage.py migrate
+
+# Create superuser
+python manage.py createsuperuser
+
+# Start server
+python manage.py runserver</code></pre>
+                        <button class="copy-btn" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="github">
+                    <div class="code-block">
+                        <pre><code># Clone from GitHub
+git clone https://github.com/ChronoCoders/farmvision.git
+cd farmvision
+
+# Install with pip
+pip install -e .
+
+# Or use poetry
+poetry install
+
+# Configure and run
+cp .env.example .env
+python manage.py migrate
+python manage.py runserver</code></pre>
+                        <button class="copy-btn" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="installation-links">
+                <a href="https://github.com/ChronoCoders/farmvision/wiki/Installation-Guide" class="link-card">
+                    <i class="fas fa-book"></i>
+                    <span>Full Installation Guide</span>
+                </a>
+                <a href="https://github.com/ChronoCoders/farmvision/wiki/Quick-Start" class="link-card">
+                    <i class="fas fa-rocket"></i>
+                    <span>Quick Start Guide</span>
+                </a>
+                <a href="https://github.com/ChronoCoders/farmvision/wiki" class="link-card">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Documentation</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Documentation Section -->
+    <section class="documentation" id="documentation">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Documentation</span>
+                <h2 class="section-title">Comprehensive Documentation</h2>
+                <p class="section-subtitle">Everything you need to know to get the most out of FarmVision</p>
+            </div>
+            <div class="docs-grid">
+                <a href="https://github.com/ChronoCoders/farmvision/wiki/Quick-Start" class="doc-card">
+                    <div class="doc-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>Quick Start</h3>
+                    <p>Get up and running in 5 minutes with our quick start guide.</p>
+                </a>
+
+                <a href="https://github.com/ChronoCoders/farmvision/wiki/User-Guide" class="doc-card">
+                    <div class="doc-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <h3>User Guide</h3>
+                    <p>Learn how to use all features with step-by-step tutorials.</p>
+                </a>
+
+                <a href="https://github.com/ChronoCoders/farmvision/wiki/API-Documentation" class="doc-card">
+                    <div class="doc-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>API Reference</h3>
+                    <p>Complete API documentation with examples and schemas.</p>
+                </a>
+
+                <a href="https://github.com/ChronoCoders/farmvision/wiki/Development-Setup" class="doc-card">
+                    <div class="doc-icon">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h3>Development</h3>
+                    <p>Set up your development environment and contribute.</p>
+                </a>
+
+                <a href="https://github.com/ChronoCoders/farmvision/wiki/Production-Deployment" class="doc-card">
+                    <div class="doc-icon">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <h3>Deployment</h3>
+                    <p>Deploy to production with Docker, Nginx, and more.</p>
+                </a>
+
+                <a href="https://github.com/ChronoCoders/farmvision/wiki/Roadmap" class="doc-card">
+                    <div class="doc-icon">
+                        <i class="fas fa-road"></i>
+                    </div>
+                    <h3>Roadmap</h3>
+                    <p>See what's coming next and contribute your ideas.</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Transform Your Farm?</h2>
+                <p>Join farmers worldwide using AI to optimize their operations</p>
+                <div class="cta-buttons">
+                    <a href="https://github.com/ChronoCoders/farmvision" class="btn btn-primary btn-lg">
+                        <i class="fab fa-github"></i> Get Started on GitHub
+                    </a>
+                    <a href="https://github.com/ChronoCoders/farmvision/wiki" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-book"></i> Read Documentation
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>
+                        <span class="logo-icon">🌾</span> FarmVision
+                    </h3>
+                    <p>Open-source AI-powered agricultural analysis platform.</p>
+                    <div class="social-links">
+                        <a href="https://github.com/ChronoCoders/farmvision" target="_blank" aria-label="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="https://github.com/ChronoCoders/farmvision/discussions" target="_blank" aria-label="Discussions">
+                            <i class="fas fa-comments"></i>
+                        </a>
+                        <a href="https://github.com/ChronoCoders/farmvision/issues" target="_blank" aria-label="Issues">
+                            <i class="fas fa-bug"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="https://github.com/ChronoCoders/farmvision/wiki/Roadmap">Roadmap</a></li>
+                        <li><a href="https://github.com/ChronoCoders/farmvision/releases">Releases</a></li>
+                        <li><a href="https://github.com/ChronoCoders/farmvision/blob/main/CHANGELOG.md">Changelog</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="https://github.com/ChronoCoders/farmvision/wiki">Documentation</a></li>
+                        <li><a href="https://github.com/ChronoCoders/farmvision/wiki/Installation-Guide">Installation</a></li>
+                        <li><a href="https://github.com/ChronoCoders/farmvision/wiki/API-Documentation">API Docs</a></li>
+                        <li><a href="https://github.com/ChronoCoders/farmvision/discussions">Community</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="https://github.com/ChronoCoders/farmvision/issues">Report Bug</a></li>
+                        <li><a href="https://github.com/ChronoCoders/farmvision/discussions">Ask Question</a></li>
+                        <li><a href="https://github.com/ChronoCoders/farmvision/blob/main/CONTRIBUTING.md">Contributing</a></li>
+                        <li><a href="https://github.com/ChronoCoders/farmvision/blob/main/LICENSE">License</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 FarmVision by ChronoCoders. Released under the MIT License.</p>
+                <p>
+                    <a href="https://github.com/ChronoCoders/farmvision">GitHub</a> ·
+                    <a href="https://github.com/ChronoCoders/farmvision/wiki">Wiki</a> ·
+                    <a href="https://github.com/ChronoCoders/farmvision/releases">Releases</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+</body>
+</html>
