@@ -178,8 +178,23 @@ def index(request: HttpRequest) -> HttpResponse:
                         request, "main.html", {"error": "Ağaç sayısı gerekli"}
                     )
                 agac_sayisi_int = int(agac_sayisi)
+                # Add range validation for tree count
+                if not (1 <= agac_sayisi_int <= 100000):
+                    return render(
+                        request, "main.html", {"error": "Ağaç sayısı 1-100000 arasında olmalı"}
+                    )
             except ValueError:
                 return render(request, "main.html", {"error": "Geçersiz sayı formatı"})
+
+            # Validate tree age with range check
+            try:
+                agac_yasi_int = int(agac_yasi)
+                if not (0 <= agac_yasi_int <= 150):
+                    return render(
+                        request, "main.html", {"error": "Ağaç yaşı 0-150 arasında olmalı"}
+                    )
+            except ValueError:
+                return render(request, "main.html", {"error": "Geçersiz yaş formatı"})
 
             if meyve_grubu not in FRUIT_MODELS:
                 return render(request, "main.html", {"error": "Geçersiz meyve grubu"})
@@ -233,7 +248,7 @@ def index(request: HttpRequest) -> HttpResponse:
 
                 try:
                     model_path = FRUIT_MODELS[meyve_grubu]
-                    detec, unique_id, confidence_score = predict_tree.preddict(
+                    detec, unique_id, confidence_score = predict_tree.predict(
                         path_to_weights=model_path, path_to_source=tmp_path
                     )
 
@@ -288,7 +303,8 @@ def index(request: HttpRequest) -> HttpResponse:
 
                 except (FileNotFoundError, RuntimeError, ValueError, IOError) as e:
                     logger.error(f"Model algılama hatası: {e}")
-                    raise ValidationError(f"Algılama işlemi başarısız: {str(e)}")
+                    # Don't expose internal error details to users
+                    raise ValidationError("Algılama işlemi başarısız oldu. Lütfen tekrar deneyin.")
                 finally:
                     # Clean up temp file
                     try:
@@ -443,11 +459,16 @@ def download_image(request: HttpRequest, slug: str) -> FileResponse | HttpRespon
         if not file_path.exists():
             return HttpResponse("Dosya bulunamadı", status=404)
 
-        return FileResponse(
-            open(file_path, "rb"),
+        # Open file and let FileResponse handle closure properly
+        file_handle = open(file_path, "rb")
+        response = FileResponse(
+            file_handle,
             as_attachment=True,
             filename=f"{safe_slug}_result.zip",
         )
+        # FileResponse will close the file when done, but we explicitly mark it
+        response.file_to_stream.close_file = True
+        return response
     except Exception as e:
         logger.error(f"Dosya indirme hatası: {e}")
         return HttpResponse("Dosya indirilemedi", status=500)

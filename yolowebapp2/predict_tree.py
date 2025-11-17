@@ -72,7 +72,7 @@ def get_model(model_name: str) -> Any:
         return _model_cache[model_name]
 
 
-def preddict(path_to_weights: str, path_to_source: str) -> Tuple[bytes, str, float]:
+def predict(path_to_weights: str, path_to_source: str) -> Tuple[bytes, str, float]:
     unique_id = str(uuid.uuid4())
 
     try:

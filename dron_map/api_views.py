@@ -2,7 +2,7 @@
 from rest_framework import viewsets, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Projects
 from .serializers import ProjectSerializer, ProjectSummarySerializer
@@ -22,11 +22,13 @@ class ProjectViewSet(viewsets.ModelViewSet):
     - Search by farm/field/title (GET /api/projects/?search=apple)
     - Get project summary (GET /api/projects/{id}/summary/)
     - List by farm (GET /api/projects/by_farm/)
+
+    Note: Authentication required for all endpoints to protect farm data.
     """
 
     queryset = Projects.objects.all()
     serializer_class = ProjectSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
     filter_backends = [
         DjangoFilterBackend,
         filters.SearchFilter,

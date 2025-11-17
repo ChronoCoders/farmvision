@@ -2,7 +2,7 @@
 from rest_framework import viewsets, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import DetectionResult, MultiDetectionBatch
 from .serializers import DetectionResultSerializer, MultiDetectionBatchSerializer
@@ -21,11 +21,13 @@ class DetectionResultViewSet(viewsets.ModelViewSet):
     - Filter by fruit type (GET /api/detections/?fruit_type=apple)
     - Search by fruit type (GET /api/detections/?search=apple)
     - Get statistics (GET /api/detections/statistics/)
+
+    Note: Authentication required for all endpoints to protect detection data.
     """
 
     queryset = DetectionResult.objects.all()
     serializer_class = DetectionResultSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
     filter_backends = [
         DjangoFilterBackend,
         filters.SearchFilter,
@@ -90,7 +92,7 @@ class MultiDetectionBatchViewSet(viewsets.ModelViewSet):
 
     queryset = MultiDetectionBatch.objects.all()
     serializer_class = MultiDetectionBatchSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
     filter_backends = [
         DjangoFilterBackend,
         filters.SearchFilter,

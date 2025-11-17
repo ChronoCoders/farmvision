@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
+import logging
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status, serializers
 from django.db import connection
 from drf_spectacular.utils import extend_schema, OpenApiResponse
+
+logger = logging.getLogger(__name__)
 
 
 class HealthCheckResponseSerializer(serializers.Serializer):
@@ -36,7 +39,9 @@ def health_check(request):
         connection.ensure_connection()
         health_status["database"] = "connected"
     except Exception as e:
-        health_status["database"] = f"error: {str(e)}"
+        # Log the actual error for debugging, but don't expose it to users
+        logger.error(f"Database connection error: {str(e)}")
+        health_status["database"] = "connection_error"
         health_status["status"] = "degraded"
         return Response(health_status, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
