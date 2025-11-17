@@ -8,7 +8,8 @@ import sys
 import io
 
 # Configure stdout/stderr for UTF-8 encoding on Windows to handle Turkish characters
-if sys.platform == "win32":
+# Skip when running under pytest to avoid conflicts with pytest's capture mechanism
+if sys.platform == "win32" and "pytest" not in sys.modules:
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
