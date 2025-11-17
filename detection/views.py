@@ -35,6 +35,275 @@ ALLOWED_MIME_TYPES = {"image/jpeg", "image/png", "image/bmp", "image/x-ms-bmp"}
 MAX_FILE_SIZE = 10 * 1024 * 1024
 
 
+def _get_chart_data() -> str:
+    """
+    Get chart data from recent detection results for dashboard display.
+
+    Returns:
+        JSON string containing chart labels and values for monthly averages.
+    """
+    import json
+    from detection.models import DetectionResult
+    from django.db.models import Avg
+    from django.db.models.functions import TruncMonth
+    from datetime import timedelta
+    from django.utils import timezone
+
+    # Get last 6 months of data
+    six_months_ago = timezone.now() - timedelta(days=180)
+    monthly_stats = (
+        DetectionResult.objects.filter(created_at__gte=six_months_ago)
+        .annotate(month=TruncMonth("created_at"))
+        .values("month")
+        .annotate(avg_count=Avg("detected_count"))
+        .order_by("month")
+    )
+
+    chart_labels = []
+    chart_values = []
+    for stat in monthly_stats:
+        chart_labels.append(stat["month"].strftime("%Y-%m"))
+        chart_values.append(float(stat["avg_count"]) if stat["avg_count"] else 0)
+
+    return json.dumps(
+        {
+            "labels": chart_labels if chart_labels else None,
+            "values": chart_values if chart_values else None,
+            "label": "Aylık Ortalama Tespit Sayısı",
+        }
+    )
+
+
+def _validate_detection_form(request: HttpRequest) -> Dict[str, Any]:
+    """
+    Validate and parse detection form inputs.
+
+    Args:
+        request: HTTP request with POST data
+
+    Returns:
+        Dictionary with validated form data including:
+        - meyve_grubu: str
+        - agac_sayisi: int
+        - agac_yasi: int
+        - ekim_sirasi: str
+        - file: UploadedFile
+
+    Raises:
+        ValidationError: If any validation fails
+    """
+    meyve_grubu = request.POST.get("meyve_grubu")
+    agac_sayisi = request.POST.get("agac_sayisi")
+    agac_yasi = request.POST.get("agac_yasi")
+    ekim_sirasi = request.POST.get("ekim_sirasi")
+    filename = request.FILES.get("file")
+
+    if not all([meyve_grubu, agac_sayisi, agac_yasi, ekim_sirasi, filename]):
+        raise ValidationError("Tüm alanları doldurun")
+
+    if filename is None:
+        raise ValidationError("Dosya bulunamadı")
+
+    validate_image_file(filename)
+
+    # Validate tree count
+    try:
+        if agac_sayisi is None:
+            raise ValidationError("Ağaç sayısı gerekli")
+        agac_sayisi_int = int(agac_sayisi)
+        if not validate_tree_count(agac_sayisi_int):
+            raise ValidationError("Ağaç sayısı 1-100000 arasında olmalı")
+    except ValueError:
+        raise ValidationError("Geçersiz sayı formatı")
+
+    # Validate tree age
+    try:
+        agac_yasi_int = int(agac_yasi)
+        if not validate_tree_age(agac_yasi_int):
+            raise ValidationError("Ağaç yaşı 0-150 arasında olmalı")
+    except ValueError:
+        raise ValidationError("Geçersiz yaş formatı")
+
+    if meyve_grubu not in FRUIT_MODELS:
+        raise ValidationError("Geçersiz meyve grubu")
+
+    return {
+        "meyve_grubu": meyve_grubu,
+        "agac_sayisi": agac_sayisi_int,
+        "agac_yasi": agac_yasi_int,
+        "ekim_sirasi": ekim_sirasi,
+        "file": filename,
+    }
+
+
+def _handle_cached_detection(
+    cached_result: Dict[str, Any], agac_sayisi: int
+) -> Dict[str, Any]:
+    """
+    Build response from cached detection result.
+
+    Args:
+        cached_result: Cached prediction data
+        agac_sayisi: Tree count for total weight calculation
+
+    Returns:
+        Response dictionary with detection results
+    """
+    cached_weight = cached_result["weight_per_fruit"] * cached_result["detected_count"]
+
+    return {
+        "count": cached_result["detected_count"],
+        "kilo": cached_weight,
+        "toplam_agirlik": agac_sayisi * cached_weight,
+        "time": "0.00",
+        "image": cached_result["image_path"],
+        "image_detection": cached_result["image_path"],
+        "confidence": f"{cached_result['confidence_score']:.2%}",
+        "from_cache": True,
+    }
+
+
+def _save_detection_to_db(
+    meyve_grubu: str,
+    agac_sayisi: int,
+    agac_yasi: int,
+    count: int,
+    weight: float,
+    total_weight: float,
+    processing_time: float,
+    confidence_score: float,
+    image_path: str,
+) -> None:
+    """
+    Save detection result to database.
+
+    Args:
+        meyve_grubu: Fruit type
+        agac_sayisi: Tree count
+        agac_yasi: Tree age
+        count: Detected fruit count
+        weight: Weight per tree
+        total_weight: Total weight for all trees
+        processing_time: Time taken for detection
+        confidence_score: Model confidence
+        image_path: Path to detected image
+    """
+    from detection.models import DetectionResult
+
+    try:
+        DetectionResult.objects.create(
+            fruit_type=meyve_grubu,
+            tree_count=agac_sayisi,
+            tree_age=agac_yasi,
+            detected_count=count,
+            weight=weight,
+            total_weight=total_weight,
+            processing_time=processing_time,
+            confidence_score=confidence_score,
+            image_path=image_path,
+        )
+        logger.info(
+            f"Detection result saved: {meyve_grubu}, count={count}, confidence={confidence_score:.3f}"
+        )
+    except Exception as db_error:
+        logger.error(f"Veritabanı kaydetme hatası: {db_error}")
+        # Don't fail the request if DB save fails, just log it
+
+
+def _process_new_detection(
+    form_data: Dict[str, Any], image_data: bytes, image_hash: str, safe_filename: str
+) -> Dict[str, Any]:
+    """
+    Process a new detection (cache miss).
+
+    Args:
+        form_data: Validated form data
+        image_data: Raw image bytes
+        image_hash: SHA256 hash of image
+        safe_filename: Sanitized filename
+
+    Returns:
+        Response dictionary with detection results
+
+    Raises:
+        ValidationError: If detection fails
+    """
+    temp_dir = tempfile.gettempdir()
+    tmp_path = os.path.join(temp_dir, safe_filename)
+
+    # Write uploaded file to temp directory
+    try:
+        with open(tmp_path, "wb") as tmp:
+            tmp.write(image_data)
+    except Exception as e:
+        logger.error(f"Geçici dosya yazma hatası: {tmp_path}: {e}")
+        raise ValidationError("Dosya yüklenirken hata oluştu")
+
+    start_time = time.time()
+
+    try:
+        model_path = FRUIT_MODELS[form_data["meyve_grubu"]]
+        detec, unique_id, confidence_score = predict_tree.predict(
+            path_to_weights=model_path, path_to_source=tmp_path
+        )
+
+        count = extract_detection_count(detec)
+        weight_per_fruit = FRUIT_WEIGHTS[form_data["meyve_grubu"]]
+        processing_time = time.time() - start_time
+
+        weight = count * weight_per_fruit
+        total_weight = form_data["agac_sayisi"] * weight
+        image_path = f"detected/{unique_id}/{safe_filename}"
+
+        response = {
+            "count": count,
+            "kilo": weight,
+            "toplam_agirlik": total_weight,
+            "time": f"{processing_time:.2f}",
+            "image": image_path,
+            "image_detection": image_path,
+            "confidence": f"{confidence_score:.2%}",
+            "from_cache": False,
+        }
+
+        # Cache the prediction result
+        cache_data = {
+            "detected_count": count,
+            "weight_per_fruit": weight_per_fruit,
+            "confidence_score": confidence_score,
+            "image_path": image_path,
+            "fruit_type": form_data["meyve_grubu"],
+            "image_hash": image_hash,
+        }
+        set_cached_prediction(image_hash, form_data["meyve_grubu"], cache_data)
+
+        # Save detection result to database
+        _save_detection_to_db(
+            meyve_grubu=form_data["meyve_grubu"],
+            agac_sayisi=form_data["agac_sayisi"],
+            agac_yasi=form_data["agac_yasi"],
+            count=count,
+            weight=weight,
+            total_weight=total_weight,
+            processing_time=processing_time,
+            confidence_score=confidence_score,
+            image_path=image_path,
+        )
+
+        return response
+
+    except (FileNotFoundError, RuntimeError, ValueError, IOError) as e:
+        logger.error(f"Model algılama hatası: {e}")
+        raise ValidationError("Algılama işlemi başarısız oldu. Lütfen tekrar deneyin.")
+    finally:
+        # Clean up temp file
+        try:
+            if os.path.exists(tmp_path):
+                os.unlink(tmp_path)
+        except Exception as e:
+            logger.error(f"Geçici dosya silme hatası: {tmp_path}: {e}")
+
+
 def validate_image_file(file: UploadedFile) -> bool:
     if not file:
         raise ValidationError("Dosya bulunamadı")
@@ -112,86 +381,23 @@ def sanitize_filename(filename: str) -> str:
 
 @login_required
 def index(request: HttpRequest) -> HttpResponse:
+    """
+    Main detection view for single image fruit detection.
+
+    Handles both GET (display form) and POST (process detection) requests.
+    Uses caching for improved performance on repeated images.
+    """
     response: Dict[str, Any] = {}
-
-    # Get chart data from recent detection results
-    import json
-    from detection.models import DetectionResult
-    from django.db.models import Avg
-    from django.db.models.functions import TruncMonth
-    from datetime import timedelta
-    from django.utils import timezone
-
-    # Get last 10 months of data
-    six_months_ago = timezone.now() - timedelta(days=180)
-    monthly_stats = (
-        DetectionResult.objects.filter(created_at__gte=six_months_ago)
-        .annotate(month=TruncMonth("created_at"))
-        .values("month")
-        .annotate(avg_count=Avg("detected_count"))
-        .order_by("month")
-    )
-
-    chart_labels = []
-    chart_values = []
-    for stat in monthly_stats:
-        chart_labels.append(stat["month"].strftime("%Y-%m"))
-        chart_values.append(float(stat["avg_count"]) if stat["avg_count"] else 0)
-
-    chart_data = json.dumps(
-        {
-            "labels": chart_labels if chart_labels else None,
-            "values": chart_values if chart_values else None,
-            "label": "Aylık Ortalama Tespit Sayısı",
-        }
-    )
+    chart_data = _get_chart_data()
 
     if request.method == "POST":
         try:
-            meyve_grubu = request.POST.get("meyve_grubu")
-            agac_sayisi = request.POST.get("agac_sayisi")
-            agac_yasi = request.POST.get("agac_yasi")
-            ekim_sirasi = request.POST.get("ekim_sirasi")
-            filename = request.FILES.get("file")
+            # Validate form inputs
+            form_data = _validate_detection_form(request)
+            filename = form_data["file"]
 
-            if not all([meyve_grubu, agac_sayisi, agac_yasi, ekim_sirasi, filename]):
-                return render(request, "main.html", {"error": "Tüm alanları doldurun"})
-
-            if filename is None:
-                return render(request, "main.html", {"error": "Dosya bulunamadı"})
-
-            validate_image_file(filename)
-
-            try:
-                if agac_sayisi is None:
-                    return render(
-                        request, "main.html", {"error": "Ağaç sayısı gerekli"}
-                    )
-                agac_sayisi_int = int(agac_sayisi)
-                # Add range validation for tree count using shared config
-                if not validate_tree_count(agac_sayisi_int):
-                    return render(
-                        request, "main.html", {"error": "Ağaç sayısı 1-100000 arasında olmalı"}
-                    )
-            except ValueError:
-                return render(request, "main.html", {"error": "Geçersiz sayı formatı"})
-
-            # Validate tree age with range check using shared config
-            try:
-                agac_yasi_int = int(agac_yasi)
-                if not validate_tree_age(agac_yasi_int):
-                    return render(
-                        request, "main.html", {"error": "Ağaç yaşı 0-150 arasında olmalı"}
-                    )
-            except ValueError:
-                return render(request, "main.html", {"error": "Geçersiz yaş formatı"})
-
-            if meyve_grubu not in FRUIT_MODELS:
-                return render(request, "main.html", {"error": "Geçersiz meyve grubu"})
-
+            # Prepare image data for caching
             safe_filename = sanitize_filename(filename.name or "")
-
-            # Read image data for hashing and caching
             filename.seek(0)
             image_data = filename.read()
             filename.seek(0)
@@ -200,111 +406,24 @@ def index(request: HttpRequest) -> HttpResponse:
             image_hash = calculate_image_hash(image_data)
 
             # Check cache first
-            cached_result = get_cached_prediction(image_hash, meyve_grubu)
+            cached_result = get_cached_prediction(image_hash, form_data["meyve_grubu"])
 
             if cached_result:
-                # Cache HIT - return cached result
+                # Cache HIT
                 logger.info(
-                    f"Using cached result for {meyve_grubu}, hash={image_hash[:16]}..."
+                    f"Using cached result for {form_data['meyve_grubu']}, hash={image_hash[:16]}..."
                 )
-
-                # Adjust for current tree count
-                cached_weight = (
-                    cached_result["weight_per_fruit"] * cached_result["detected_count"]
+                response = _handle_cached_detection(
+                    cached_result, form_data["agac_sayisi"]
                 )
-
-                response["count"] = cached_result["detected_count"]
-                response["kilo"] = cached_weight
-                response["toplam_agirlik"] = agac_sayisi_int * cached_weight
-                response["time"] = "0.00"  # Instant from cache
-                response["image"] = cached_result["image_path"]
-                response["image_detection"] = cached_result["image_path"]
-                response["confidence"] = f"{cached_result['confidence_score']:.2%}"
-                response["from_cache"] = True
             else:
                 # Cache MISS - run prediction
-                temp_dir = tempfile.gettempdir()
-                tmp_path = os.path.join(temp_dir, safe_filename)
-
-                # Write uploaded file to temp directory
-                try:
-                    with open(tmp_path, "wb") as tmp:
-                        tmp.write(image_data)
-                except Exception as e:
-                    logger.error(f"Geçici dosya yazma hatası: {tmp_path}: {e}")
-                    raise ValidationError("Dosya yüklenirken hata oluştu")
-
-                start_time = time.time()
-
-                try:
-                    model_path = FRUIT_MODELS[meyve_grubu]
-                    detec, unique_id, confidence_score = predict_tree.predict(
-                        path_to_weights=model_path, path_to_source=tmp_path
-                    )
-
-                    count = extract_detection_count(detec)
-                    weight_per_fruit = FRUIT_WEIGHTS[meyve_grubu]
-                    processing_time = time.time() - start_time
-
-                    response["count"] = count
-                    response["kilo"] = count * weight_per_fruit
-                    response["toplam_agirlik"] = agac_sayisi_int * response["kilo"]
-                    response["time"] = f"{processing_time:.2f}"
-                    response["image"] = f"detected/{unique_id}/{safe_filename}"
-                    response["image_detection"] = (
-                        f"detected/{unique_id}/{safe_filename}"
-                    )
-                    response["confidence"] = f"{confidence_score:.2%}"
-                    response["from_cache"] = False
-
-                    # Cache the prediction result
-                    cache_data = {
-                        "detected_count": count,
-                        "weight_per_fruit": weight_per_fruit,
-                        "confidence_score": confidence_score,
-                        "image_path": f"detected/{unique_id}/{safe_filename}",
-                        "fruit_type": meyve_grubu,
-                        "image_hash": image_hash,
-                    }
-                    set_cached_prediction(image_hash, meyve_grubu, cache_data)
-
-                    # Save detection result to database
-                    try:
-                        if agac_yasi is None:
-                            raise ValueError("Ağaç yaşı gerekli")
-                        agac_yasi_int = int(agac_yasi)
-                        DetectionResult.objects.create(
-                            fruit_type=meyve_grubu,
-                            tree_count=agac_sayisi_int,
-                            tree_age=agac_yasi_int,
-                            detected_count=count,
-                            weight=response["kilo"],
-                            total_weight=response["toplam_agirlik"],
-                            processing_time=processing_time,
-                            confidence_score=confidence_score,
-                            image_path=f"detected/{unique_id}/{safe_filename}",
-                        )
-                        logger.info(
-                            f"Detection result saved: {meyve_grubu}, count={count}, confidence={confidence_score:.3f}"
-                        )
-                    except Exception as db_error:
-                        logger.error(f"Veritabanı kaydetme hatası: {db_error}")
-                        # Don't fail the request if DB save fails, just log it
-
-                except (FileNotFoundError, RuntimeError, ValueError, IOError) as e:
-                    logger.error(f"Model algılama hatası: {e}")
-                    # Don't expose internal error details to users
-                    raise ValidationError("Algılama işlemi başarısız oldu. Lütfen tekrar deneyin.")
-                finally:
-                    # Clean up temp file
-                    try:
-                        if os.path.exists(tmp_path):
-                            os.unlink(tmp_path)
-                    except Exception as e:
-                        logger.error(f"Geçici dosya silme hatası: {tmp_path}: {e}")
+                response = _process_new_detection(
+                    form_data, image_data, image_hash, safe_filename
+                )
 
         except ValidationError as e:
-            return render(request, "main.html", {"error": str(e)})
+            return render(request, "main.html", {"error": str(e), "chart_data": chart_data})
         except Exception as e:
             logger.error(f"İşlem hatası: {e}")
             return render(
@@ -319,118 +438,137 @@ def index(request: HttpRequest) -> HttpResponse:
     return render(request, "main.html", context)
 
 
+def _validate_multi_detection_form(request: HttpRequest) -> Dict[str, Any]:
+    """
+    Validate and parse multi-detection form inputs.
+
+    Args:
+        request: HTTP request with POST data
+
+    Returns:
+        Dictionary with validated form data
+
+    Raises:
+        ValidationError: If validation fails
+    """
+    meyve_grubu = request.POST.get("meyve_grubu")
+    ekim_sirasi = request.POST.get("ekim_sirasi")
+    filelist = request.FILES.getlist("file")
+
+    if not meyve_grubu or not ekim_sirasi or not filelist:
+        raise ValidationError("Tüm alanları doldurun")
+
+    for file in filelist:
+        validate_image_file(file)
+
+    if meyve_grubu not in FRUIT_MODELS:
+        raise ValidationError("Geçersiz meyve grubu")
+
+    return {
+        "meyve_grubu": meyve_grubu,
+        "ekim_sirasi": ekim_sirasi,
+        "filelist": filelist,
+    }
+
+
+def _save_uploaded_files(filelist: list, upload_dir: Path) -> None:
+    """
+    Save uploaded files to directory with path traversal protection.
+
+    Args:
+        filelist: List of uploaded files
+        upload_dir: Directory to save files to
+
+    Raises:
+        ValidationError: If file saving fails
+    """
+    for image in filelist:
+        if not image.name:
+            raise ValidationError("Dosya adı bulunamadı")
+
+        safe_image_name = os.path.basename(image.name)
+        if ".." in safe_image_name or "/" in safe_image_name or "\\" in safe_image_name:
+            logger.warning(f"Path traversal attempt in filename: {image.name}")
+            raise ValidationError(f"Geçersiz dosya adı: {image.name}")
+
+        img_path = upload_dir / safe_image_name
+        with open(img_path, "wb") as f:
+            for chunk in image.chunks():
+                f.write(chunk)
+
+
+def _cleanup_directory(directory: Path) -> None:
+    """
+    Clean up a directory and its contents.
+
+    Args:
+        directory: Path to directory to remove
+    """
+    if directory and directory.exists():
+        try:
+            shutil.rmtree(str(directory))
+            logger.info(f"Dosyalar temizlendi: {directory}")
+        except Exception as cleanup_error:
+            logger.error(f"Dosya temizleme hatası: {cleanup_error}")
+
+
 @login_required
 def multi_detection_image(request: HttpRequest) -> HttpResponse:
-    if request.method == "POST":
+    """
+    Multi-image detection view for batch fruit detection.
+
+    Processes multiple images at once and generates a combined result.
+    """
+    if request.method != "POST":
+        return render(request, "multi_detection_fruit.html")
+
+    try:
+        # Validate form inputs
+        form_data = _validate_multi_detection_form(request)
+
+        # Create hash and output directory
         try:
-            meyve_grubu = request.POST.get("meyve_grubu")
-            ekim_sirasi = request.POST.get("ekim_sirasi")
-            filelist = request.FILES.getlist("file")
-
-            if not meyve_grubu or not ekim_sirasi or not filelist:
-                return render(
-                    request,
-                    "multi_detection_fruit.html",
-                    {"error": "Tüm alanları doldurun"},
-                )
-
-            for file in filelist:
-                validate_image_file(file)
-
-            if meyve_grubu not in FRUIT_MODELS:
-                return render(
-                    request,
-                    "multi_detection_fruit.html",
-                    {"error": "Geçersiz meyve grubu"},
-                )
-
-            start_time = time.time()
-
-            try:
-                hass = hashing.add_prefix2(filename=f"{time.time()}")
-            except Exception as e:
-                logger.error(f"Hash oluşturma hatası: {e}")
-                raise ValidationError("Dizin oluşturulamadı")
-
-            # Create output directory
-            upload_dir = None
-            try:
-                upload_dir = Path(hass[0])
-                upload_dir.mkdir(parents=True, exist_ok=True)
-            except Exception as e:
-                logger.error(f"Çıktı dizini oluşturma hatası: {hass[0]}: {e}")
-                raise ValidationError("Çıktı dizini oluşturulamadı")
-
-            # Save uploaded files
-            try:
-                for image in filelist:
-                    # Sanitize filename to prevent path traversal
-                    if not image.name:
-                        raise ValidationError("Dosya adı bulunamadı")
-
-                    safe_image_name = os.path.basename(image.name)
-                    if (
-                        ".." in safe_image_name
-                        or "/" in safe_image_name
-                        or "\\" in safe_image_name
-                    ):
-                        logger.warning(
-                            f"Path traversal attempt in filename: {image.name}"
-                        )
-                        raise ValidationError(f"Geçersiz dosya adı: {image.name}")
-
-                    img_path = Path(hass[0]) / safe_image_name
-                    with open(img_path, "wb") as f:
-                        for chunk in image.chunks():
-                            f.write(chunk)
-            except Exception as e:
-                logger.error(f"Dosya kaydetme hatası: {e}")
-                # Clean up directory on file save failure
-                if upload_dir and upload_dir.exists():
-                    try:
-                        shutil.rmtree(str(upload_dir))
-                        logger.info(f"Hatalı dosyalar temizlendi: {upload_dir}")
-                    except Exception as cleanup_error:
-                        logger.error(f"Dosya temizleme hatası: {cleanup_error}")
-                raise ValidationError("Dosyalar kaydedilemedi")
-
-            # Run multi prediction
-            try:
-                weight_file = FRUIT_MODELS[meyve_grubu]
-
-                predict_tree.multi_predictor(
-                    path_to_weights=weight_file,
-                    path_to_source=hass[0],
-                    ekim_sirasi=ekim_sirasi,
-                    hashing=hass[1],
-                )
-
-                return render(
-                    request, "multi_detection_fruit.html", {"response": hass[1]}
-                )
-
-            except (FileNotFoundError, RuntimeError, ValueError, IOError) as e:
-                logger.error(f"Çoklu algılama işlemi hatası: {e}")
-                # Clean up input files on prediction failure
-                if upload_dir and upload_dir.exists():
-                    try:
-                        shutil.rmtree(str(upload_dir))
-                        logger.info(
-                            f"Algılama hatası nedeniyle dosyalar silindi: {upload_dir}"
-                        )
-                    except Exception as cleanup_error:
-                        logger.error(f"Dosya temizleme hatası: {cleanup_error}")
-                raise ValidationError(f"Algılama başarısız: {str(e)}")
-
-        except ValidationError as e:
-            return render(request, "multi_detection_fruit.html", {"error": str(e)})
+            hass = hashing.add_prefix2(filename=f"{time.time()}")
         except Exception as e:
-            logger.error(f"Çoklu algılama hatası: {e}")
-            return render(
-                request, "multi_detection_fruit.html", {"error": "Bir hata oluştu"}
-            )
+            logger.error(f"Hash oluşturma hatası: {e}")
+            raise ValidationError("Dizin oluşturulamadı")
 
-    return render(request, "multi_detection_fruit.html")
+        upload_dir = Path(hass[0])
+        try:
+            upload_dir.mkdir(parents=True, exist_ok=True)
+        except Exception as e:
+            logger.error(f"Çıktı dizini oluşturma hatası: {hass[0]}: {e}")
+            raise ValidationError("Çıktı dizini oluşturulamadı")
+
+        # Save uploaded files
+        try:
+            _save_uploaded_files(form_data["filelist"], upload_dir)
+        except Exception as e:
+            logger.error(f"Dosya kaydetme hatası: {e}")
+            _cleanup_directory(upload_dir)
+            raise ValidationError("Dosyalar kaydedilemedi")
+
+        # Run multi prediction
+        try:
+            weight_file = FRUIT_MODELS[form_data["meyve_grubu"]]
+            predict_tree.multi_predictor(
+                path_to_weights=weight_file,
+                path_to_source=hass[0],
+                ekim_sirasi=form_data["ekim_sirasi"],
+                hashing=hass[1],
+            )
+            return render(request, "multi_detection_fruit.html", {"response": hass[1]})
+
+        except (FileNotFoundError, RuntimeError, ValueError, IOError) as e:
+            logger.error(f"Çoklu algılama işlemi hatası: {e}")
+            _cleanup_directory(upload_dir)
+            raise ValidationError("Algılama başarısız oldu. Lütfen tekrar deneyin.")
+
+    except ValidationError as e:
+        return render(request, "multi_detection_fruit.html", {"error": str(e)})
+    except Exception as e:
+        logger.error(f"Çoklu algılama hatası: {e}")
+        return render(request, "multi_detection_fruit.html", {"error": "Bir hata oluştu"})
 
 
 @login_required
@@ -548,6 +686,143 @@ def system_monitoring(request: HttpRequest) -> HttpResponse:
         )
 
 
+def _validate_async_detection_form(request: HttpRequest) -> Dict[str, Any]:
+    """
+    Validate async detection form inputs.
+
+    Args:
+        request: HTTP request with POST data
+
+    Returns:
+        Dictionary with validated form data
+
+    Raises:
+        ValidationError: If validation fails
+    """
+    meyve_grubu = request.POST.get("meyve_grubu")
+    agac_sayisi = request.POST.get("agac_sayisi")
+    agac_yasi = request.POST.get("agac_yasi")
+    filename = request.FILES.get("file")
+
+    if not all([meyve_grubu, agac_sayisi, agac_yasi, filename]):
+        raise ValidationError("Tüm alanları doldurun")
+
+    if filename is None:
+        raise ValidationError("Dosya bulunamadı")
+
+    validate_image_file(filename)
+
+    try:
+        if agac_sayisi is None or agac_yasi is None:
+            raise ValidationError("Ağaç sayısı ve yaşı gerekli")
+        agac_sayisi_int = int(agac_sayisi)
+        agac_yasi_int = int(agac_yasi)
+    except ValueError:
+        raise ValidationError("Geçersiz sayı formatı")
+
+    if meyve_grubu not in FRUIT_MODELS:
+        raise ValidationError("Geçersiz meyve grubu")
+
+    return {
+        "meyve_grubu": meyve_grubu,
+        "agac_sayisi": agac_sayisi_int,
+        "agac_yasi": agac_yasi_int,
+        "file": filename,
+    }
+
+
+def _build_cached_async_response(
+    cached_result: Dict[str, Any], agac_sayisi: int
+) -> JsonResponse:
+    """
+    Build JSON response for cached async detection result.
+
+    Args:
+        cached_result: Cached prediction data
+        agac_sayisi: Tree count for total weight calculation
+
+    Returns:
+        JsonResponse with cached detection results
+    """
+    cached_weight = cached_result["weight_per_fruit"] * cached_result["detected_count"]
+
+    return JsonResponse(
+        {
+            "task_id": None,
+            "status": "SUCCESS",
+            "message": "Önbellekten döndürüldü",
+            "from_cache": True,
+            "result": {
+                "detected_count": cached_result["detected_count"],
+                "weight": cached_weight,
+                "total_weight": agac_sayisi * cached_weight,
+                "confidence_score": cached_result["confidence_score"],
+                "image_path": cached_result["image_path"],
+                "processing_time": 0.0,
+            },
+        },
+        status=200,
+    )
+
+
+def _queue_detection_task(
+    image_data: bytes,
+    safe_filename: str,
+    meyve_grubu: str,
+    agac_sayisi: int,
+    agac_yasi: int,
+    user_id: int | None,
+) -> JsonResponse:
+    """
+    Queue async detection task with Celery.
+
+    Args:
+        image_data: Raw image bytes
+        safe_filename: Sanitized filename
+        meyve_grubu: Fruit type
+        agac_sayisi: Tree count
+        agac_yasi: Tree age
+        user_id: ID of authenticated user
+
+    Returns:
+        JsonResponse with task_id and status
+
+    Raises:
+        ValidationError: If file writing fails
+    """
+    from detection.tasks import process_image_detection
+
+    temp_dir = tempfile.gettempdir()
+    tmp_path = os.path.join(temp_dir, safe_filename)
+
+    try:
+        with open(tmp_path, "wb") as tmp:
+            tmp.write(image_data)
+    except Exception as e:
+        logger.error(f"Geçici dosya yazma hatası: {tmp_path}: {e}")
+        raise ValidationError("Dosya yüklenirken hata oluştu")
+
+    task = process_image_detection.delay(
+        image_path=tmp_path,
+        fruit_type=meyve_grubu,
+        tree_count=agac_sayisi,
+        tree_age=agac_yasi,
+        user_id=user_id,
+    )
+
+    logger.info(f"Async detection task queued: {task.id} for {meyve_grubu}")
+
+    return JsonResponse(
+        {
+            "task_id": task.id,
+            "status": "PENDING",
+            "message": "Görüntü işleme kuyruğa eklendi",
+            "from_cache": False,
+        },
+        status=202,
+    )
+
+
 @login_required
 @require_http_methods(["POST"])
 def async_detection(request: HttpRequest) -> JsonResponse:
@@ -555,53 +830,14 @@ def async_detection(request: HttpRequest) -> JsonResponse:
     Asynchronous image detection endpoint using Celery.
 
     Returns task_id immediately while processing continues in background.
-
-    POST Parameters:
-        - meyve_grubu: Fruit type (mandalina, elma, armut, seftale, nar)
-        - agac_sayisi: Tree count
-        - agac_yasi: Tree age
-        - file: Uploaded image file
-
-    Returns:
-        JSON: {
-            'task_id': str,
-            'status': 'PENDING',
-            'message': str
-        }
     """
     try:
-        meyve_grubu = request.POST.get("meyve_grubu")
-        agac_sayisi = request.POST.get("agac_sayisi")
-        agac_yasi = request.POST.get("agac_yasi")
-        filename = request.FILES.get("file")
+        # Validate form inputs
+        form_data = _validate_async_detection_form(request)
+        filename = form_data["file"]
 
-        if not all([meyve_grubu, agac_sayisi, agac_yasi, filename]):
-            return JsonResponse({"error": "Tüm alanları doldurun"}, status=400)
-
-        if filename is None:
-            return JsonResponse({"error": "Dosya bulunamadı"}, status=400)
-
-        # Validate image file
-        validate_image_file(filename)
-
-        # Validate inputs
-        try:
-            if agac_sayisi is None or agac_yasi is None:
-                return JsonResponse(
-                    {"error": "Ağaç sayısı ve yaşı gerekli"}, status=400
-                )
-            agac_sayisi_int = int(agac_sayisi)
-            agac_yasi_int = int(agac_yasi)
-        except ValueError:
-            return JsonResponse({"error": "Geçersiz sayı formatı"}, status=400)
-
-        if meyve_grubu not in FRUIT_MODELS:
-            return JsonResponse({"error": "Geçersiz meyve grubu"}, status=400)
-
-        # Sanitize filename
+        # Prepare image data for caching
         safe_filename = sanitize_filename(filename.name or "")
-
-        # Read image data for hashing and caching
         filename.seek(0)
         image_data = filename.read()
         filename.seek(0)
@@ -610,69 +846,23 @@ def async_detection(request: HttpRequest) -> JsonResponse:
         image_hash = calculate_image_hash(image_data)
 
         # Check cache first
-        cached_result = get_cached_prediction(image_hash, meyve_grubu)
+        cached_result = get_cached_prediction(image_hash, form_data["meyve_grubu"])
 
         if cached_result:
-            # Cache HIT - return cached result immediately
+            # Cache HIT
             logger.info(
-                f"Async endpoint: Using cached result for {meyve_grubu}, hash={image_hash[:16]}..."
+                f"Async endpoint: Using cached result for {form_data['meyve_grubu']}, hash={image_hash[:16]}..."
             )
+            return _build_cached_async_response(cached_result, form_data["agac_sayisi"])
 
-            # Adjust for current tree count
-            cached_weight = (
-                cached_result["weight_per_fruit"] * cached_result["detected_count"]
-            )
-
-            return JsonResponse(
-                {
-                    "task_id": None,
-                    "status": "SUCCESS",
-                    "message": "Önbellekten döndürüldü",
-                    "from_cache": True,
-                    "result": {
-                        "detected_count": cached_result["detected_count"],
-                        "weight": cached_weight,
-                        "total_weight": agac_sayisi_int * cached_weight,
-                        "confidence_score": cached_result["confidence_score"],
-                        "image_path": cached_result["image_path"],
-                        "processing_time": 0.0,
-                    },
-                },
-                status=200,
-            )
-
-        # Cache MISS - save to temp directory and queue async task
-        temp_dir = tempfile.gettempdir()
-        tmp_path = os.path.join(temp_dir, safe_filename)
-
-        try:
-            with open(tmp_path, "wb") as tmp:
-                tmp.write(image_data)
-        except Exception as e:
-            logger.error(f"Geçici dosya yazma hatası: {tmp_path}: {e}")
-            return JsonResponse({"error": "Dosya yüklenirken hata oluştu"}, status=500)
-
-        # Queue async task
-        from detection.tasks import process_image_detection
-
-        task = process_image_detection.delay(
-            image_path=tmp_path,
-            fruit_type=meyve_grubu,
-            tree_count=agac_sayisi_int,
-            tree_age=agac_yasi_int,
+        # Cache MISS - queue async task
+        return _queue_detection_task(
+            image_data=image_data,
+            safe_filename=safe_filename,
+            meyve_grubu=form_data["meyve_grubu"],
+            agac_sayisi=form_data["agac_sayisi"],
+            agac_yasi=form_data["agac_yasi"],
             user_id=request.user.pk if request.user.is_authenticated else None,
-        )
-
-        logger.info(f"Async detection task queued: {task.id} for {meyve_grubu}")
-
-        return JsonResponse(
-            {
-                "task_id": task.id,
-                "status": "PENDING",
-                "message": "Görüntü işleme kuyruğa eklendi",
-                "from_cache": False,
-            },
-            status=202,
         )
 
     except ValidationError as e:
