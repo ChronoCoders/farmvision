@@ -118,6 +118,8 @@ def _validate_detection_form(request: HttpRequest) -> Dict[str, Any]:
 
     # Validate tree age
     try:
+        if agac_yasi is None:
+            raise ValidationError("Ağaç yaşı gerekli")
         agac_yasi_int = int(agac_yasi)
         if not validate_tree_age(agac_yasi_int):
             raise ValidationError("Ağaç yaşı 0-150 arasında olmalı")
@@ -594,8 +596,7 @@ def download_image(request: HttpRequest, slug: str) -> FileResponse | HttpRespon
             as_attachment=True,
             filename=f"{safe_slug}_result.zip",
         )
-        # FileResponse will close the file when done, but we explicitly mark it
-        response.file_to_stream.close_file = True
+        # FileResponse will automatically close the file when done
         return response
     except Exception as e:
         logger.error(f"Dosya indirme hatası: {e}")
