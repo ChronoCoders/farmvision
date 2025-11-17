@@ -249,7 +249,7 @@
 		<!-- Refresh Button -->
 		<div class="row small-spacing">
 			<div class="col-12 text-center">
-				<button onclick="location.reload();" class="btn btn-primary btn-lg waves-effect waves-light">
+				<button data-action="refresh" class="btn btn-primary btn-lg waves-effect waves-light">
 					<i class="fa fa-refresh"></i> Yenile
 				</button>
 			</div>
@@ -259,4 +259,5 @@
 	<!-- /.main-content -->
 </div><!--/#wrapper -->
 
+<script src="{% static 'assets/scripts/form-handlers.js' %}"></script>
 {% endblock %}

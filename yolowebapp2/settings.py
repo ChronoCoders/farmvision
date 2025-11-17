@@ -141,14 +141,26 @@ if not DEBUG and not IS_DEVELOPMENT:
     SECURE_HSTS_PRELOAD = True
 
 CSP_DEFAULT_SRC = ("'self'",)
-# NOTE: unsafe-inline and unsafe-eval are kept for backwards compatibility with existing
-# templates that use inline scripts. For better security, migrate to nonces or external scripts.
-# TODO: Refactor templates to remove inline scripts and enable stricter CSP
-CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'")
-CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")
+# Trusted CDN hosts for third-party libraries
+CSP_SCRIPT_SRC = (
+    "'self'",
+    "https://cdn.jsdelivr.net",  # Chart.js
+    "https://unpkg.com",  # Leaflet, georaster
+    "https://www.gstatic.com",  # Google Charts
+)
+CSP_STYLE_SRC = (
+    "'self'",
+    "'unsafe-inline'",  # Required for inline styles in some components
+    "https://unpkg.com",  # Leaflet CSS
+)
 CSP_IMG_SRC = ("'self'", "data:", "https:")
-CSP_FONT_SRC = ("'self'", "data:")
-CSP_CONNECT_SRC = ("'self'",)
+CSP_FONT_SRC = ("'self'", "data:", "https://cdn.jsdelivr.net")
+CSP_CONNECT_SRC = (
+    "'self'",
+    "https://tile.openstreetmap.org",  # OpenStreetMap tiles
+    "https://*.tile.osm.org",  # OSM tiles
+    "https://*.google.com",  # Google Maps tiles
+)
 # Report CSP violations for monitoring (configure endpoint as needed)
 # CSP_REPORT_URI = "/csp-report/"
 

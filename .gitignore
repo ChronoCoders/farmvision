@@ -37,6 +37,9 @@ db.sqlite3-journal
 /media
 /staticfiles
 /static
+!/static/assets/
+!/static/assets/scripts/
+!/static/assets/scripts/*.js
 
 # Environment variables
 .env

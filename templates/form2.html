@@ -2,7 +2,7 @@
 	<div class="box-content card white">
 		<h4 class="box-title">Giriş Değerleri</h4>
 		<div class="card-content">
-			<form action="{% url 'detection:multi_detection_image' %}" method="post" enctype="multipart/form-data" onsubmit="handleFormSubmit2(event)">
+			<form action="{% url 'detection:multi_detection_image' %}" method="post" enctype="multipart/form-data" data-form="multi-detection">
 				{% csrf_token %}
 				<div class="form-group margin-bottom-20">
 					<select name="meyve_grubu" class="form-control" required aria-label="Meyve Grubu Seçin">
@@ -26,7 +26,7 @@
 
 				<div class="form-group">
 					<label for="exampleInputFile" class="btn btn-default">Meyve Fotoğraflarını Seç <i class="ico fa-solid fa-image" aria-hidden="true"></i></label>
-					<input id="exampleInputFile" style="display: none" type="file" name="file" accept="image/jpeg,image/png,image/tiff" onchange="loadFile(event)" multiple required aria-label="Meyve Fotoğrafları Seç">
+					<input id="exampleInputFile" style="display: none" type="file" name="file" accept="image/jpeg,image/png,image/tiff" data-preview="true" multiple required aria-label="Meyve Fotoğrafları Seç">
 					{% load static %}
 					<div class="col-lg-3 col-6">
 						<a href="#" class="thumbnail">
@@ -47,51 +47,4 @@
 	</div>
 </div>
 
-<script>
-function loadFile(event) {
-	if (!event.target.files || !event.target.files[0]) return;
-
-	const file = event.target.files[0];
-	const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-	const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/tiff'];
-
-	// Validate file type
-	if (!ALLOWED_TYPES.includes(file.type)) {
-		alert('Geçersiz dosya formatı. Sadece JPEG, PNG ve TIFF formatları kabul edilir.');
-		event.target.value = ''; // Clear the input
-		return;
-	}
-
-	// Validate file size
-	if (file.size > MAX_FILE_SIZE) {
-		alert('Dosya boyutu çok büyük. Maksimum 10MB yüklenebilir.');
-		event.target.value = ''; // Clear the input
-		return;
-	}
-
-	const reader = new FileReader();
-
-	reader.onload = function(){
-		const output = document.getElementById('output');
-		if (output) output.src = reader.result;
-	};
-
-	reader.onerror = function(error){
-		console.error('Dosya okuma hatası:', error);
-		alert('Dosya yüklenirken bir hata oluştu. Lütfen tekrar deneyin.');
-		event.target.value = ''; // Clear the input
-	};
-
-	reader.readAsDataURL(file);
-}
-
-function handleFormSubmit2(event) {
-	const submitBtn = document.getElementById('submitBtn2');
-	if (submitBtn) {
-		submitBtn.disabled = true;
-		submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Yükleniyor...';
-	}
-	// Form will submit normally
-	return true;
-}
-</script>
+<script src="{% static 'assets/scripts/form-handlers.js' %}"></script>
