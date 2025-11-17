@@ -83,16 +83,16 @@ def check_git_status():
         assert not isdocker(), "skipping check (Docker image)"
         assert check_online(), "skipping check (offline)"
 
-        cmd = "git fetch && git config --get remote.origin.url"
-        url = subprocess.check_output(cmd, shell=True).decode().strip().rstrip(".git")
+        subprocess.check_output(["git", "fetch"], shell=False)
+        url = subprocess.check_output(["git", "config", "--get", "remote.origin.url"], shell=False).decode().strip().rstrip(".git")
         branch = (
-            subprocess.check_output("git rev-parse --abbrev-ref HEAD", shell=True)
+            subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"], shell=False)
             .decode()
             .strip()
         )
         n = int(
             subprocess.check_output(
-                f"git rev-list {branch}..origin/master --count", shell=True
+                ["git", "rev-list", f"{branch}..origin/master", "--count"], shell=False
             )
         )
         if n > 0:
@@ -135,7 +135,7 @@ def check_requirements(requirements="requirements.txt", exclude=()):
                 f"{prefix} {e.req} not found and is required by YOLOR, attempting auto-update..."
             )
             print(
-                subprocess.check_output(f"pip install '{e.req}'", shell=True).decode()
+                subprocess.check_output(["pip", "install", str(e.req)], shell=False).decode()
             )
 
     if n:
@@ -202,9 +202,17 @@ def check_dataset(dict):
                 if s.startswith("http") and s.endswith(".zip"):
                     f = Path(s).name
                     torch.hub.download_url_to_file(s, f)
-                    r = os.system("unzip -q %s -d ../ && rm %s" % (f, f))
+                    result1 = subprocess.run(["unzip", "-q", f, "-d", "../"], shell=False, check=False)
+                    result2 = subprocess.run(["rm", f], shell=False, check=False)
+                    r = result1.returncode or result2.returncode
                 else:
-                    r = os.system(s)
+                    # Only allow http/https URLs for safety, not arbitrary shell commands
+                    if s.startswith("http://") or s.startswith("https://"):
+                        torch.hub.download_url_to_file(s, Path(s).name)
+                        r = 0
+                    else:
+                        print(f"WARNING: Skipping potentially unsafe command: {s}")
+                        r = 1
                 print(
                     "Dataset autodownload %s\n" % ("success" if r == 0 else "failure")
                 )
@@ -972,7 +980,7 @@ def print_mutation(hyp, results, yaml_file="hyp_evolved.yaml", bucket=""):
         if gsutil_getsize(url) > (
             os.path.getsize("evolve.txt") if os.path.exists("evolve.txt") else 0
         ):
-            os.system("gsutil cp %s ." % url)
+            subprocess.run(["gsutil", "cp", url, "."], shell=False, check=False)
 
     with open("evolve.txt", "a") as f:
         f.write(c + b + "\n")
@@ -994,7 +1002,7 @@ def print_mutation(hyp, results, yaml_file="hyp_evolved.yaml", bucket=""):
         yaml.dump(hyp, f, sort_keys=False)
 
     if bucket:
-        os.system("gsutil cp evolve.txt %s gs://%s" % (yaml_file, bucket))
+        subprocess.run(["gsutil", "cp", "evolve.txt", yaml_file, f"gs://{bucket}"], shell=False, check=False)
 
 
 def apply_classifier(x, model, img, im0):
