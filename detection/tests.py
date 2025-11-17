@@ -99,7 +99,8 @@ class DetectionAPITests(APITestCase):
         """Test that listing detections requires authentication."""
         self.client.logout()
         response = self.client.get("/api/detections/")
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        # SessionAuthentication returns 403 for unauthenticated requests
+        self.assertIn(response.status_code, [status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN])
 
     def test_list_detections(self):
         """Test listing all detections."""

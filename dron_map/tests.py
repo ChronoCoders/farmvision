@@ -63,7 +63,8 @@ class ProjectAPITests(APITestCase):
         """Test that listing projects requires authentication."""
         self.client.logout()
         response = self.client.get("/api/projects/")
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        # SessionAuthentication returns 403 for unauthenticated requests
+        self.assertIn(response.status_code, [status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN])
 
     def test_list_projects(self):
         """Test listing all projects."""
