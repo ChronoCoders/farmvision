@@ -10,7 +10,8 @@ services:
     environment:
       POSTGRES_DB: ${DATABASE_NAME:-farmvision}
       POSTGRES_USER: ${DATABASE_USER:-farmvision_user}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-changeme}
+      # SECURITY: Change this password in production! Do not use defaults.
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?DATABASE_PASSWORD environment variable is required}
     ports:
       - "5432:5432"
     healthcheck:
@@ -62,7 +63,7 @@ services:
       DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1}
       DATABASE_NAME: ${DATABASE_NAME:-farmvision}
       DATABASE_USER: ${DATABASE_USER:-farmvision_user}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-changeme}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:?DATABASE_PASSWORD environment variable is required}
       DATABASE_HOST: db
       DATABASE_PORT: 5432
       REDIS_HOST: redis
@@ -101,7 +102,7 @@ services:
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
       DATABASE_NAME: ${DATABASE_NAME:-farmvision}
       DATABASE_USER: ${DATABASE_USER:-farmvision_user}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-changeme}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:?DATABASE_PASSWORD environment variable is required}
       DATABASE_HOST: db
       DATABASE_PORT: 5432
       REDIS_HOST: redis
@@ -130,7 +131,7 @@ services:
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
       DATABASE_NAME: ${DATABASE_NAME:-farmvision}
       DATABASE_USER: ${DATABASE_USER:-farmvision_user}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-changeme}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:?DATABASE_PASSWORD environment variable is required}
       DATABASE_HOST: db
       DATABASE_PORT: 5432
       REDIS_HOST: redis

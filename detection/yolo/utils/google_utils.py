@@ -14,8 +14,9 @@ import torch
 def gsutil_getsize(url=""):
     # gs://bucket/file size
     # https://cloud.google.com/storage/docs/gsutil/commands/du
-    s = subprocess.check_output(f"gsutil du {url}", shell=True).decode("utf-8")
-    return eval(s.split(" ")[0]) if len(s) else 0  # bytes
+    s = subprocess.check_output(["gsutil", "du", url], shell=False).decode("utf-8")
+    # Use int() instead of eval() for safety
+    return int(s.split(" ")[0]) if len(s) else 0  # bytes
 
 
 def attempt_download(file, repo="WongKinYiu/yolov7"):
@@ -39,7 +40,7 @@ def attempt_download(file, repo="WongKinYiu/yolov7"):
                 "yolov7-e6e.pt",
                 "yolov7-w6.pt",
             ]
-            tag = subprocess.check_output("git tag", shell=True).decode().split()[-1]
+            tag = subprocess.check_output(["git", "tag"], shell=False).decode().split()[-1]
 
         name = file.name
         if name in assets:
@@ -55,8 +56,8 @@ def attempt_download(file, repo="WongKinYiu/yolov7"):
                 assert redundant, "No secondary mirror"
                 url = f"https://storage.googleapis.com/{repo}/ckpt/{name}"
                 print(f"Downloading {url} to {file}...")
-                os.system(
-                    f"curl -L {url} -o {file}"
+                subprocess.run(
+                    ["curl", "-L", url, "-o", str(file)], shell=False, check=False
                 )  # torch.hub.download_url_to_file(url, weights)
             finally:
                 if not file.exists() or file.stat().st_size < 1e6:  # check
@@ -81,14 +82,27 @@ def gdrive_download(id="", file="tmp.zip"):
 
     # Attempt file download
     out = "NUL" if platform.system() == "Windows" else "/dev/null"
-    os.system(
-        f'curl -c ./cookie -s -L "drive.google.com/uc?export=download&id={id}" > {out}'
-    )
+    with open(out, "w") as devnull:
+        subprocess.run(
+            ["curl", "-c", "./cookie", "-s", "-L", f"drive.google.com/uc?export=download&id={id}"],
+            stdout=devnull,
+            shell=False,
+            check=False
+        )
     if os.path.exists("cookie"):  # large file
-        s = f'curl -Lb ./cookie "drive.google.com/uc?export=download&confirm={get_token()}&id={id}" -o {file}'
+        token = get_token()
+        result = subprocess.run(
+            ["curl", "-Lb", "./cookie", f"drive.google.com/uc?export=download&confirm={token}&id={id}", "-o", str(file)],
+            shell=False,
+            check=False
+        )
     else:  # small file
-        s = f'curl -s -L -o {file} "drive.google.com/uc?export=download&id={id}"'
-    r = os.system(s)  # execute, capture return
+        result = subprocess.run(
+            ["curl", "-s", "-L", "-o", str(file), f"drive.google.com/uc?export=download&id={id}"],
+            shell=False,
+            check=False
+        )
+    r = result.returncode  # execute, capture return
     cookie.unlink(missing_ok=True)  # remove existing cookie
 
     # Error check
@@ -100,7 +114,7 @@ def gdrive_download(id="", file="tmp.zip"):
     # Unzip if archive
     if file.suffix == ".zip":
         print("unzipping... ", end="")
-        os.system(f"unzip -q {file}")  # unzip
+        subprocess.run(["unzip", "-q", str(file)], shell=False, check=False)  # unzip
         file.unlink()  # remove zip to free space
 
     print(f"Done ({time.time() - t:.1f}s)")

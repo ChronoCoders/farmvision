@@ -246,7 +246,7 @@ class LoadWebcam:
         self.stride = stride
 
         if pipe.isnumeric():
-            pipe = eval(pipe)
+            pipe = int(pipe)  # Use int() instead of eval() for safety
 
         self.pipe = pipe
         self.cap = cv2.VideoCapture(pipe)
@@ -311,7 +311,7 @@ class LoadStreams:
         for i, s in enumerate(sources):
 
             print(f"{i + 1}/{n}: {s}... ", end="")
-            url = eval(s) if s.isnumeric() else s
+            url = int(s) if s.isnumeric() else s  # Use int() instead of eval() for safety
             if "youtube.com/" in str(url) or "youtu.be/" in str(url):
                 check_requirements(("pafy", "youtube_dl"))
                 import pafy

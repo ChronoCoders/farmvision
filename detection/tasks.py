@@ -92,7 +92,7 @@ def process_image_detection(
 
         # Run detection
         try:
-            detec, unique_id, confidence_score = predict_tree.preddict(
+            detec, unique_id, confidence_score = predict_tree.predict(
                 path_to_weights=model_path, path_to_source=image_path
             )
 
