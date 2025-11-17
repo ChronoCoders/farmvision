@@ -16,7 +16,7 @@ FarmVision is an advanced agricultural intelligence platform that combines drone
 ## Tech Stack
 
 - **Backend**: Django 4.2.17
-- **AI/ML**: YOLOv8 (Ultralytics), PyTorch, OpenCV
+- **AI/ML**: YOLOv7 (Ultralytics), PyTorch, OpenCV
 - **GIS**: GDAL, Rasterio, PyProj
 - **Database**: PostgreSQL (with PostGIS support)
 - **Cache**: Redis
