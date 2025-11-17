@@ -141,11 +141,16 @@ if not DEBUG and not IS_DEVELOPMENT:
     SECURE_HSTS_PRELOAD = True
 
 CSP_DEFAULT_SRC = ("'self'",)
+# NOTE: unsafe-inline and unsafe-eval are kept for backwards compatibility with existing
+# templates that use inline scripts. For better security, migrate to nonces or external scripts.
+# TODO: Refactor templates to remove inline scripts and enable stricter CSP
 CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'")
 CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")
 CSP_IMG_SRC = ("'self'", "data:", "https:")
 CSP_FONT_SRC = ("'self'", "data:")
 CSP_CONNECT_SRC = ("'self'",)
+# Report CSP violations for monitoring (configure endpoint as needed)
+# CSP_REPORT_URI = "/csp-report/"
 
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
@@ -252,18 +257,21 @@ LOGGING = {
 # CORS Configuration
 if IS_DEVELOPMENT:
     # Development: Allow all origins for easier testing
+    # WARNING: Ensure IS_DEVELOPMENT is False in production!
     CORS_ALLOW_ALL_ORIGINS = True
     CORS_ALLOW_CREDENTIALS = True
 else:
     # Production: Use whitelist from environment variable
     cors_origins = os.environ.get("CORS_ALLOWED_ORIGINS", "")
     if cors_origins:
-        CORS_ALLOWED_ORIGINS = cors_origins.split(",")
+        CORS_ALLOWED_ORIGINS = [origin.strip() for origin in cors_origins.split(",")]
     else:
-        # Default to empty list in production for security
+        # Default to same-origin only in production for security
         CORS_ALLOWED_ORIGINS = []
 
     CORS_ALLOW_CREDENTIALS = True
+    # Ensure credentials are only sent to allowed origins
+    CORS_ALLOW_ALL_ORIGINS = False
 
 # CORS settings that apply to both environments
 CORS_ALLOW_METHODS = [

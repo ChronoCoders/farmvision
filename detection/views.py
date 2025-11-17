@@ -20,6 +20,12 @@ from detection.cache_utils import (
     get_cached_prediction,
     set_cached_prediction,
 )
+from detection.config import (
+    FRUIT_WEIGHTS,
+    FRUIT_MODELS,
+    validate_tree_count,
+    validate_tree_age,
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 logger = logging.getLogger(__name__)
@@ -27,22 +33,6 @@ logger = logging.getLogger(__name__)
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "bmp"}
 ALLOWED_MIME_TYPES = {"image/jpeg", "image/png", "image/bmp", "image/x-ms-bmp"}
 MAX_FILE_SIZE = 10 * 1024 * 1024
-
-FRUIT_WEIGHTS = {
-    "mandalina": 0.125,
-    "elma": 0.105,
-    "armut": 0.220,
-    "seftale": 0.185,
-    "nar": 0.300,
-}
-
-FRUIT_MODELS = {
-    "mandalina": "mandalina.pt",
-    "elma": "elma.pt",
-    "armut": "armut.pt",
-    "seftale": "seftale.pt",
-    "nar": "nar.pt",
-}
 
 
 def validate_image_file(file: UploadedFile) -> bool:
@@ -178,18 +168,18 @@ def index(request: HttpRequest) -> HttpResponse:
                         request, "main.html", {"error": "Ağaç sayısı gerekli"}
                     )
                 agac_sayisi_int = int(agac_sayisi)
-                # Add range validation for tree count
-                if not (1 <= agac_sayisi_int <= 100000):
+                # Add range validation for tree count using shared config
+                if not validate_tree_count(agac_sayisi_int):
                     return render(
                         request, "main.html", {"error": "Ağaç sayısı 1-100000 arasında olmalı"}
                     )
             except ValueError:
                 return render(request, "main.html", {"error": "Geçersiz sayı formatı"})
 
-            # Validate tree age with range check
+            # Validate tree age with range check using shared config
             try:
                 agac_yasi_int = int(agac_yasi)
-                if not (0 <= agac_yasi_int <= 150):
+                if not validate_tree_age(agac_yasi_int):
                     return render(
                         request, "main.html", {"error": "Ağaç yaşı 0-150 arasında olmalı"}
                     )
