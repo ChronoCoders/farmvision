@@ -5,7 +5,7 @@ FarmVision is an advanced agricultural intelligence platform that combines drone
 ## Features
 
 - **Drone Project Management**: Create, manage, and organize drone survey projects
-- **AI-Powered Detection**: YOLOv7-based multi-object detection for agricultural analysis
+- **AI-Powered Detection**: YOLOv8-based multi-object detection for agricultural analysis
 - **Orthophoto Processing**: Automated processing of drone imagery into georeferenced orthophotos
 - **Interactive Mapping**: WebODM integration for detailed field visualization
 - **Real-time Monitoring**: System monitoring dashboard with CPU, GPU, and memory metrics
