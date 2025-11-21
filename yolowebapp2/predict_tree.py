@@ -1,10 +1,16 @@
 # -*- coding: utf-8 -*-
+from pathlib import Path
+import sys
+
+# Add YOLO directory to path BEFORE importing YOLO modules
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(str(BASE_DIR / "detection" / "yolo"))
+
 from detection.yolo.utils.datasets import LoadImages
 from detection.yolo.utils.torch_utils import select_device
 from detection.yolo.utils.plots import plot_one_box
 from detection.yolo.utils.general import non_max_suppression, scale_coords
 from models.experimental import attempt_load
-from pathlib import Path
 import openpyxl
 from natsort import natsorted
 import numpy as np
@@ -12,17 +18,12 @@ import glob
 import zipfile
 import torch
 import cv2
-import sys
 import threading
 import uuid
 import logging
 from typing import Tuple, Dict, Any
 
 logger = logging.getLogger(__name__)
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-sys.path.append(str(BASE_DIR / "detection" / "yolo"))
 
 _model_cache = {}
 _device = None
