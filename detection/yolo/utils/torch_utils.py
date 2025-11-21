@@ -437,7 +437,6 @@ def revert_sync_batchnorm(module):
             module_output.qconfig = module.qconfig
     for name, child in module.named_children():
         module_output.add_module(name, revert_sync_batchnorm(child))
-    del module
     return module_output
 
 
