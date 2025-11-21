@@ -19,12 +19,8 @@ class HealthCheckResponseSerializer(serializers.Serializer):
     summary="Health Check",
     description="Check the health status of the FarmVision API and database connectivity",
     responses={
-        200: OpenApiResponse(
-            response=HealthCheckResponseSerializer, description="Service is healthy"
-        ),
-        503: OpenApiResponse(
-            response=HealthCheckResponseSerializer, description="Service is degraded"
-        ),
+        200: OpenApiResponse(response=HealthCheckResponseSerializer, description="Service is healthy"),
+        503: OpenApiResponse(response=HealthCheckResponseSerializer, description="Service is degraded"),
     },
     tags=["System"],
 )

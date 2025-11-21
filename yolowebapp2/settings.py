@@ -25,13 +25,9 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
 if not SECRET_KEY:
     if IS_DEVELOPMENT:
-        SECRET_KEY = (
-            "django-insecure-skit=zl3tcyh6*-zoxegu%@4*5k)-k5jnt(1fzfqyt4@jl%a%9"
-        )
+        SECRET_KEY = "django-insecure-skit=zl3tcyh6*-zoxegu%@4*5k)-k5jnt(1fzfqyt4@jl%a%9"
     else:
-        raise ValueError(
-            "DJANGO_SECRET_KEY environment variable must be set in production"
-        )
+        raise ValueError("DJANGO_SECRET_KEY environment variable must be set in production")
 
 ALLOWED_HOSTS = os.environ.get(
     "DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
@@ -298,9 +294,7 @@ CELERY_BROKER_URL = os.environ.get(
     "CELERY_BROKER_URL", "redis://localhost:6379/0")
 
 # Celery result backend (Redis)
-CELERY_RESULT_BACKEND = os.environ.get(
-    "CELERY_RESULT_BACKEND", "redis://localhost:6379/0"
-)
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
 
 # Celery task serializer
 CELERY_TASK_SERIALIZER = "json"
@@ -318,11 +312,8 @@ CELERY_TASK_TIME_LIMIT = 30 * 60  # Hard time limit: 30 minutes
 CELERY_TASK_SOFT_TIME_LIMIT = 25 * 60  # Soft time limit: 25 minutes
 
 # Celery worker configuration
-# Process one task at a time (for ML tasks)
-CELERY_WORKER_PREFETCH_MULTIPLIER = 1
-CELERY_WORKER_MAX_TASKS_PER_CHILD = (
-    10  # Restart worker after 10 tasks (memory management)
-)
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1  # Process one task at a time (for ML tasks)
+CELERY_WORKER_MAX_TASKS_PER_CHILD = 10  # Restart worker after 10 tasks (memory management)
 
 # Task routes (optional - for future scaling)
 CELERY_TASK_ROUTES = {

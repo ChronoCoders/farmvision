@@ -67,9 +67,7 @@ def process_image_detection(
     """
     try:
         # Update task state to PROCESSING
-        self.update_state(
-            state="PROCESSING", meta={"status": "Görüntü işleniyor...", "progress": 10}
-        )
+        self.update_state(state="PROCESSING", meta={"status": "Görüntü işleniyor...", "progress": 10})
 
         # Validate fruit type
         if fruit_type not in FRUIT_MODELS:
@@ -78,15 +76,10 @@ def process_image_detection(
         # Get model path
         model_path = FRUIT_MODELS[fruit_type]
 
-        logger.info(
-            f"Task {self.request.id}: Starting detection for {fruit_type} "
-            f"on image {image_path}"
-        )
+        logger.info(f"Task {self.request.id}: Starting detection for {fruit_type} " f"on image {image_path}")
 
         # Update state
-        self.update_state(
-            state="PROCESSING", meta={"status": "Model yükleniyor...", "progress": 30}
-        )
+        self.update_state(state="PROCESSING", meta={"status": "Model yükleniyor...", "progress": 30})
 
         start_time = time.time()
 
@@ -150,9 +143,7 @@ def process_image_detection(
         try:
             if os.path.exists(image_path):
                 os.unlink(image_path)
-                logger.debug(
-                    f"Task {self.request.id}: Cleaned up temp file {image_path}"
-                )
+                logger.debug(f"Task {self.request.id}: Cleaned up temp file {image_path}")
         except Exception as cleanup_error:
             logger.warning(
                 f"Task {self.request.id}: Cleanup failed: {cleanup_error}")
@@ -169,9 +160,7 @@ def process_image_detection(
             "processing_time": float(processing_time),
             "image_path": f"detected/{unique_id}/{Path(image_path).name}",
             "unique_id": str(unique_id),
-            "detection_result_id": (
-                int(detection_result.pk) if "detection_result" in locals() else None
-            ),
+            "detection_result_id": (int(detection_result.pk) if "detection_result" in locals() else None),
         }
 
         return result
@@ -220,9 +209,7 @@ def check_model_health() -> Dict[str, Any]:
 
     for fruit in fruits:
         try:
-            status = DetectionResult.check_model_degradation(
-                fruit_type=fruit, days=7, threshold=0.7
-            )
+            status = DetectionResult.check_model_degradation(fruit_type=fruit, days=7, threshold=0.7)
 
             results[fruit] = status
 

@@ -16,9 +16,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("detection/", include("detection.urls")),
     path("dron-map/", include("dron_map.urls")),
-    path(
-        "favicon.ico", RedirectView.as_view(url="/static/favicon.ico", permanent=True)
-    ),
+    path("favicon.ico", RedirectView.as_view(url="/static/favicon.ico", permanent=True)),
     # Backwards compatibility redirects
     path("mcti/", RedirectView.as_view(url="/detection/mcti/", permanent=False)),
     path("mcti", RedirectView.as_view(url="/detection/mcti/", permanent=False)),

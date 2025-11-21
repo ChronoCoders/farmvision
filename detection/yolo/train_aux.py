@@ -604,8 +604,8 @@ def train(hyp, opt, device, tb_writer=None):
                 if (
                     wandb_logger.wandb
                     and (
-                    (epoch + 1) % opt.save_period == 0 and not final_epoch
-                )
+                        (epoch + 1) % opt.save_period == 0 and not final_epoch
+                    )
                     and opt.save_period != -1
                 ):
                     wandb_logger.log_model(

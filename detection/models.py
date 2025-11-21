@@ -23,9 +23,7 @@ class DetectionResult(models.Model):
         help_text="Celery task ID for async processing",
     )
     image_path: models.CharField = models.CharField(max_length=255)
-    created_at: models.DateTimeField = models.DateTimeField(
-        auto_now_add=True, db_index=True
-    )
+    created_at: models.DateTimeField = models.DateTimeField(auto_now_add=True, db_index=True)
 
     class Meta:
         db_table = "detection_results"
@@ -57,16 +55,12 @@ class DetectionResult(models.Model):
 
         cutoff_date = timezone.now() - timedelta(days=days)
 
-        queryset = cls.objects.filter(
-            created_at__gte=cutoff_date, confidence_score__isnull=False
-        )
+        queryset = cls.objects.filter(created_at__gte=cutoff_date, confidence_score__isnull=False)
 
         if fruit_type:
             queryset = queryset.filter(fruit_type=fruit_type)
 
-        stats = queryset.aggregate(
-            avg_confidence=Avg("confidence_score"), sample_count=Count("id")
-        )
+        stats = queryset.aggregate(avg_confidence=Avg("confidence_score"), sample_count=Count("id"))
 
         avg_confidence = stats["avg_confidence"] or 0.0
         sample_count = stats["sample_count"] or 0
@@ -86,13 +80,9 @@ class DetectionResult(models.Model):
 
 class MultiDetectionBatch(models.Model):
     fruit_type: models.CharField = models.CharField(max_length=50, db_index=True)
-    batch_hash: models.CharField = models.CharField(
-        max_length=100, unique=True, db_index=True
-    )
+    batch_hash: models.CharField = models.CharField(max_length=100, unique=True, db_index=True)
     image_count: models.IntegerField = models.IntegerField()
-    created_at: models.DateTimeField = models.DateTimeField(
-        auto_now_add=True, db_index=True
-    )
+    created_at: models.DateTimeField = models.DateTimeField(auto_now_add=True, db_index=True)
 
     class Meta:
         db_table = "multi_detection_batches"

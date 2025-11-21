@@ -6,16 +6,12 @@ bind = "0.0.0.0:8000"
 backlog = 2048
 
 # Worker processes - Optimized for ML workloads
-workers = min(
-    4, multiprocessing.cpu_count()
-)  # Limit to 4 workers max for GPU/ML models
+workers = min(4, multiprocessing.cpu_count())  # Limit to 4 workers max for GPU/ML models
 worker_class = "gevent"  # Use gevent for better concurrency with I/O-bound ML tasks
 threads = 2  # Threads per worker for parallel request handling
 worker_connections = 1000
 max_requests = 500  # Restart workers after 500 requests to prevent memory leaks
-max_requests_jitter = (
-    50  # Add randomness to prevent all workers restarting simultaneously
-)
+max_requests_jitter = 50  # Add randomness to prevent all workers restarting simultaneously
 timeout = 120
 keepalive = 5
 
