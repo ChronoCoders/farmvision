@@ -5,12 +5,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from utils.general import (
+from .general import (
     bbox_iou,
     box_iou,
     xywh2xyxy,
 )
-from utils.torch_utils import is_parallel
+from .torch_utils import is_parallel
 
 
 def smooth_BCE(
