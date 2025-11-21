@@ -17,7 +17,7 @@ class Node_processing:
             self.task = self.create_node_task(image_folder=image_dir)
             self.uuid = self.task.uuid
         except Exception as e:
-            logger.error(f"NodeODM connection error: {e}")
+            logger.error("NodeODM connection error: %s", e)
             raise ConnectionError(f"NodeODM'e bağlanılamadı. Docker çalışıyor mu? Hata: {e}")
 
     def create_node_task(self, image_folder):
@@ -28,22 +28,22 @@ class Node_processing:
                 raise ValueError(f"Klasörde JPG dosyası bulunamadı: {image_folder}")
 
             task = self.start_api.create_task(images, {"dsm": True, "dtm": True, "odm": True})
-            logger.info(f"Task oluşturuldu: {task.uuid}")
+            logger.info("Task oluşturuldu: %s", task.uuid)
             return task
         except Exception as e:
-            logger.error(f"Task oluşturma hatası: {e}")
+            logger.error("Task oluşturma hatası: %s", e)
             raise
 
     def download_task(self, path):
         try:
-            logger.info(f"Task bekleniyor: {self.task.uuid}")
+            logger.info("Task bekleniyor: %s", self.task.uuid)
             self.task.wait_for_completion()
 
             os.makedirs(path, exist_ok=True)
             self.task.download_assets(path)
-            logger.info(f"Sonuçlar indirildi: {path}")
+            logger.info("Sonuçlar indirildi: %s", path)
         except Exception as e:
-            logger.error(f"İndirme hatası: {e}")
+            logger.error("İndirme hatası: %s", e)
             raise
 
     def get_uuid(self):
@@ -53,7 +53,7 @@ class Node_processing:
         try:
             return self.start_api.get_task(api)
         except Exception as e:
-            logger.error(f"Task bilgisi alınamadı: {e}")
+            logger.error("Task bilgisi alınamadı: %s", e)
             return None
 
     def task_info(self):
@@ -67,5 +67,5 @@ class Node_processing:
                 "engine": info.engine,
             }
         except Exception as e:
-            logger.error(f"Info alınamadı: {e}")
+            logger.error("Info alınamadı: %s", e)
             return {}

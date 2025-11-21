@@ -60,7 +60,7 @@ def validate_image_file(file: UploadedFile) -> bool:
 
     # Check for path traversal attempts
     if ".." in filename or "/" in filename or "\\" in filename:
-        logger.warning(f"Path traversal attempt detected: {file.name}")
+        logger.warning("Path traversal attempt detected: %s", file.name)
         raise ValidationError("Geçersiz dosya adı")
 
     # Check file extension
@@ -78,11 +78,11 @@ def validate_image_file(file: UploadedFile) -> bool:
         mime = magic.from_buffer(file_header, mime=True)
 
         if mime not in ALLOWED_MIME_TYPES:
-            logger.warning(f"MIME type mismatch: expected image, got {mime} for file {file.name}")
+            logger.warning("MIME type mismatch: expected image, got %s for file %s", mime, file.name)
             raise ValidationError(f"Geçersiz dosya tipi: {mime}")
 
     except Exception as e:
-        logger.error(f"Magic bytes check failed for {file.name}: {e}")
+        logger.error("Magic bytes check failed for %s: %s", file.name, e)
         raise ValidationError("Dosya doğrulama hatası")
 
     return True
@@ -93,7 +93,7 @@ def extract_detection_count(detec_result: bytes) -> int:
         count_str = detec_result.decode("utf-8")
         return int(count_str)
     except (ValueError, UnicodeDecodeError, AttributeError) as e:
-        logger.error(f"Algılama sonucu parse hatası: {e}")
+        logger.error("Algılama sonucu parse hatası: %s", e)
         raise ValidationError("Algılama sonucu işlenemedi")
 
 
@@ -103,7 +103,7 @@ def sanitize_filename(filename: str) -> str:
 
     # Additional check for path traversal - reject if malicious path detected
     if ".." in filename or "/" in filename or "\\" in filename:
-        logger.warning(f"Path traversal attempt detected in sanitize_filename: {filename}")
+        logger.warning("Path traversal attempt detected in sanitize_filename: %s", filename)
         raise ValidationError("Geçersiz dosya adı - güvenlik ihlali tespit edildi")
 
     name, ext = os.path.splitext(filename)
@@ -212,7 +212,7 @@ def index(request: HttpRequest) -> HttpResponse:
 
             if cached_result:
                 # Cache HIT - return cached result
-                logger.info(f"Using cached result for {meyve_grubu}, hash={image_hash[:16]}...")
+                logger.info("Using cached result for %s, hash=%s...", meyve_grubu, image_hash[:16])
 
                 # Adjust for current tree count
                 cached_weight = cached_result["weight_per_fruit"] * cached_result["detected_count"]
@@ -235,7 +235,7 @@ def index(request: HttpRequest) -> HttpResponse:
                     with open(tmp_path, "wb") as tmp:
                         tmp.write(image_data)
                 except Exception as e:
-                    logger.error(f"Geçici dosya yazma hatası: {tmp_path}: {e}")
+                    logger.error("Geçici dosya yazma hatası: %s: %s", tmp_path, e)
                     raise ValidationError("Dosya yüklenirken hata oluştu")
 
                 start_time = time.time()
@@ -290,11 +290,11 @@ def index(request: HttpRequest) -> HttpResponse:
                             f"Detection result saved: {meyve_grubu}, count={count}, confidence={confidence_score:.3f}"
                         )
                     except Exception as db_error:
-                        logger.error(f"Veritabanı kaydetme hatası: {db_error}")
+                        logger.error("Veritabanı kaydetme hatası: %s", db_error)
                         # Don't fail the request if DB save fails, just log it
 
                 except (FileNotFoundError, RuntimeError, ValueError, IOError) as e:
-                    logger.error(f"Model algılama hatası: {e}")
+                    logger.error("Model algılama hatası: %s", e)
                     # Don't expose internal error details to users
                     raise ValidationError("Algılama işlemi başarısız oldu. Lütfen tekrar deneyin.")
                 finally:
@@ -303,12 +303,12 @@ def index(request: HttpRequest) -> HttpResponse:
                         if os.path.exists(tmp_path):
                             os.unlink(tmp_path)
                     except Exception as e:
-                        logger.error(f"Geçici dosya silme hatası: {tmp_path}: {e}")
+                        logger.error("Geçici dosya silme hatası: %s: %s", tmp_path, e)
 
         except ValidationError as e:
             return render(request, "main.html", {"error": str(e)})
         except Exception as e:
-            logger.error(f"İşlem hatası: {e}")
+            logger.error("İşlem hatası: %s", e)
             return render(
                 request,
                 "main.html",
@@ -349,7 +349,7 @@ def multi_detection_image(request: HttpRequest) -> HttpResponse:
             try:
                 hass = hashing.add_prefix2(filename=f"{time.time()}")
             except Exception as e:
-                logger.error(f"Hash oluşturma hatası: {e}")
+                logger.error("Hash oluşturma hatası: %s", e)
                 raise ValidationError("Dizin oluşturulamadı")
 
             # Create output directory
@@ -358,7 +358,7 @@ def multi_detection_image(request: HttpRequest) -> HttpResponse:
                 upload_dir = Path(hass[0])
                 upload_dir.mkdir(parents=True, exist_ok=True)
             except Exception as e:
-                logger.error(f"Çıktı dizini oluşturma hatası: {hass[0]}: {e}")
+                logger.error("Çıktı dizini oluşturma hatası: %s: %s", hass[0], e)
                 raise ValidationError("Çıktı dizini oluşturulamadı")
 
             # Save uploaded files
@@ -370,7 +370,7 @@ def multi_detection_image(request: HttpRequest) -> HttpResponse:
 
                     safe_image_name = os.path.basename(image.name)
                     if ".." in safe_image_name or "/" in safe_image_name or "\\" in safe_image_name:
-                        logger.warning(f"Path traversal attempt in filename: {image.name}")
+                        logger.warning("Path traversal attempt in filename: %s", image.name)
                         raise ValidationError(f"Geçersiz dosya adı: {image.name}")
 
                     img_path = Path(hass[0]) / safe_image_name
@@ -378,14 +378,14 @@ def multi_detection_image(request: HttpRequest) -> HttpResponse:
                         for chunk in image.chunks():
                             f.write(chunk)
             except Exception as e:
-                logger.error(f"Dosya kaydetme hatası: {e}")
+                logger.error("Dosya kaydetme hatası: %s", e)
                 # Clean up directory on file save failure
                 if upload_dir and upload_dir.exists():
                     try:
                         shutil.rmtree(str(upload_dir))
-                        logger.info(f"Hatalı dosyalar temizlendi: {upload_dir}")
+                        logger.info("Hatalı dosyalar temizlendi: %s", upload_dir)
                     except Exception as cleanup_error:
-                        logger.error(f"Dosya temizleme hatası: {cleanup_error}")
+                        logger.error("Dosya temizleme hatası: %s", cleanup_error)
                 raise ValidationError("Dosyalar kaydedilemedi")
 
             # Run multi prediction
@@ -402,20 +402,20 @@ def multi_detection_image(request: HttpRequest) -> HttpResponse:
                 return render(request, "multi_detection_fruit.html", {"response": hass[1]})
 
             except (FileNotFoundError, RuntimeError, ValueError, IOError) as e:
-                logger.error(f"Çoklu algılama işlemi hatası: {e}")
+                logger.error("Çoklu algılama işlemi hatası: %s", e)
                 # Clean up input files on prediction failure
                 if upload_dir and upload_dir.exists():
                     try:
                         shutil.rmtree(str(upload_dir))
-                        logger.info(f"Algılama hatası nedeniyle dosyalar silindi: {upload_dir}")
+                        logger.info("Algılama hatası nedeniyle dosyalar silindi: %s", upload_dir)
                     except Exception as cleanup_error:
-                        logger.error(f"Dosya temizleme hatası: {cleanup_error}")
+                        logger.error("Dosya temizleme hatası: %s", cleanup_error)
                 raise ValidationError(f"Algılama başarısız: {str(e)}")
 
         except ValidationError as e:
             return render(request, "multi_detection_fruit.html", {"error": str(e)})
         except Exception as e:
-            logger.error(f"Çoklu algılama hatası: {e}")
+            logger.error("Çoklu algılama hatası: %s", e)
             return render(request, "multi_detection_fruit.html", {"error": "Bir hata oluştu"})
 
     return render(request, "multi_detection_fruit.html")
@@ -448,7 +448,7 @@ def download_image(request: HttpRequest, slug: str) -> FileResponse | HttpRespon
         response.file_to_stream.close_file = True
         return response
     except Exception as e:
-        logger.error(f"Dosya indirme hatası: {e}")
+        logger.error("Dosya indirme hatası: %s", e)
         return HttpResponse("Dosya indirilemedi", status=500)
 
 
@@ -528,7 +528,7 @@ def system_monitoring(request: HttpRequest) -> HttpResponse:
         return render(request, "system_monitoring.html", context)
 
     except Exception as e:
-        logger.error(f"Sistem izleme hatası: {e}")
+        logger.error("Sistem izleme hatası: %s", e)
         return render(
             request,
             "system_monitoring.html",
@@ -600,7 +600,7 @@ def async_detection(request: HttpRequest) -> JsonResponse:
 
         if cached_result:
             # Cache HIT - return cached result immediately
-            logger.info(f"Async endpoint: Using cached result for {meyve_grubu}, hash={image_hash[:16]}...")
+            logger.info("Async endpoint: Using cached result for %s, hash=%s...", meyve_grubu, image_hash[:16])
 
             # Adjust for current tree count
             cached_weight = cached_result["weight_per_fruit"] * cached_result["detected_count"]
@@ -631,7 +631,7 @@ def async_detection(request: HttpRequest) -> JsonResponse:
             with open(tmp_path, "wb") as tmp:
                 tmp.write(image_data)
         except Exception as e:
-            logger.error(f"Geçici dosya yazma hatası: {tmp_path}: {e}")
+            logger.error("Geçici dosya yazma hatası: %s: %s", tmp_path, e)
             return JsonResponse({"error": "Dosya yüklenirken hata oluştu"}, status=500)
 
         # Queue async task
@@ -645,7 +645,7 @@ def async_detection(request: HttpRequest) -> JsonResponse:
             user_id=request.user.pk if request.user.is_authenticated else None,
         )
 
-        logger.info(f"Async detection task queued: {task.id} for {meyve_grubu}")
+        logger.info("Async detection task queued: %s for %s", task.id, meyve_grubu)
 
         return JsonResponse(
             {
@@ -660,7 +660,7 @@ def async_detection(request: HttpRequest) -> JsonResponse:
     except ValidationError as e:
         return JsonResponse({"error": str(e)}, status=400)
     except Exception as e:
-        logger.error(f"Async detection hatası: {e}")
+        logger.error("Async detection hatası: %s", e)
         return JsonResponse({"error": "Bir hata oluştu"}, status=500)
 
 
@@ -723,7 +723,7 @@ def task_status(request: HttpRequest, task_id: str) -> JsonResponse:
         return JsonResponse(response_data)
 
     except Exception as e:
-        logger.error(f"Task status check hatası: {e}")
+        logger.error("Task status check hatası: %s", e)
         return JsonResponse(
             {
                 "task_id": task_id,
@@ -808,7 +808,7 @@ def cache_invalidate(request: HttpRequest) -> JsonResponse:
             )
 
     except Exception as e:
-        logger.error(f"Cache invalidation hatası: {e}")
+        logger.error("Cache invalidation hatası: %s", e)
         return JsonResponse({"success": False, "error": str(e)}, status=500)
 
 
@@ -840,5 +840,5 @@ def cache_statistics(request: HttpRequest) -> JsonResponse:
         return JsonResponse(stats)
 
     except Exception as e:
-        logger.error(f"Cache statistics hatası: {e}")
+        logger.error("Cache statistics hatası: %s", e)
         return JsonResponse({"redis_available": False, "error": str(e)}, status=500)

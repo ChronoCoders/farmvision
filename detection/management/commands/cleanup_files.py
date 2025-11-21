@@ -78,7 +78,7 @@ class Command(BaseCommand):
                                         f"(age: {file_age_hours:.1f}h, size: {file_size} bytes)"
                                     )
                                 )
-                                logger.info(f"Deleted old file: {file_path}")
+                                logger.info("Deleted old file: %s", file_path)
 
                             deleted_count += 1
                             deleted_size += file_size
@@ -87,7 +87,7 @@ class Command(BaseCommand):
 
                     except (OSError, IOError) as e:
                         self.stdout.write(self.style.ERROR(f"Error processing file {file_path}: {e}"))
-                        logger.error(f"Error processing file {file_path}: {e}")
+                        logger.error("Error processing file %s: %s", file_path, e)
 
                 # Clean up empty directories (only if not dry run)
                 if not dry_run:
@@ -98,7 +98,7 @@ class Command(BaseCommand):
                             if dir_path.exists():
                                 dir_path.rmdir()
                                 self.stdout.write(self.style.SUCCESS(f"Removed empty directory: {dir_path}"))
-                                logger.info(f"Removed empty directory: {dir_path}")
+                                logger.info("Removed empty directory: %s", dir_path)
                         except (OSError, IOError):
                             # Directory not empty or other error, skip silently
                             pass
@@ -127,5 +127,5 @@ class Command(BaseCommand):
 
         except Exception as e:
             self.stdout.write(self.style.ERROR(f"Cleanup failed: {e}"))
-            logger.error(f"Cleanup failed: {e}")
+            logger.error("Cleanup failed: %s", e)
             raise

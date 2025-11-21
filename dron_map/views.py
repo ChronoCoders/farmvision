@@ -68,7 +68,7 @@ def validate_uploaded_files(files: List[Any]) -> None:
 
         # Check for path traversal attempts
         if ".." in filename or "/" in filename or "\\" in filename:
-            logger.warning(f"Path traversal attempt detected: {uploaded_file.name}")
+            logger.warning("Path traversal attempt detected: %s", uploaded_file.name)
             raise ValidationError(f"Geçersiz dosya adı: {uploaded_file.name}")
 
         ext = filename.split(".")[-1].lower()
@@ -173,10 +173,10 @@ def add_projects(request: HttpRequest, slug: Optional[str] = None, project_id: O
                     try:
                         with transaction.atomic():
                             form.save()
-                        logger.info(f"Proje güncellendi: {projes.id}")
+                        logger.info("Proje güncellendi: %s", projes.id)
                         return redirect("dron_map:projects")
                     except Exception as e:
-                        logger.error(f"Veritabanı güncelleme hatası: {e}")
+                        logger.error("Veritabanı güncelleme hatası: %s", e)
                         return render(
                             request,
                             "add-projects.html",
@@ -192,7 +192,7 @@ def add_projects(request: HttpRequest, slug: Optional[str] = None, project_id: O
                     {"projes": projes, "errors": form.errors, "userss": request.user},
                 )
             except Exception as e:
-                logger.error(f"Update error: {e}")
+                logger.error("Update error: %s", e)
                 return render(
                     request,
                     "add-projects.html",
@@ -215,10 +215,10 @@ def add_projects(request: HttpRequest, slug: Optional[str] = None, project_id: O
             deleted_project_id = projes.id
             with transaction.atomic():
                 projes.delete()
-            logger.info(f"Proje silindi: {deleted_project_id}")
+            logger.info("Proje silindi: %s", deleted_project_id)
             return redirect("dron_map:projects")
         except Exception as e:
-            logger.error(f"Proje silme hatası: {project_id}: {e}")
+            logger.error("Proje silme hatası: %s: %s", project_id, e)
             return render(
                 request,
                 "add-projects.html",
@@ -248,7 +248,7 @@ def add_projects(request: HttpRequest, slug: Optional[str] = None, project_id: O
                     hass = hashing.add_prefix(filename=f"{title}{field}")
                     upload_dir = Path(hass[0])
                 except Exception as e:
-                    logger.error(f"Hashing path oluşturma hatası: {e}")
+                    logger.error("Hashing path oluşturma hatası: %s", e)
                     raise ValidationError("Proje dizini oluşturulamadı")
 
                 # Save uploaded images
@@ -261,24 +261,24 @@ def add_projects(request: HttpRequest, slug: Optional[str] = None, project_id: O
 
                         safe_filename = os.path.basename(image.name)
                         if ".." in safe_filename or "/" in safe_filename or "\\" in safe_filename:
-                            logger.warning(f"Path traversal attempt in filename: {image.name}")
+                            logger.warning("Path traversal attempt in filename: %s", image.name)
                             raise ValidationError(f"Geçersiz dosya adı: {image.name}")
 
                         fs = FileSystemStorage(location=str(hass[0]))
                         saved_path = fs.save(safe_filename, image)
                         if not saved_path:
-                            logger.error(f"Dosya kaydetme başarısız: {safe_filename}")
+                            logger.error("Dosya kaydetme başarısız: %s", safe_filename)
                             raise IOError(f"Dosya kaydedilemedi: {safe_filename}")
                     saved_files_dir = upload_dir
                 except Exception as e:
-                    logger.error(f"Görüntü kaydetme hatası: {e}")
+                    logger.error("Görüntü kaydetme hatası: %s", e)
                     # Clean up any files that were saved
                     if upload_dir.exists():
                         try:
                             shutil.rmtree(str(upload_dir))
-                            logger.info(f"Hatalı dosyalar temizlendi: {upload_dir}")
+                            logger.info("Hatalı dosyalar temizlendi: %s", upload_dir)
                         except Exception as cleanup_error:
-                            logger.error(f"Dosya temizleme hatası: {cleanup_error}")
+                            logger.error("Dosya temizleme hatası: %s", cleanup_error)
                     raise ValidationError(f"Dosyalar kaydedilemedi: {str(e)}")
 
                 # Save project to database with transaction
@@ -286,16 +286,16 @@ def add_projects(request: HttpRequest, slug: Optional[str] = None, project_id: O
                     with transaction.atomic():
                         form.instance.hashing_path = hass[1]
                         project = form.save()
-                        logger.info(f"Proje veritabanına kaydedildi: {project.id}")
+                        logger.info("Proje veritabanına kaydedildi: %s", project.id)
                 except Exception as e:
-                    logger.error(f"Veritabanı kaydetme hatası: {e}")
+                    logger.error("Veritabanı kaydetme hatası: %s", e)
                     # Database save failed, clean up saved files
                     if saved_files_dir and saved_files_dir.exists():
                         try:
                             shutil.rmtree(str(saved_files_dir))
-                            logger.info(f"Veritabanı hatası nedeniyle dosyalar silindi: {saved_files_dir}")
+                            logger.info("Veritabanı hatası nedeniyle dosyalar silindi: %s", saved_files_dir)
                         except Exception as cleanup_error:
-                            logger.error(f"Dosya temizleme hatası: {cleanup_error}")
+                            logger.error("Dosya temizleme hatası: %s", cleanup_error)
                     raise ValidationError("Proje kaydedilemedi")
 
                 # Process task (non-critical, log but don't fail)
@@ -303,7 +303,7 @@ def add_projects(request: HttpRequest, slug: Optional[str] = None, project_id: O
                     p = tasknode.Node_processing(str(hass[0]))
                     p.download_task(f"{BASE_DIR}/static/results/{hass[1]}")
                 except Exception as e:
-                    logger.error(f"Task processing error: {e}")
+                    logger.error("Task processing error: %s", e)
                     # Don't raise, just log - this is not critical
 
                 return redirect("dron_map:projects")
@@ -315,7 +315,7 @@ def add_projects(request: HttpRequest, slug: Optional[str] = None, project_id: O
                     {"error": str(e), "userss": request.user},
                 )
             except Exception as e:
-                logger.error(f"Add project error: {e}")
+                logger.error("Add project error: %s", e)
                 return render(
                     request,
                     "add-projects.html",
@@ -429,7 +429,7 @@ def maping(request: HttpRequest, project_id: int) -> HttpResponse:
                     },
                 )
             except (ValueError, ImportError) as e:
-                logger.error(f"Detection conversion error: {e}")
+                logger.error("Detection conversion error: %s", e)
                 return render(
                     request,
                     "map.html",
@@ -444,7 +444,7 @@ def maping(request: HttpRequest, project_id: int) -> HttpResponse:
                     },
                 )
             except Exception as e:
-                logger.error(f"Unexpected detection error: {e}")
+                logger.error("Unexpected detection error: %s", e)
                 return render(
                     request,
                     "map.html",
@@ -465,7 +465,7 @@ def maping(request: HttpRequest, project_id: int) -> HttpResponse:
 
                 # Check if file exists
                 if not os.path.exists(orthophoto_path):
-                    logger.error(f"Orthophoto bulunamadı: {orthophoto_path}")
+                    logger.error("Orthophoto bulunamadı: %s", orthophoto_path)
                     return render(
                         request,
                         "map.html",
@@ -496,7 +496,7 @@ def maping(request: HttpRequest, project_id: int) -> HttpResponse:
                 )
 
             except AttributeError as e:
-                logger.error(f"Algoritma metodu bulunamadı: {health_color}: {e}")
+                logger.error("Algoritma metodu bulunamadı: %s: %s", health_color, e)
                 return render(
                     request,
                     "map.html",
@@ -511,7 +511,7 @@ def maping(request: HttpRequest, project_id: int) -> HttpResponse:
                     },
                 )
             except Exception as e:
-                logger.error(f"Sağlık algoritması hatası: {health_color}: {e}")
+                logger.error("Sağlık algoritması hatası: %s: %s", health_color, e)
                 return render(
                     request,
                     "map.html",

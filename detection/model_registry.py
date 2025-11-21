@@ -181,14 +181,14 @@ def log_registry_info() -> None:
     logger.info("=" * 70)
 
     for model_name, info in MODEL_REGISTRY.items():
-        logger.info(f"Model: {model_name}")
+        logger.info("Model: %s", model_name)
         logger.info(f"  Version: {info['version']}")
         logger.info(f"  Date: {info['date'].strftime('%Y-%m-%d')}")
         logger.info(f"  Accuracy: {info['accuracy']:.2%}")
         logger.info(f"  Description: {info['description']}")
         logger.info("-" * 70)
 
-    logger.info(f"Total models registered: {len(MODEL_REGISTRY)}")
+    logger.info("Total models registered: %s", len(MODEL_REGISTRY))
     logger.info("=" * 70)
 
 
@@ -196,4 +196,4 @@ def log_registry_info() -> None:
 try:
     log_registry_info()
 except Exception as e:
-    logger.error(f"Failed to log registry info: {e}")
+    logger.error("Failed to log registry info: %s", e)
