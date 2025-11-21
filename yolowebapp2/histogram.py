@@ -24,8 +24,7 @@ def get_zoom(raster_path: str) -> Dict[str, int]:
         info = src.info()
         band_count = src.dataset.meta["count"]
         minzoom, maxzoom = info["minzoom"], info["maxzoom"]
-        if maxzoom < minzoom:
-            maxzoom = minzoom
+        maxzoom = max(maxzoom, minzoom)
     return {"minzoom": minzoom, "maxzoom": maxzoom, "band_count": band_count}
 
 
