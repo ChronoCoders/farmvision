@@ -278,7 +278,11 @@ def train(hyp, opt, device, tb_writer=None):
             )
         if epochs < start_epoch:
             logger.info(
-                "%s has been trained for %g epochs. Fine-tuning for %g additional epochs.", weights, ckpt["epoch"], epochs)
+                "%s has been trained for %g epochs. Fine-tuning for %g additional epochs.",
+                weights,
+                ckpt["epoch"],
+                epochs,
+            )
             epochs += ckpt["epoch"]
 
     gs = max(int(model.stride.max()), 32)
@@ -416,7 +420,16 @@ def train(hyp, opt, device, tb_writer=None):
             dataloader.sampler.set_epoch(epoch)
         pbar = enumerate(dataloader)
         logger.info(
-            ("\n" + "%10s" * 8), "Epoch", "gpu_mem", "box", "obj", "cls", "total", "labels", "img_size")
+            ("\n" + "%10s" * 8),
+            "Epoch",
+            "gpu_mem",
+            "box",
+            "obj",
+            "cls",
+            "total",
+            "labels",
+            "img_size",
+        )
         if rank in [-1, 0]:
             pbar = tqdm(pbar, total=nb)
         optimizer.zero_grad()
@@ -599,9 +612,7 @@ def train(hyp, opt, device, tb_writer=None):
                     torch.save(ckpt, wdir / "epoch_{:03d}.pt".format(epoch))
                 if (
                     wandb_logger.wandb
-                    and (
-                    (epoch + 1) % opt.save_period == 0 and not final_epoch
-                )
+                    and ((epoch + 1) % opt.save_period == 0 and not final_epoch)
                     and opt.save_period != -1
                 ):
                     wandb_logger.log_model(
@@ -630,7 +641,10 @@ def train(hyp, opt, device, tb_writer=None):
                 )
 
         logger.info(
-            "%g epochs completed in %.3f hours.\n", epoch - start_epoch + 1, (time.time() - t0) / 3600)
+            "%g epochs completed in %.3f hours.\n",
+            epoch - start_epoch + 1,
+            (time.time() - t0) / 3600,
+        )
         if opt.data.endswith("coco.yaml") and nc == 80:
             for m in (last, best) if best.exists() else (last):
                 results, _, _ = test.test(
