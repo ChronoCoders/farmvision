@@ -273,7 +273,6 @@ def cleanup_old_results(self, days_old: int = 30) -> Dict[str, Any]:
     try:
         # Get old results
         old_results = DetectionResult.objects.filter(created_at__lt=cutoff_date)
-        count = old_results.count()
 
         # Delete from database
         deleted_count, _ = old_results.delete()
