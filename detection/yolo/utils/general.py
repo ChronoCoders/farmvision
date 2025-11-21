@@ -227,7 +227,8 @@ def check_dataset(dict):
                     torch.hub.download_url_to_file(s, f)
                     unzip_cmd = shutil.which("unzip")
                     if not unzip_cmd:
-                        raise FileNotFoundError("unzip command not found in PATH")
+                        raise FileNotFoundError(
+                            "unzip command not found in PATH")
                     result1 = subprocess.run(
                         [unzip_cmd, "-q", f, "-d", "../"], shell=False, check=False
                     )
@@ -244,8 +245,7 @@ def check_dataset(dict):
                             f"WARNING: Skipping potentially unsafe command: {s}")
                         r = 1
                 print(
-                    f"Dataset autodownload {'success' if r == 0 else 'failure'}\n"
-                )
+                    f"Dataset autodownload {'success' if r == 0 else 'failure'}\n")
             else:
                 raise Exception("Dataset not found.")
 
