@@ -93,7 +93,7 @@ def get_statistics(id: str, type: str) -> Dict[str, Any]:
                 import json
 
                 with open(task) as f:
-                    j = json.loads(f.read())
+                    j = json.load(f)
             except Exception as e:
                 return {"error": str(e)}
             return {
@@ -105,7 +105,7 @@ def get_statistics(id: str, type: str) -> Dict[str, Any]:
         else:
             return {}
 
-    elif type == "orthophoto" or type == "plant":
+    elif type in ("orthophoto", "plant"):
         task = task_path(id, "odm_orthophoto", "odm_orthophoto.tif")
         return {"odm_orthophoto": task}
 
@@ -124,7 +124,7 @@ def get_statistics(id: str, type: str) -> Dict[str, Any]:
                 import json
 
                 with open(task) as f:
-                    j = json.loads(f.read())
+                    j = json.load(f)
             except Exception as e:
                 return {"error": str(e)}
             return {"camera_shots": j}
@@ -139,7 +139,7 @@ def get_statistics(id: str, type: str) -> Dict[str, Any]:
                 import json
 
                 with open(task) as f:
-                    j = json.loads(f.read())
+                    j = json.load(f)
             except Exception as e:
                 return {"error": str(e)}
             return {

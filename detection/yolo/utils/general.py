@@ -79,9 +79,15 @@ def check_git_status():
 
     print(colorstr("github: "), end="")
     try:
-        assert Path(".git").exists(), "skipping check (not a git repository)"
-        assert not isdocker(), "skipping check (Docker image)"
-        assert check_online(), "skipping check (offline)"
+        if not Path(".git").exists():
+            print("skipping check (not a git repository)")
+            return
+        if isdocker():
+            print("skipping check (Docker image)")
+            return
+        if not check_online():
+            print("skipping check (offline)")
+            return
 
         subprocess.check_output(["git", "fetch"], shell=False)
         url = subprocess.check_output(["git", "config", "--get", "remote.origin.url"], shell=False).decode().strip().rstrip(".git")
@@ -161,7 +167,8 @@ def check_img_size(img_size, s=32):
 def check_imshow():
 
     try:
-        assert not isdocker(), "cv2.imshow() is disabled in Docker environments"
+        if isdocker():
+            raise RuntimeError("cv2.imshow() is disabled in Docker environments")
         cv2.imshow("test", np.zeros((1, 1, 3)))
         cv2.waitKey(1)
         cv2.destroyAllWindows()
@@ -180,10 +187,10 @@ def check_file(file):
         return file
     else:
         files = glob.glob("./**/" + file, recursive=True)
-        assert len(files), f"File Not Found: {file}"
-        assert (
-            len(files) == 1
-        ), f"Multiple files match '{file}', specify exact path: {files}"
+        if not len(files):
+            raise FileNotFoundError(f"File Not Found: {file}")
+        if len(files) != 1:
+            raise ValueError(f"Multiple files match '{file}', specify exact path: {files}")
         return files[0]
 
 

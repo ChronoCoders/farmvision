@@ -33,8 +33,6 @@ class BCEBlurWithLogitsLoss(nn.Module):
         loss = self.loss_fcn(pred, true)
         pred = torch.sigmoid(pred)  # prob from logits
         dx = pred - true  # reduce only missing label effects
-        # dx = (pred - true).abs()  # reduce missing label and false label
-        # effects
         alpha_factor = 1 - torch.exp((dx - 1) / (self.alpha + 1e-4))
         loss *= alpha_factor
         return loss.mean()
@@ -73,7 +71,6 @@ class SigmoidBin(nn.Module):
         end = max - (self.scale / 2.0) / self.bin_count
         step = self.scale / self.bin_count
         self.step = step
-        # print(f" start = {start}, end = {end}, step = {step} ")
 
         bins = torch.range(start, end + 0.0001, step).float()
         self.register_buffer("bins", bins)
@@ -88,12 +85,11 @@ class SigmoidBin(nn.Module):
         return self.length
 
     def forward(self, pred):
-        assert (
-            pred.shape[-1] == self.length
-        ), "pred.shape[-1]=%d is not equal to self.length=%d" % (
-            pred.shape[-1],
-            self.length,
-        )
+        if pred.shape[-1] != self.length:
+            raise ValueError("pred.shape[-1]=%d is not equal to self.length=%d" % (
+                pred.shape[-1],
+                self.length,
+            ))
 
         pred_reg = (pred[..., 0] * self.reg_scale - self.reg_scale / 2.0) * self.step
         pred_bin = pred[..., 1 : (1 + self.bin_count)]
@@ -110,18 +106,16 @@ class SigmoidBin(nn.Module):
         return result
 
     def training_loss(self, pred, target):
-        assert (
-            pred.shape[-1] == self.length
-        ), "pred.shape[-1]=%d is not equal to self.length=%d" % (
-            pred.shape[-1],
-            self.length,
-        )
-        assert (
-            pred.shape[0] == target.shape[0]
-        ), "pred.shape=%d is not equal to the target.shape=%d" % (
-            pred.shape[0],
-            target.shape[0],
-        )
+        if pred.shape[-1] != self.length:
+            raise ValueError("pred.shape[-1]=%d is not equal to self.length=%d" % (
+                pred.shape[-1],
+                self.length,
+            ))
+        if pred.shape[0] != target.shape[0]:
+            raise ValueError("pred.shape=%d is not equal to the target.shape=%d" % (
+                pred.shape[0],
+                target.shape[0],
+            ))
         device = pred.device
 
         pred_reg = (
@@ -166,9 +160,6 @@ class FocalLoss(nn.Module):
 
     def forward(self, pred, true):
         loss = self.loss_fcn(pred, true)
-        # p_t = torch.exp(-loss)
-        # loss *= self.alpha * (1.000001 - p_t) ** self.gamma  # non-zero power
-        # for gradient stability
 
         # TF implementation
         # https://github.com/tensorflow/addons/blob/v0.7.1/tensorflow_addons/losses/focal_loss.py
@@ -513,9 +504,6 @@ class ComputeLoss:
         self.balance = {3: [4.0, 1.0, 0.4]}.get(
             det.nl, [4.0, 1.0, 0.25, 0.06, 0.02]
         )  # P3-P7
-        # self.balance = {3: [4.0, 1.0, 0.4]}.get(det.nl, [4.0, 1.0, 0.25, 0.1, .05])  # P3-P7
-        # self.balance = {3: [4.0, 1.0, 0.4]}.get(det.nl, [4.0, 1.0, 0.5, 0.4,
-        # .1])  # P3-P7
         self.ssi = list(det.stride).index(16) if autobalance else 0  # stride 16 index
         self.BCEcls, self.BCEobj, self.gr, self.hyp, self.autobalance = (
             BCEcls,
@@ -630,8 +618,6 @@ class ComputeLoss:
                 # Matches
                 r = t[:, :, 4:6] / anchors[:, None]  # wh ratio
                 j = torch.max(r, 1.0 / r).max(2)[0] < self.hyp["anchor_t"]  # compare
-                # j = wh_iou(anchors, t[:, 4:6]) > model.hyp['iou_t']  #
-                # iou(3,n)=wh_iou(anchors(3,2), gwh(n,2))
                 t = t[j]  # filter
 
                 # Offsets
@@ -733,7 +719,6 @@ class ComputeLossOTA:
                 # Regression
                 grid = torch.stack([gi, gj], dim=1)
                 pxy = ps[:, :2].sigmoid() * 2.0 - 0.5
-                # pxy = ps[:, :2].sigmoid() * 3. - 1.
                 pwh = (ps[:, 2:4].sigmoid() * 2) ** 2 * anchors[i]
                 pbox = torch.cat((pxy, pwh), 1)  # predicted box
                 selected_tbox = targets[i][:, 2:6] * pre_gen_gains[i]
@@ -780,11 +765,7 @@ class ComputeLossOTA:
 
     def build_targets(self, p, targets, imgs):
 
-        # indices, anch = self.find_positive(p, targets)
         indices, anch = self.find_3_positive(p, targets)
-        # indices, anch = self.find_4_positive(p, targets)
-        # indices, anch = self.find_5_positive(p, targets)
-        # indices, anch = self.find_9_positive(p, targets)
         device = torch.device(targets.device)
         matching_bs = [[] for pp in p]
         matching_as = [[] for pp in p]
@@ -835,7 +816,6 @@ class ComputeLossOTA:
                 pxy = (fg_pred[:, :2].sigmoid() * 2.0 - 0.5 + grid) * self.stride[
                     i
                 ]  # / 8.
-                # pxy = (fg_pred[:, :2].sigmoid() * 3. - 1. + grid) * self.stride[i]
                 pwh = (
                     (fg_pred[:, 2:4].sigmoid() * 2) ** 2 * anch[i][idx] * self.stride[i]
                 )  # / 8.
@@ -985,8 +965,6 @@ class ComputeLossOTA:
                 # Matches
                 r = t[:, :, 4:6] / anchors[:, None]  # wh ratio
                 j = torch.max(r, 1.0 / r).max(2)[0] < self.hyp["anchor_t"]  # compare
-                # j = wh_iou(anchors, t[:, 4:6]) > model.hyp['iou_t']  #
-                # iou(3,n)=wh_iou(anchors(3,2), gwh(n,2))
                 t = t[j]  # filter
 
                 # Offsets
@@ -1061,11 +1039,9 @@ class ComputeLossBinOTA:
         for k in "na", "nc", "nl", "anchors", "stride", "bin_count":
             setattr(self, k, getattr(det, k))
 
-        # xy_bin_sigmoid = SigmoidBin(bin_count=11, min=-0.5, max=1.5, use_loss_regression=False).to(device)
         wh_bin_sigmoid = SigmoidBin(
             bin_count=self.bin_count, min=0.0, max=4.0, use_loss_regression=False
         ).to(device)
-        # angle_bin_sigmoid = SigmoidBin(bin_count=31, min=-1.1, max=1.1, use_loss_regression=False).to(device)
         self.wh_bin_sigmoid = wh_bin_sigmoid
 
     def __call__(self, p, targets, imgs):  # predictions, targets, model
@@ -1100,13 +1076,6 @@ class ComputeLossBinOTA:
                 selected_tbox = targets[i][:, 2:6] * pre_gen_gains[i]
                 selected_tbox[:, :2] -= grid
 
-                # pxy = ps[:, :2].sigmoid() * 2. - 0.5
-                # pxy = ps[:, :2].sigmoid() * 3. - 1.
-                # pwh = (ps[:, 2:4].sigmoid() * 2) ** 2 * anchors[i]
-                # pbox = torch.cat((pxy, pwh), 1)  # predicted box
-
-                # x_loss, px = xy_bin_sigmoid.training_loss(ps[..., 0:12], tbox[i][..., 0])
-                # y_loss, py = xy_bin_sigmoid.training_loss(ps[..., 12:24], tbox[i][..., 1])
                 w_loss, pw = self.wh_bin_sigmoid.training_loss(
                     ps[..., 2 : (3 + self.bin_count)],
                     selected_tbox[..., 2] / anchors[i][..., 0],
@@ -1123,8 +1092,6 @@ class ComputeLossBinOTA:
                 py = ps[:, 1].sigmoid() * 2.0 - 0.5
 
                 lbox += w_loss + h_loss  # + x_loss + y_loss
-
-                # print(f"\n px = {px.shape}, py = {py.shape}, pw = {pw.shape}, ph = {ph.shape} \n")
 
                 pbox = torch.cat(
                     (
@@ -1182,11 +1149,7 @@ class ComputeLossBinOTA:
 
     def build_targets(self, p, targets, imgs):
 
-        # indices, anch = self.find_positive(p, targets)
         indices, anch = self.find_3_positive(p, targets)
-        # indices, anch = self.find_4_positive(p, targets)
-        # indices, anch = self.find_5_positive(p, targets)
-        # indices, anch = self.find_9_positive(p, targets)
 
         matching_bs = [[] for pp in p]
         matching_as = [[] for pp in p]
@@ -1402,8 +1365,6 @@ class ComputeLossBinOTA:
                 # Matches
                 r = t[:, :, 4:6] / anchors[:, None]  # wh ratio
                 j = torch.max(r, 1.0 / r).max(2)[0] < self.hyp["anchor_t"]  # compare
-                # j = wh_iou(anchors, t[:, 4:6]) > model.hyp['iou_t']  #
-                # iou(3,n)=wh_iou(anchors(3,2), gwh(n,2))
                 t = t[j]  # filter
 
                 # Offsets
@@ -1653,7 +1614,6 @@ class ComputeLossAuxOTA:
                 pxy = (fg_pred[:, :2].sigmoid() * 2.0 - 0.5 + grid) * self.stride[
                     i
                 ]  # / 8.
-                # pxy = (fg_pred[:, :2].sigmoid() * 3. - 1. + grid) * self.stride[i]
                 pwh = (
                     (fg_pred[:, 2:4].sigmoid() * 2) ** 2 * anch[i][idx] * self.stride[i]
                 )  # / 8.
@@ -1816,7 +1776,6 @@ class ComputeLossAuxOTA:
                 pxy = (fg_pred[:, :2].sigmoid() * 2.0 - 0.5 + grid) * self.stride[
                     i
                 ]  # / 8.
-                # pxy = (fg_pred[:, :2].sigmoid() * 3. - 1. + grid) * self.stride[i]
                 pwh = (
                     (fg_pred[:, 2:4].sigmoid() * 2) ** 2 * anch[i][idx] * self.stride[i]
                 )  # / 8.
@@ -1966,8 +1925,6 @@ class ComputeLossAuxOTA:
                 # Matches
                 r = t[:, :, 4:6] / anchors[:, None]  # wh ratio
                 j = torch.max(r, 1.0 / r).max(2)[0] < self.hyp["anchor_t"]  # compare
-                # j = wh_iou(anchors, t[:, 4:6]) > model.hyp['iou_t']  #
-                # iou(3,n)=wh_iou(anchors(3,2), gwh(n,2))
                 t = t[j]  # filter
 
                 # Offsets
@@ -2038,8 +1995,6 @@ class ComputeLossAuxOTA:
                 # Matches
                 r = t[:, :, 4:6] / anchors[:, None]  # wh ratio
                 j = torch.max(r, 1.0 / r).max(2)[0] < self.hyp["anchor_t"]  # compare
-                # j = wh_iou(anchors, t[:, 4:6]) > model.hyp['iou_t']  #
-                # iou(3,n)=wh_iou(anchors(3,2), gwh(n,2))
                 t = t[j]  # filter
 
                 # Offsets

@@ -100,7 +100,6 @@ def kmean_anchors(
     def metric(k, wh):  # compute metrics
         r = wh[:, None] / k[None]
         x = torch.min(r, 1.0 / r).min(2)[0]  # ratio metric
-        # x = wh_iou(wh, torch.tensor(k))  # iou metric
         return x, x.max(1)[0]  # x, best_x
 
     def anchor_fitness(k):  # mutation fitness
@@ -148,32 +147,19 @@ def kmean_anchors(
             f"{prefix}WARNING: Extremely small objects found. {i} of {len(wh0)} labels are < 3 pixels in size."
         )
     wh = wh0[(wh0 >= 2.0).any(1)]  # filter > 2 pixels
-    # wh = wh * (np.random.rand(wh.shape[0], 1) * 0.9 + 0.1)  # multiply by
-    # random scale 0-1
 
     # Kmeans calculation
     print(f"{prefix}Running kmeans for {n} anchors on {len(wh)} points...")
     s = wh.std(0)  # sigmas for whitening
     k, dist = kmeans(wh / s, n, iter=30)  # points, mean distance
-    assert len(k) == n, print(
-        f"{prefix}ERROR: scipy.cluster.vq.kmeans requested {n} points but returned only {len(k)}"
-    )
+    if len(k) != n:
+        raise RuntimeError(
+            f"{prefix}ERROR: scipy.cluster.vq.kmeans requested {n} points but returned only {len(k)}"
+        )
     k *= s
     wh = torch.tensor(wh, dtype=torch.float32)  # filtered
     wh0 = torch.tensor(wh0, dtype=torch.float32)  # unfiltered
     k = print_results(k)
-
-    # Plot
-    # k, d = [None] * 20, [None] * 20
-    # for i in tqdm(range(1, 21)):
-    #     k[i-1], d[i-1] = kmeans(wh / s, i)  # points, mean distance
-    # fig, ax = plt.subplots(1, 2, figsize=(14, 7), tight_layout=True)
-    # ax = ax.ravel()
-    # ax[0].plot(np.arange(1, 21), np.array(d) ** 2, marker='.')
-    # fig, ax = plt.subplots(1, 2, figsize=(14, 7))  # plot wh
-    # ax[0].hist(wh[wh[:, 0]<100, 0],400)
-    # ax[1].hist(wh[wh[:, 1]<100, 1],400)
-    # fig.savefig('wh.png', dpi=200)
 
     # Evolve
     npr = np.random

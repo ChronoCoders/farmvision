@@ -184,10 +184,11 @@ class LoadImages:
             self.new_video(videos[0])
         else:
             self.cap = None
-        assert self.nf > 0, (
-            f"No images or videos found in {p}. "
-            f"Supported formats are:\nimages: {img_formats}\nvideos: {vid_formats}"
-        )
+        if not self.nf > 0:
+            raise FileNotFoundError(
+                f"No images or videos found in {p}. "
+                f"Supported formats are:\nimages: {img_formats}\nvideos: {vid_formats}"
+            )
 
     def __iter__(self):
         self.count = 0
@@ -222,7 +223,8 @@ class LoadImages:
 
             self.count += 1
             img0 = cv2.imread(path)
-            assert img0 is not None, "Image Not Found " + path
+            if img0 is None:
+                raise FileNotFoundError("Image Not Found " + path)
 
         img = letterbox(img0, self.img_size, stride=self.stride)[0]
 
@@ -276,7 +278,8 @@ class LoadWebcam:
                     if ret_val:
                         break
 
-        assert ret_val, f"Camera Error {self.pipe}"
+        if not ret_val:
+            raise RuntimeError(f"Camera Error {self.pipe}")
         img_path = "webcam.jpg"
         print(f"webcam {self.count}: ", end="")
 
@@ -318,7 +321,8 @@ class LoadStreams:
 
                 url = pafy.new(url).getbest(preftype="mp4").url
             cap = cv2.VideoCapture(url)
-            assert cap.isOpened(), f"Failed to open {s}"
+            if not cap.isOpened():
+                raise RuntimeError(f"Failed to open {s}")
             w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
             h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
             self.fps = cap.get(cv2.CAP_PROP_FPS) % 100
@@ -442,7 +446,8 @@ class LoadImagesAndLabels(Dataset):
                 ]
             )
 
-            assert self.img_files, f"{prefix}No images found"
+            if not self.img_files:
+                raise FileNotFoundError(f"{prefix}No images found")
         except Exception as e:
             raise Exception(
                 f"{prefix}Error loading data from {path}: {e}\nSee {help_url}"
@@ -462,9 +467,8 @@ class LoadImagesAndLabels(Dataset):
         if exists:
             d = f"Scanning '{cache_path}' images and labels... {nf} found, {nm} missing, {ne} empty, {nc} corrupted"
             tqdm(None, desc=prefix + d, total=n, initial=n)
-        assert (
-            nf > 0 or not augment
-        ), f"{prefix}No labels in {cache_path}. Can not train without labels. See {help_url}"
+        if not (nf > 0 or not augment):
+            raise ValueError(f"{prefix}No labels in {cache_path}. Can not train without labels. See {help_url}")
 
         cache.pop("hash")
         cache.pop("version")
@@ -552,16 +556,16 @@ class LoadImagesAndLabels(Dataset):
                 im.verify()
                 shape = exif_size(im)
                 segments = []
-                assert (shape[0] > 9) & (shape[1] > 9), f"image size {shape} <10 pixels"
-                assert (
-                    im.format.lower() in img_formats
-                ), f"invalid image format {im.format}"
+                if not ((shape[0] > 9) & (shape[1] > 9)):
+                    raise ValueError(f"image size {shape} <10 pixels")
+                if not im.format.lower() in img_formats:
+                    raise ValueError(f"invalid image format {im.format}")
 
                 if os.path.isfile(lb_file):
                     nf += 1
                     with open(lb_file, "r") as f:
                         l = [x.split() for x in f.read().strip().splitlines()]
-                        if any([len(x) > 8 for x in l]):
+                        if any(len(x) > 8 for x in l):
                             classes = np.array([x[0] for x in l], dtype=np.float32)
                             segments = [
                                 np.array(x[1:], dtype=np.float32).reshape(-1, 2)
@@ -571,15 +575,15 @@ class LoadImagesAndLabels(Dataset):
                                 (classes.reshape(-1, 1), segments2boxes(segments)), 1
                             )
                         l = np.array(l, dtype=np.float32)
-                    if len(l):
-                        assert l.shape[1] == 5, "labels require 5 columns each"
-                        assert (l >= 0).all(), "negative labels"
-                        assert (
-                            l[:, 1:] <= 1
-                        ).all(), "non-normalized or out of bounds coordinate labels"
-                        assert (
-                            np.unique(l, axis=0).shape[0] == l.shape[0]
-                        ), "duplicate labels"
+                    if l:
+                        if l.shape[1] != 5:
+                            raise ValueError("labels require 5 columns each")
+                        if not (l >= 0).all():
+                            raise ValueError("negative labels")
+                        if not (l[:, 1:] <= 1).all():
+                            raise ValueError("non-normalized or out of bounds coordinate labels")
+                        if not np.unique(l, axis=0).shape[0] == l.shape[0]:
+                            raise ValueError("duplicate labels")
                     else:
                         ne += 1
                         l = np.zeros((0, 5), dtype=np.float32)
@@ -677,7 +681,7 @@ class LoadImagesAndLabels(Dataset):
                     sample_images += sample_images_
                     sample_masks += sample_masks_
 
-                    if len(sample_labels) == 0:
+                    if not sample_labels:
                         break
                 labels = pastein(
                     img, labels, sample_labels, sample_images, sample_masks
@@ -771,7 +775,8 @@ def load_image(self, index):
     if img is None:
         path = self.img_files[index]
         img = cv2.imread(path)
-        assert img is not None, "Image Not Found " + path
+        if img is None:
+            raise FileNotFoundError("Image Not Found " + path)
         h0, w0 = img.shape[:2]
         r = self.img_size / max(h0, w0)
         if r != 1:
@@ -1264,7 +1269,7 @@ def cutout(image, labels):
 
         image[ymin:ymax, xmin:xmax] = [random.randint(64, 191) for _ in range(3)]
 
-        if len(labels) and s > 0.03:
+        if labels and s > 0.03:
             box = np.array([xmin, ymin, xmax, ymax], dtype=np.float32)
             ioa = bbox_ioa(box, labels[:, 1:5])
             labels = labels[ioa < 0.60]
@@ -1289,7 +1294,7 @@ def pastein(image, labels, sample_labels, sample_images, sample_masks):
         ymax = min(h, ymin + mask_h)
 
         box = np.array([xmin, ymin, xmax, ymax], dtype=np.float32)
-        if len(labels):
+        if labels:
             ioa = bbox_ioa(box, labels[:, 1:5])
         else:
             ioa = np.zeros(1)
@@ -1318,7 +1323,7 @@ def pastein(image, labels, sample_labels, sample_images, sample_masks):
                     box = np.array(
                         [xmin, ymin, xmin + r_w, ymin + r_h], dtype=np.float32
                     )
-                    if len(labels):
+                    if labels:
                         labels = np.concatenate(
                             (labels, [[sample_labels[sel_ind], *box]]), 0
                         )
@@ -1416,9 +1421,8 @@ def extract_boxes(path="../coco/"):
 
                     b[[0, 2]] = np.clip(b[[0, 2]], 0, w)
                     b[[1, 3]] = np.clip(b[[1, 3]], 0, h)
-                    assert cv2.imwrite(
-                        str(f), im[b[1] : b[3], b[0] : b[2]]
-                    ), f"box failure in {f}"
+                    if not cv2.imwrite(str(f), im[b[1] : b[3], b[0] : b[2]]):
+                        raise IOError(f"box failure in {f}")
 
 
 def autosplit(path="../coco", weights=(0.9, 0.1, 0.0), annotated_only=False):

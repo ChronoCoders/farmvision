@@ -109,7 +109,7 @@ def predict(path_to_weights: str, path_to_source: str) -> Tuple[bytes, str, floa
                 for i, det in enumerate(pred):
                     im0 = im0s.copy()
 
-                    if len(det):
+                    if det:
                         det[:, :4] = scale_coords(
                             img.shape[2:], det[:, :4], im0.shape
                         ).round()
@@ -222,7 +222,7 @@ def multi_predictor(
                     for i, det in enumerate(pred):
                         im0 = im0s.copy()
 
-                        if len(det):
+                        if det:
                             det[:, :4] = scale_coords(
                                 img.shape[2:], det[:, :4], im0.shape
                             ).round()
@@ -367,7 +367,7 @@ def tree_detection(img_path: str) -> Dict[str, Any]:
                 for i, det in enumerate(pred):
                     im0 = im0s.copy()
 
-                    if len(det):
+                    if det:
                         det[:, :4] = scale_coords(
                             img.shape[2:], det[:, :4], im0.shape
                         ).round()
