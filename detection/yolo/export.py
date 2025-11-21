@@ -51,12 +51,9 @@ def export_coreml(ts, img, opt):
 
         if bits < 32 and sys.platform.lower() == "darwin":
             with warnings.catch_warnings():
-                warnings.filterwarnings(
-                    "ignore", category=DeprecationWarning)
-                ct_model = (
-                    ct.models.neural_network.quantization_utils.quantize_weights(
-                        ct_model, bits, mode
-                    )
+                warnings.filterwarnings("ignore", category=DeprecationWarning)
+                ct_model = ct.models.neural_network.quantization_utils.quantize_weights(
+                    ct_model, bits, mode
                 )
         elif bits < 32:
             print("quantization only supported on macOS, skipping...")

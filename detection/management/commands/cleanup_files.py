@@ -91,7 +91,8 @@ class Command(BaseCommand):
 
                     except OSError as e:
                         self.stdout.write(
-                            self.style.ERROR(f"Error processing file {file_path}: {e}")
+                            self.style.ERROR(
+                                f"Error processing file {file_path}: {e}")
                         )
                         logger.error(f"Error processing file {file_path}: {e}")
 
@@ -108,7 +109,8 @@ class Command(BaseCommand):
                                         f"Removed empty directory: {dir_path}"
                                     )
                                 )
-                                logger.info(f"Removed empty directory: {dir_path}")
+                                logger.info(
+                                    f"Removed empty directory: {dir_path}")
                         except OSError:
                             # Directory not empty or other error, skip silently
                             pass
@@ -130,7 +132,8 @@ class Command(BaseCommand):
                     )
                 )
 
-            self.stdout.write(f"Skipped {skipped_count} files (not old enough)")
+            self.stdout.write(
+                f"Skipped {skipped_count} files (not old enough)")
 
             if not dry_run:
                 logger.info(

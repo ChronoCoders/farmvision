@@ -23,7 +23,9 @@ class Command(BaseCommand):
             return
 
         self.stdout.write("Compressing schema...")
-        with open(schema_path, "rb") as f_in, gzip.open(gz_path, "wb", compresslevel=9) as f_out:
+        with open(schema_path, "rb") as f_in, gzip.open(
+            gz_path, "wb", compresslevel=9
+        ) as f_out:
             shutil.copyfileobj(f_in, f_out)
 
         original_size = schema_path.stat().st_size
