@@ -53,7 +53,11 @@ class ProjectViewSet(viewsets.ModelViewSet):
         """
         from django.db.models import Count
 
-        farms = Projects.objects.values("Farm").annotate(project_count=Count("id")).order_by("Farm")
+        farms = (
+            Projects.objects.values("Farm")
+            .annotate(project_count=Count("id"))
+            .order_by("Farm")
+        )
 
         result = []
         for farm_data in farms:
@@ -78,7 +82,11 @@ class ProjectViewSet(viewsets.ModelViewSet):
         """
         from django.db.models import Count
 
-        states = Projects.objects.values("State").annotate(project_count=Count("id")).order_by("State")
+        states = (
+            Projects.objects.values("State")
+            .annotate(project_count=Count("id"))
+            .order_by("State")
+        )
 
         return Response(states)
 
@@ -114,7 +122,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
             "total_projects": Projects.objects.count(),
             "total_farms": Projects.objects.values("Farm").distinct().count(),
             "total_fields": Projects.objects.values("Field").distinct().count(),
-            "projects_by_state": list(Projects.objects.values("State").annotate(count=Count("id"))),
+            "projects_by_state": list(
+                Projects.objects.values("State").annotate(count=Count("id"))
+            ),
         }
 
         return Response(stats)

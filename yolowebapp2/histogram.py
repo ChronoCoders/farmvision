@@ -35,7 +35,9 @@ class VegetationIndex(ABC):
     All vegetation index implementations must subclass this and implement calculate().
     """
 
-    def __init__(self, red: np.ndarray, green: np.ndarray, blue: np.ndarray, nir: np.ndarray):
+    def __init__(
+        self, red: np.ndarray, green: np.ndarray, blue: np.ndarray, nir: np.ndarray
+    ):
         """
         Initialize with band data.
 
@@ -83,7 +85,9 @@ class GLI(VegetationIndex):
     """Green Leaf Index: ((G * 2) - R - B) / ((G * 2) + R + B)"""
 
     def calculate(self) -> np.ndarray:
-        return ((self.green * 2) - self.red - self.blue) / ((self.green * 2) + self.red + self.blue)
+        return ((self.green * 2) - self.red - self.blue) / (
+            (self.green * 2) + self.red + self.blue
+        )
 
 
 class NDYI(VegetationIndex):
@@ -118,14 +122,18 @@ class ENDVI(VegetationIndex):
     """Enhanced NDVI: ((NIR + G) - (2 * B)) / ((NIR + G) + (2 * B))"""
 
     def calculate(self) -> np.ndarray:
-        return ((self.nir + self.green) - (2 * self.blue)) / ((self.nir + self.green) + (2 * self.blue))
+        return ((self.nir + self.green) - (2 * self.blue)) / (
+            (self.nir + self.green) + (2 * self.blue)
+        )
 
 
 class VNDVI(VegetationIndex):
     """Visible NDVI: 0.5268*((R ** -0.1294) * (G ** 0.3389) * (B ** -0.3118))"""
 
     def calculate(self) -> np.ndarray:
-        return 0.5268 * ((self.red**-0.1294) * (self.green**0.3389) * (self.blue**-0.3118))
+        return 0.5268 * (
+            (self.red**-0.1294) * (self.green**0.3389) * (self.blue**-0.3118)
+        )
 
 
 class MPRI(VegetationIndex):
@@ -216,21 +224,35 @@ class LAI(VegetationIndex):
     """Leaf Area Index: 3.618 * (2.5 * (NIR - R) / (NIR + 6*R - 7.5*B + 1)) * 0.118"""
 
     def calculate(self) -> np.ndarray:
-        return 3.618 * (2.5 * (self.nir - self.red) / (self.nir + 6 * self.red - 7.5 * self.blue + 1)) * 0.118
+        return (
+            3.618
+            * (
+                2.5
+                * (self.nir - self.red)
+                / (self.nir + 6 * self.red - 7.5 * self.blue + 1)
+            )
+            * 0.118
+        )
 
 
 class EVI(VegetationIndex):
     """Enhanced Vegetation Index: 2.5 * (NIR - R) / (NIR + 6*R - 7.5*B + 1)"""
 
     def calculate(self) -> np.ndarray:
-        return 2.5 * (self.nir - self.red) / (self.nir + 6 * self.red - 7.5 * self.blue + 1)
+        return (
+            2.5
+            * (self.nir - self.red)
+            / (self.nir + 6 * self.red - 7.5 * self.blue + 1)
+        )
 
 
 class ARVI(VegetationIndex):
     """Atmospherically Resistant Vegetation Index: (NIR - (2 * R) + B) / (NIR + (2 * R) + B)"""
 
     def calculate(self) -> np.ndarray:
-        return (self.nir - (2 * self.red) + self.blue) / (self.nir + (2 * self.red) + self.blue)
+        return (self.nir - (2 * self.red) + self.blue) / (
+            self.nir + (2 * self.red) + self.blue
+        )
 
 
 # =============================================================================
@@ -288,7 +310,8 @@ class algos:
         """
         self.input_path = path
         self.output_path = out
-        self.raster = rasterio.open(self.input_path, driver="GTiff", dtype=np.float32)
+        self.raster = rasterio.open(
+            self.input_path, driver="GTiff", dtype=np.float32)
         self.red = self.raster.read(1)
         self.green = self.raster.read(2)
         self.blue = self.raster.read(3)
@@ -339,7 +362,9 @@ class algos:
             }
         )
 
-        output_path = f"{BASE_DIR}/static/results/{self.output_path}/odm_orthophoto/output.tif"
+        output_path = (
+            f"{BASE_DIR}/static/results/{self.output_path}/odm_orthophoto/output.tif"
+        )
         with rasterio.open(output_path, "w", **meta) as dst:
             dst.write(rgb, 1)
             dst.write_colormap(1, cm)
@@ -351,78 +376,126 @@ class algos:
         }
 
     # Keep original method names for backward compatibility
-    def Ndvi(self, ranges: Tuple[float, float] = (-1, 1), colormap: Optional[str] = None) -> Dict[str, Any]:
+    def Ndvi(
+        self, ranges: Tuple[float, float] = (-1, 1), colormap: Optional[str] = None
+    ) -> Dict[str, Any]:
         if ranges == (-0.0, 0.0):
             ranges = (-0.5, 1)
         return self._process_index(NDVI, ranges, colormap)
 
-    def Vari(self, ranges: Tuple[float, float], colormap: Optional[str]) -> Dict[str, Any]:
+    def Vari(
+        self, ranges: Tuple[float, float], colormap: Optional[str]
+    ) -> Dict[str, Any]:
         return self._process_index(VARI, ranges, colormap)
 
-    def Gli(self, ranges: Tuple[float, float], colormap: Optional[str]) -> Dict[str, Any]:
+    def Gli(
+        self, ranges: Tuple[float, float], colormap: Optional[str]
+    ) -> Dict[str, Any]:
         return self._process_index(GLI, ranges, colormap)
 
-    def NDYI(self, ranges: Tuple[float, float], colormap: Optional[str]) -> Dict[str, Any]:
+    def NDYI(
+        self, ranges: Tuple[float, float], colormap: Optional[str]
+    ) -> Dict[str, Any]:
         return self._process_index(NDYI, ranges, colormap)
 
-    def NDRE(self, ranges: Tuple[float, float], colormap: Optional[str]) -> Dict[str, Any]:
+    def NDRE(
+        self, ranges: Tuple[float, float], colormap: Optional[str]
+    ) -> Dict[str, Any]:
         return self._process_index(NDRE, ranges, colormap)
 
-    def NDWI(self, ranges: Tuple[float, float], colormap: Optional[str]) -> Dict[str, Any]:
+    def NDWI(
+        self, ranges: Tuple[float, float], colormap: Optional[str]
+    ) -> Dict[str, Any]:
         return self._process_index(NDWI, ranges, colormap)
 
-    def NDVI_Blue(self, ranges: Tuple[float, float], colormap: Optional[str]) -> Dict[str, Any]:
+    def NDVI_Blue(
+        self, ranges: Tuple[float, float], colormap: Optional[str]
+    ) -> Dict[str, Any]:
         return self._process_index(NDVI_Blue, ranges, colormap)
 
-    def ENDVI(self, ranges: Tuple[float, float], colormap: Optional[str]) -> Dict[str, Any]:
+    def ENDVI(
+        self, ranges: Tuple[float, float], colormap: Optional[str]
+    ) -> Dict[str, Any]:
         return self._process_index(ENDVI, ranges, colormap)
 
-    def VNDVI(self, ranges: Tuple[float, float], colormap: Optional[str]) -> Dict[str, Any]:
+    def VNDVI(
+        self, ranges: Tuple[float, float], colormap: Optional[str]
+    ) -> Dict[str, Any]:
         return self._process_index(VNDVI, ranges, colormap)
 
-    def MPRI(self, ranges: Tuple[float, float], colormap: Optional[str]) -> Dict[str, Any]:
+    def MPRI(
+        self, ranges: Tuple[float, float], colormap: Optional[str]
+    ) -> Dict[str, Any]:
         return self._process_index(MPRI, ranges, colormap)
 
-    def EXG(self, ranges: Tuple[float, float], colormap: Optional[str]) -> Dict[str, Any]:
+    def EXG(
+        self, ranges: Tuple[float, float], colormap: Optional[str]
+    ) -> Dict[str, Any]:
         return self._process_index(EXG, ranges, colormap, rescale=False)
 
-    def TGI(self, ranges: Tuple[float, float], colormap: Optional[str]) -> Dict[str, Any]:
+    def TGI(
+        self, ranges: Tuple[float, float], colormap: Optional[str]
+    ) -> Dict[str, Any]:
         return self._process_index(TGI, ranges, colormap)
 
-    def BAI(self, ranges: Tuple[float, float], colormap: Optional[str]) -> Dict[str, Any]:
+    def BAI(
+        self, ranges: Tuple[float, float], colormap: Optional[str]
+    ) -> Dict[str, Any]:
         return self._process_index(BAI, ranges, colormap)
 
-    def GNDVI(self, ranges: Tuple[float, float], colormap: Optional[str]) -> Dict[str, Any]:
+    def GNDVI(
+        self, ranges: Tuple[float, float], colormap: Optional[str]
+    ) -> Dict[str, Any]:
         return self._process_index(GNDVI, ranges, colormap)
 
-    def GRVI(self, ranges: Tuple[float, float], colormap: Optional[str]) -> Dict[str, Any]:
+    def GRVI(
+        self, ranges: Tuple[float, float], colormap: Optional[str]
+    ) -> Dict[str, Any]:
         return self._process_index(GRVI, ranges, colormap)
 
-    def SAVI(self, ranges: Tuple[float, float], colormap: Optional[str]) -> Dict[str, Any]:
+    def SAVI(
+        self, ranges: Tuple[float, float], colormap: Optional[str]
+    ) -> Dict[str, Any]:
         return self._process_index(SAVI, ranges, colormap)
 
-    def MNLI(self, ranges: Tuple[float, float], colormap: Optional[str]) -> Dict[str, Any]:
+    def MNLI(
+        self, ranges: Tuple[float, float], colormap: Optional[str]
+    ) -> Dict[str, Any]:
         return self._process_index(MNLI, ranges, colormap)
 
-    def MSR(self, ranges: Tuple[float, float], colormap: Optional[str]) -> Dict[str, Any]:
+    def MSR(
+        self, ranges: Tuple[float, float], colormap: Optional[str]
+    ) -> Dict[str, Any]:
         return self._process_index(MSR, ranges, colormap)
 
-    def RDVI(self, ranges: Tuple[float, float], colormap: Optional[str]) -> Dict[str, Any]:
+    def RDVI(
+        self, ranges: Tuple[float, float], colormap: Optional[str]
+    ) -> Dict[str, Any]:
         return self._process_index(RDVI, ranges, colormap)
 
-    def TDVI(self, ranges: Tuple[float, float], colormap: Optional[str]) -> Dict[str, Any]:
+    def TDVI(
+        self, ranges: Tuple[float, float], colormap: Optional[str]
+    ) -> Dict[str, Any]:
         return self._process_index(TDVI, ranges, colormap)
 
-    def OSAVI(self, ranges: Tuple[float, float], colormap: Optional[str]) -> Dict[str, Any]:
+    def OSAVI(
+        self, ranges: Tuple[float, float], colormap: Optional[str]
+    ) -> Dict[str, Any]:
         return self._process_index(OSAVI, ranges, colormap)
 
-    def LAI(self, ranges: Tuple[float, float], colormap: Optional[str]) -> Dict[str, Any]:
+    def LAI(
+        self, ranges: Tuple[float, float], colormap: Optional[str]
+    ) -> Dict[str, Any]:
         return self._process_index(LAI, ranges, colormap)
 
-    def EVI(self, ranges: Tuple[float, float], colormap: Optional[str]) -> Dict[str, Any]:
+    def EVI(
+        self, ranges: Tuple[float, float], colormap: Optional[str]
+    ) -> Dict[str, Any]:
         return self._process_index(EVI, ranges, colormap)
 
-    def ARVI(self, ranges: Tuple[float, float], colormap: Optional[str]) -> Dict[str, Any]:
+    def ARVI(
+        self, ranges: Tuple[float, float], colormap: Optional[str]
+    ) -> Dict[str, Any]:
         return self._process_index(ARVI, ranges, colormap)
 
 
@@ -437,7 +510,9 @@ def gli(path: str) -> np.ndarray:
 
     img = Image.open(path)
     arr = np.asarray(img).astype(float)
-    gli_array = (2 * arr[:, :, 1] - arr[:, :, 0] - arr[:, :, 2]) / (2 * arr[:, :, 1] + arr[:, :, 0] + arr[:, :, 2])
+    gli_array = (2 * arr[:, :, 1] - arr[:, :, 0] - arr[:, :, 2]) / (
+        2 * arr[:, :, 1] + arr[:, :, 0] + arr[:, :, 2]
+    )
     gli_array[np.isnan(gli_array)] = 0
     return gli_array
 
@@ -448,7 +523,9 @@ def vari(path: str) -> np.ndarray:
 
     img = Image.open(path)
     arr = np.asarray(img).astype(float)
-    vari_array = (arr[:, :, 1] - arr[:, :, 0]) / (arr[:, :, 1] + arr[:, :, 0] - arr[:, :, 2])
+    vari_array = (arr[:, :, 1] - arr[:, :, 0]) / (
+        arr[:, :, 1] + arr[:, :, 0] - arr[:, :, 2]
+    )
     vari_array[np.isnan(vari_array)] = 0
     return vari_array
 

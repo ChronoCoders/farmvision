@@ -18,16 +18,23 @@ class Node_processing:
             self.uuid = self.task.uuid
         except Exception as e:
             logger.error("NodeODM connection error: %s", e)
-            raise ConnectionError(f"NodeODM'e bağlanılamadı. Docker çalışıyor mu? Hata: {e}")
+            raise ConnectionError(
+                f"NodeODM'e bağlanılamadı. Docker çalışıyor mu? Hata: {e}"
+            )
 
     def create_node_task(self, image_folder):
         try:
-            images = glob.glob(f"{image_folder}/*.JPG") + glob.glob(f"{image_folder}/*.jpg")
+            images = glob.glob(f"{image_folder}/*.JPG") + glob.glob(
+                f"{image_folder}/*.jpg"
+            )
 
             if not images:
-                raise ValueError(f"Klasörde JPG dosyası bulunamadı: {image_folder}")
+                raise ValueError(
+                    f"Klasörde JPG dosyası bulunamadı: {image_folder}")
 
-            task = self.start_api.create_task(images, {"dsm": True, "dtm": True, "odm": True})
+            task = self.start_api.create_task(
+                images, {"dsm": True, "dtm": True, "odm": True}
+            )
             logger.info("Task oluşturuldu: %s", task.uuid)
             return task
         except Exception as e:

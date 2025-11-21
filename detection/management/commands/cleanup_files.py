@@ -37,7 +37,9 @@ class Command(BaseCommand):
         detected_dir = Path(base_dir) / "static" / "detected"
 
         if not detected_dir.exists():
-            self.stdout.write(self.style.WARNING(f"Directory does not exist: {detected_dir}"))
+            self.stdout.write(
+                self.style.WARNING(f"Directory does not exist: {detected_dir}")
+            )
             return
 
         deleted_count = 0
@@ -48,7 +50,9 @@ class Command(BaseCommand):
         self.stdout.write(f"Deleting files older than {hours} hours")
 
         if dry_run:
-            self.stdout.write(self.style.WARNING("DRY RUN MODE - No files will be deleted"))
+            self.stdout.write(
+                self.style.WARNING("DRY RUN MODE - No files will be deleted")
+            )
 
         try:
             # Walk through all subdirectories
@@ -86,8 +90,12 @@ class Command(BaseCommand):
                             skipped_count += 1
 
                     except (OSError, IOError) as e:
-                        self.stdout.write(self.style.ERROR(f"Error processing file {file_path}: {e}"))
-                        logger.error("Error processing file %s: %s", file_path, e)
+                        self.stdout.write(
+                            self.style.ERROR(
+                                f"Error processing file {file_path}: {e}")
+                        )
+                        logger.error(
+                            "Error processing file %s: %s", file_path, e)
 
                 # Clean up empty directories (only if not dry run)
                 if not dry_run:
@@ -97,8 +105,13 @@ class Command(BaseCommand):
                             # Try to remove directory if empty (rmdir only works on empty dirs)
                             if dir_path.exists():
                                 dir_path.rmdir()
-                                self.stdout.write(self.style.SUCCESS(f"Removed empty directory: {dir_path}"))
-                                logger.info("Removed empty directory: %s", dir_path)
+                                self.stdout.write(
+                                    self.style.SUCCESS(
+                                        f"Removed empty directory: {dir_path}"
+                                    )
+                                )
+                                logger.info(
+                                    "Removed empty directory: %s", dir_path)
                         except (OSError, IOError):
                             # Directory not empty or other error, skip silently
                             pass
@@ -108,21 +121,25 @@ class Command(BaseCommand):
             if dry_run:
                 self.stdout.write(
                     self.style.WARNING(
-                        f"DRY RUN: Would delete {deleted_count} files " f"({deleted_size / (1024*1024):.2f} MB)"
+                        f"DRY RUN: Would delete {deleted_count} files "
+                        f"({deleted_size / (1024*1024):.2f} MB)"
                     )
                 )
             else:
                 self.stdout.write(
                     self.style.SUCCESS(
-                        f"Cleanup complete: Deleted {deleted_count} files " f"({deleted_size / (1024*1024):.2f} MB)"
+                        f"Cleanup complete: Deleted {deleted_count} files "
+                        f"({deleted_size / (1024*1024):.2f} MB)"
                     )
                 )
 
-            self.stdout.write(f"Skipped {skipped_count} files (not old enough)")
+            self.stdout.write(
+                f"Skipped {skipped_count} files (not old enough)")
 
             if not dry_run:
                 logger.info(
-                    f"Cleanup completed: deleted {deleted_count} files, " f"{deleted_size / (1024*1024):.2f} MB"
+                    f"Cleanup completed: deleted {deleted_count} files, "
+                    f"{deleted_size / (1024*1024):.2f} MB"
                 )
 
         except Exception as e:

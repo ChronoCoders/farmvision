@@ -110,7 +110,9 @@ def predict(path_to_weights: str, path_to_source: str) -> Tuple[bytes, str, floa
                     im0 = im0s.copy()
 
                     if det:
-                        det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
+                        det[:, :4] = scale_coords(
+                            img.shape[2:], det[:, :4], im0.shape
+                        ).round()
                         total_detections = len(det)
 
                         from numpy import random
@@ -136,8 +138,10 @@ def predict(path_to_weights: str, path_to_source: str) -> Tuple[bytes, str, floa
                         output_path = output_dir / img_name
 
                         if not cv2.imwrite(str(output_path), im0):
-                            logger.error("Görüntü yazma hatası: %s", output_path)
-                            raise IOError(f"Görüntü kaydedilemedi: {output_path}")
+                            logger.error(
+                                "Görüntü yazma hatası: %s", output_path)
+                            raise IOError(
+                                f"Görüntü kaydedilemedi: {output_path}")
 
                     except Exception as e:
                         logger.error("Çıktı dosyası yazma hatası: %s", e)
@@ -148,7 +152,11 @@ def predict(path_to_weights: str, path_to_source: str) -> Tuple[bytes, str, floa
                 raise
 
         count_str = f"{total_detections:02d}"
-        avg_confidence = sum(confidence_scores) / len(confidence_scores) if confidence_scores else 0.0
+        avg_confidence = (
+            sum(confidence_scores) / len(confidence_scores)
+            if confidence_scores
+            else 0.0
+        )
         return count_str.encode("utf-8"), unique_id, avg_confidence
 
     except (FileNotFoundError, RuntimeError, ValueError, IOError):
@@ -158,7 +166,9 @@ def predict(path_to_weights: str, path_to_source: str) -> Tuple[bytes, str, floa
         raise RuntimeError(f"Algılama işlemi başarısız: {e}")
 
 
-def multi_predictor(path_to_weights: str, path_to_source: str, ekim_sirasi: str, hashing: str) -> str:
+def multi_predictor(
+    path_to_weights: str, path_to_source: str, ekim_sirasi: str, hashing: str
+) -> str:
     try:
         try:
             a_str, b_str = ekim_sirasi.split("-")
@@ -171,8 +181,10 @@ def multi_predictor(path_to_weights: str, path_to_source: str, ekim_sirasi: str,
         try:
             path_to_source_images = natsorted(glob.glob(f"{path_to_source}/*"))
             if not path_to_source_images:
-                logger.error("Kaynak dizinde görüntü bulunamadı: %s", path_to_source)
-                raise FileNotFoundError(f"Görüntü bulunamadı: {path_to_source}")
+                logger.error(
+                    "Kaynak dizinde görüntü bulunamadı: %s", path_to_source)
+                raise FileNotFoundError(
+                    f"Görüntü bulunamadı: {path_to_source}")
         except Exception as e:
             logger.error("Görüntü listesi oluşturma hatası: %s", e)
             raise
@@ -215,12 +227,15 @@ def multi_predictor(path_to_weights: str, path_to_source: str, ekim_sirasi: str,
                         im0 = im0s.copy()
 
                         if det:
-                            det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
+                            det[:, :4] = scale_coords(
+                                img.shape[2:], det[:, :4], im0.shape
+                            ).round()
                             total_detections = len(det)
 
                             from numpy import random
 
-                            colors = [[random.randint(0, 255) for _ in range(3)]]
+                            colors = [[random.randint(0, 255)
+                                       for _ in range(3)]]
 
                             for *xyxy, conf, cls in reversed(det):
                                 label = f"{conf:.2f}"
@@ -235,7 +250,8 @@ def multi_predictor(path_to_weights: str, path_to_source: str, ekim_sirasi: str,
                         img_name = Path(path).name
                         output_path = output_dir / img_name
                         if not cv2.imwrite(str(output_path), im0):
-                            logger.error("Görüntü kaydetme hatası: %s", output_path)
+                            logger.error(
+                                "Görüntü kaydetme hatası: %s", output_path)
 
                     detection_counts.append(total_detections)
 
@@ -250,7 +266,10 @@ def multi_predictor(path_to_weights: str, path_to_source: str, ekim_sirasi: str,
             expected_size = a * b
             actual_size = len(detection_counts)
             if expected_size != actual_size:
-                logger.error(f"Reshape boyut uyumsuzluğu: beklenen {expected_size} " f"({a}x{b}), gerçek {actual_size}")
+                logger.error(
+                    f"Reshape boyut uyumsuzluğu: beklenen {expected_size} "
+                    f"({a}x{b}), gerçek {actual_size}"
+                )
                 raise ValueError(
                     f"Ekim sırası ({a}x{b}={expected_size}) ile görüntü sayısı "
                     f"({actual_size}) uyuşmuyor. Lütfen doğru ekim sırası giriniz."
@@ -276,7 +295,9 @@ def multi_predictor(path_to_weights: str, path_to_source: str, ekim_sirasi: str,
             zip_path = BASE_DIR / "media" / f"{hashing}_result.zip"
             zip_path.parent.mkdir(parents=True, exist_ok=True)
 
-            with zipfile.ZipFile(str(zip_path), mode="w", compression=zipfile.ZIP_DEFLATED) as archive:
+            with zipfile.ZipFile(
+                str(zip_path), mode="w", compression=zipfile.ZIP_DEFLATED
+            ) as archive:
                 archive.write(str(excel_dir / "output.xlsx"), "output.xlsx")
                 for img in natsorted(output_dir.glob("*")):
                     archive.write(str(img), f"detected/{img.name}")
@@ -353,7 +374,9 @@ def tree_detection(img_path: str) -> Dict[str, Any]:
                     im0 = im0s.copy()
 
                     if det:
-                        det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
+                        det[:, :4] = scale_coords(
+                            img.shape[2:], det[:, :4], im0.shape
+                        ).round()
 
                         for *xyxy, conf, cls in reversed(det):
                             results_dict["class_name"] = "agac"
@@ -367,7 +390,8 @@ def tree_detection(img_path: str) -> Dict[str, Any]:
                     output_path = output_dir / "detection.jpg"
 
                     if not cv2.imwrite(str(output_path), im0):
-                        logger.error("Algılama görüntüsü yazma hatası: %s", output_path)
+                        logger.error(
+                            "Algılama görüntüsü yazma hatası: %s", output_path)
                         raise IOError("Sonuç görüntüsü kaydedilemedi")
 
                 except Exception as e:
@@ -388,7 +412,8 @@ def tree_detection(img_path: str) -> Dict[str, Any]:
 
 
 def preload_all_models() -> None:
-    models = ["mandalina.pt", "elma.pt", "armut.pt", "seftale.pt", "nar.pt", "agac.pt"]
+    models = ["mandalina.pt", "elma.pt", "armut.pt",
+              "seftale.pt", "nar.pt", "agac.pt"]
     loaded_count = 0
 
     for model_name in models:

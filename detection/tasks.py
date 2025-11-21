@@ -67,7 +67,9 @@ def process_image_detection(
     """
     try:
         # Update task state to PROCESSING
-        self.update_state(state="PROCESSING", meta={"status": "Görüntü işleniyor...", "progress": 10})
+        self.update_state(
+            state="PROCESSING", meta={"status": "Görüntü işleniyor...", "progress": 10}
+        )
 
         # Validate fruit type
         if fruit_type not in FRUIT_MODELS:
@@ -77,11 +79,16 @@ def process_image_detection(
         model_path = FRUIT_MODELS[fruit_type]
 
         logger.info(
-            "Task %s: Starting detection for %s on image %s", self.request.id, fruit_type, image_path
+            "Task %s: Starting detection for %s on image %s",
+            self.request.id,
+            fruit_type,
+            image_path,
         )
 
         # Update state
-        self.update_state(state="PROCESSING", meta={"status": "Model yükleniyor...", "progress": 30})
+        self.update_state(
+            state="PROCESSING", meta={"status": "Model yükleniyor...", "progress": 30}
+        )
 
         start_time = time.time()
 
@@ -138,14 +145,17 @@ def process_image_detection(
             )
 
         except Exception as db_error:
-            logger.error("Task %s: DB save failed: %s", self.request.id, db_error)
+            logger.error("Task %s: DB save failed: %s",
+                         self.request.id, db_error)
             # Continue even if DB save fails
 
         # Clean up temp file
         try:
             if os.path.exists(image_path):
                 os.unlink(image_path)
-                logger.debug("Task %s: Cleaned up temp file %s", self.request.id, image_path)
+                logger.debug(
+                    "Task %s: Cleaned up temp file %s", self.request.id, image_path
+                )
         except Exception as cleanup_error:
             logger.warning(
                 f"Task {self.request.id}: Cleanup failed: {cleanup_error}")
@@ -162,7 +172,9 @@ def process_image_detection(
             "processing_time": float(processing_time),
             "image_path": f"detected/{unique_id}/{Path(image_path).name}",
             "unique_id": str(unique_id),
-            "detection_result_id": (int(detection_result.pk) if "detection_result" in locals() else None),
+            "detection_result_id": (
+                int(detection_result.pk) if "detection_result" in locals() else None
+            ),
         }
 
         return result
@@ -211,7 +223,9 @@ def check_model_health() -> Dict[str, Any]:
 
     for fruit in fruits:
         try:
-            status = DetectionResult.check_model_degradation(fruit_type=fruit, days=7, threshold=0.7)
+            status = DetectionResult.check_model_degradation(
+                fruit_type=fruit, days=7, threshold=0.7
+            )
 
             results[fruit] = status
 

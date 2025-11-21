@@ -16,7 +16,10 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("detection/", include("detection.urls")),
     path("dron-map/", include("dron_map.urls")),
-    path("favicon.ico", RedirectView.as_view(url="/static/favicon.ico", permanent=True)),
+    path(
+        "favicon.ico", RedirectView.as_view(
+            url="/static/favicon.ico", permanent=True)
+    ),
     # Backwards compatibility redirects
     path("mcti/", RedirectView.as_view(url="/detection/mcti/", permanent=False)),
     path("mcti", RedirectView.as_view(url="/detection/mcti/", permanent=False)),
@@ -24,11 +27,13 @@ urlpatterns = [
     path("index", RedirectView.as_view(url="/detection/", permanent=False)),
     path(
         "system-monitoring/",
-        RedirectView.as_view(url="/detection/system-monitoring/", permanent=False),
+        RedirectView.as_view(
+            url="/detection/system-monitoring/", permanent=False),
     ),
     path(
         "system-monitoring",
-        RedirectView.as_view(url="/detection/system-monitoring/", permanent=False),
+        RedirectView.as_view(
+            url="/detection/system-monitoring/", permanent=False),
     ),
     path("api/", include("yolowebapp2.api_urls")),
     path("health/", health_check, name="health-check"),
@@ -38,4 +43,5 @@ urlpatterns = [
 ]
 
 if settings.DEBUG or settings.IS_DEVELOPMENT:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)

@@ -79,7 +79,9 @@ class DetectionAPITests(APITestCase):
 
     def setUp(self):
         """Set up test user and authenticate."""
-        self.user = User.objects.create_user(username="testuser", password="testpass123")
+        self.user = User.objects.create_user(
+            username="testuser", password="testpass123"
+        )
         self.client.force_authenticate(user=self.user)
         self.detection = DetectionResult.objects.create(
             fruit_type="armut",
@@ -153,7 +155,9 @@ class DetectionViewTests(TestCase):
     def setUp(self):
         """Set up test client and user."""
         self.client = Client()
-        self.user = User.objects.create_user(username="viewuser", password="testpass123")
+        self.user = User.objects.create_user(
+            username="viewuser", password="testpass123"
+        )
 
     def test_index_page_requires_login(self):
         """Test that index page requires authentication."""

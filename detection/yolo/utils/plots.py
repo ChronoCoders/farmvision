@@ -466,7 +466,8 @@ def profile_idetection(start=0, stop=0, labels=(), save_dir=""):
             results[0] = x
             for i, a in enumerate(ax):
                 if i < len(results):
-                    label = labels[fi] if labels else f.stem.replace("frames_", "")
+                    label = labels[fi] if labels else f.stem.replace(
+                        "frames_", "")
                     a.plot(
                         t,
                         results[i],

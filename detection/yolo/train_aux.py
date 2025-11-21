@@ -603,9 +603,7 @@ def train(hyp, opt, device, tb_writer=None):
                     torch.save(ckpt, wdir / "epoch_{:03d}.pt".format(epoch))
                 if (
                     wandb_logger.wandb
-                    and (
-                        (epoch + 1) % opt.save_period == 0 and not final_epoch
-                    )
+                    and ((epoch + 1) % opt.save_period == 0 and not final_epoch)
                     and opt.save_period != -1
                 ):
                     wandb_logger.log_model(
