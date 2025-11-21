@@ -889,7 +889,6 @@ class ComputeLossOTA:
             pair_wise_cls_loss = F.binary_cross_entropy_with_logits(
                 torch.log(y / (1 - y)), gt_cls_per_image, reduction="none"
             ).sum(-1)
-            del cls_preds_
 
             cost = pair_wise_cls_loss + 3.0 * pair_wise_iou_loss
 
@@ -900,8 +899,6 @@ class ComputeLossOTA:
                     cost[gt_idx], k=dynamic_ks[gt_idx].item(), largest=False
                 )
                 matching_matrix[gt_idx][pos_idx] = 1.0
-
-            del top_k, dynamic_ks
             anchor_matching_gt = matching_matrix.sum(0)
             if (anchor_matching_gt > 1).sum() > 0:
                 _, cost_argmin = torch.min(
@@ -1301,7 +1298,6 @@ class ComputeLossBinOTA:
             pair_wise_cls_loss = F.binary_cross_entropy_with_logits(
                 torch.log(y / (1 - y)), gt_cls_per_image, reduction="none"
             ).sum(-1)
-            del cls_preds_
 
             cost = pair_wise_cls_loss + 3.0 * pair_wise_iou_loss
 
@@ -1312,8 +1308,6 @@ class ComputeLossBinOTA:
                     cost[gt_idx], k=dynamic_ks[gt_idx].item(), largest=False
                 )
                 matching_matrix[gt_idx][pos_idx] = 1.0
-
-            del top_k, dynamic_ks
             anchor_matching_gt = matching_matrix.sum(0)
             if (anchor_matching_gt > 1).sum() > 0:
                 _, cost_argmin = torch.min(
@@ -1713,7 +1707,6 @@ class ComputeLossAuxOTA:
             pair_wise_cls_loss = F.binary_cross_entropy_with_logits(
                 torch.log(y / (1 - y)), gt_cls_per_image, reduction="none"
             ).sum(-1)
-            del cls_preds_
 
             cost = pair_wise_cls_loss + 3.0 * pair_wise_iou_loss
 
@@ -1724,8 +1717,6 @@ class ComputeLossAuxOTA:
                     cost[gt_idx], k=dynamic_ks[gt_idx].item(), largest=False
                 )
                 matching_matrix[gt_idx][pos_idx] = 1.0
-
-            del top_k, dynamic_ks
             anchor_matching_gt = matching_matrix.sum(0)
             if (anchor_matching_gt > 1).sum() > 0:
                 _, cost_argmin = torch.min(
@@ -1883,7 +1874,6 @@ class ComputeLossAuxOTA:
             pair_wise_cls_loss = F.binary_cross_entropy_with_logits(
                 torch.log(y / (1 - y)), gt_cls_per_image, reduction="none"
             ).sum(-1)
-            del cls_preds_
 
             cost = pair_wise_cls_loss + 3.0 * pair_wise_iou_loss
 
@@ -1894,8 +1884,6 @@ class ComputeLossAuxOTA:
                     cost[gt_idx], k=dynamic_ks[gt_idx].item(), largest=False
                 )
                 matching_matrix[gt_idx][pos_idx] = 1.0
-
-            del top_k, dynamic_ks
             anchor_matching_gt = matching_matrix.sum(0)
             if (anchor_matching_gt > 1).sum() > 0:
                 _, cost_argmin = torch.min(
