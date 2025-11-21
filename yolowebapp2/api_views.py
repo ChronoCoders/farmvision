@@ -19,12 +19,8 @@ class HealthCheckResponseSerializer(serializers.Serializer):
     summary="Health Check",
     description="Check the health status of the FarmVision API and database connectivity",
     responses={
-        200: OpenApiResponse(
-            response=HealthCheckResponseSerializer, description="Service is healthy"
-        ),
-        503: OpenApiResponse(
-            response=HealthCheckResponseSerializer, description="Service is degraded"
-        ),
+        200: OpenApiResponse(response=HealthCheckResponseSerializer, description="Service is healthy"),
+        503: OpenApiResponse(response=HealthCheckResponseSerializer, description="Service is degraded"),
     },
     tags=["System"],
 )
@@ -40,7 +36,7 @@ def health_check(request):
         health_status["database"] = "connected"
     except Exception as e:
         # Log the actual error for debugging, but don't expose it to users
-        logger.error(f"Database connection error: {str(e)}")
+        logger.error("Database connection error: %s", str(e))
         health_status["database"] = "connection_error"
         health_status["status"] = "degraded"
         return Response(health_status, status=status.HTTP_503_SERVICE_UNAVAILABLE)

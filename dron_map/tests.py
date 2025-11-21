@@ -47,9 +47,7 @@ class ProjectAPITests(APITestCase):
 
     def setUp(self):
         """Set up test user and authenticate."""
-        self.user = User.objects.create_user(
-            username="testuser", password="testpass123"
-        )
+        self.user = User.objects.create_user(username="testuser", password="testpass123")
         self.client.force_authenticate(user=self.user)
         self.project = Projects.objects.create(
             Farm="API Test Farm",
@@ -87,9 +85,7 @@ class ProjectViewTests(TestCase):
     def setUp(self):
         """Set up test client and user."""
         self.client = Client()
-        self.user = User.objects.create_user(
-            username="viewuser", password="testpass123"
-        )
+        self.user = User.objects.create_user(username="viewuser", password="testpass123")
 
     def test_projects_page_requires_login(self):
         """Test that projects page requires authentication."""
