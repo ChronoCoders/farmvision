@@ -94,8 +94,8 @@ class Command(BaseCommand):
                     for dirname in dirs:
                         dir_path = Path(root) / dirname
                         try:
-                            # Try to remove directory if empty
-                            if dir_path.exists() and not any(dir_path.iterdir()):
+                            # Try to remove directory if empty (rmdir only works on empty dirs)
+                            if dir_path.exists():
                                 dir_path.rmdir()
                                 self.stdout.write(self.style.SUCCESS(f"Removed empty directory: {dir_path}"))
                                 logger.info(f"Removed empty directory: {dir_path}")
