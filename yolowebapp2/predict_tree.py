@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+from utils.datasets import LoadImages
+from utils.torch_utils import select_device
+from utils.plots import plot_one_box
+from utils.general import non_max_suppression, scale_coords
+from models.experimental import attempt_load
 from pathlib import Path
 import openpyxl
 from natsort import natsorted
@@ -18,11 +23,6 @@ logger = logging.getLogger(__name__)
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 sys.path.append(str(BASE_DIR / "detection" / "yolo"))
-from models.experimental import attempt_load
-from utils.general import non_max_suppression, scale_coords
-from utils.plots import plot_one_box
-from utils.torch_utils import select_device
-from utils.datasets import LoadImages
 
 _model_cache = {}
 _device = None
@@ -138,8 +138,10 @@ def predict(path_to_weights: str, path_to_source: str) -> Tuple[bytes, str, floa
                         output_path = output_dir / img_name
 
                         if not cv2.imwrite(str(output_path), im0):
-                            logger.error(f"Görüntü yazma hatası: {output_path}")
-                            raise IOError(f"Görüntü kaydedilemedi: {output_path}")
+                            logger.error(
+                                f"Görüntü yazma hatası: {output_path}")
+                            raise IOError(
+                                f"Görüntü kaydedilemedi: {output_path}")
 
                     except Exception as e:
                         logger.error(f"Çıktı dosyası yazma hatası: {e}")
@@ -179,8 +181,10 @@ def multi_predictor(
         try:
             path_to_source_images = natsorted(glob.glob(f"{path_to_source}/*"))
             if not path_to_source_images:
-                logger.error(f"Kaynak dizinde görüntü bulunamadı: {path_to_source}")
-                raise FileNotFoundError(f"Görüntü bulunamadı: {path_to_source}")
+                logger.error(
+                    f"Kaynak dizinde görüntü bulunamadı: {path_to_source}")
+                raise FileNotFoundError(
+                    f"Görüntü bulunamadı: {path_to_source}")
         except Exception as e:
             logger.error(f"Görüntü listesi oluşturma hatası: {e}")
             raise
@@ -230,7 +234,8 @@ def multi_predictor(
 
                             from numpy import random
 
-                            colors = [[random.randint(0, 255) for _ in range(3)]]
+                            colors = [[random.randint(0, 255)
+                                       for _ in range(3)]]
 
                             for *xyxy, conf, cls in reversed(det):
                                 label = f"{conf:.2f}"
@@ -245,7 +250,8 @@ def multi_predictor(
                         img_name = Path(path).name
                         output_path = output_dir / img_name
                         if not cv2.imwrite(str(output_path), im0):
-                            logger.error(f"Görüntü kaydetme hatası: {output_path}")
+                            logger.error(
+                                f"Görüntü kaydetme hatası: {output_path}")
 
                     detection_counts.append(total_detections)
 
@@ -384,7 +390,8 @@ def tree_detection(img_path: str) -> Dict[str, Any]:
                     output_path = output_dir / "detection.jpg"
 
                     if not cv2.imwrite(str(output_path), im0):
-                        logger.error(f"Algılama görüntüsü yazma hatası: {output_path}")
+                        logger.error(
+                            f"Algılama görüntüsü yazma hatası: {output_path}")
                         raise IOError("Sonuç görüntüsü kaydedilemedi")
 
                 except Exception as e:
@@ -405,7 +412,8 @@ def tree_detection(img_path: str) -> Dict[str, Any]:
 
 
 def preload_all_models() -> None:
-    models = ["mandalina.pt", "elma.pt", "armut.pt", "seftale.pt", "nar.pt", "agac.pt"]
+    models = ["mandalina.pt", "elma.pt", "armut.pt",
+              "seftale.pt", "nar.pt", "agac.pt"]
     loaded_count = 0
 
     for model_name in models:
