@@ -241,7 +241,6 @@ def train(hyp, opt, device, tb_writer=None):
         "Optimizer groups: %g .bias, %g conv.weight, %g other"
         % (len(pg2), len(pg1), len(pg0))
     )
-    del pg0, pg1, pg2
 
     if opt.linear_lr:
 
@@ -284,8 +283,6 @@ def train(hyp, opt, device, tb_writer=None):
                 % (weights, ckpt["epoch"], epochs)
             )
             epochs += ckpt["epoch"]
-
-        del ckpt, state_dict
 
     gs = max(int(model.stride.max()), 32)
     nl = model.model[-1].nl
@@ -614,7 +611,6 @@ def train(hyp, opt, device, tb_writer=None):
                         wandb_logger.log_model(
                             last.parent, opt, epoch, fi, best_model=best_fitness == fi
                         )
-                del ckpt
 
     if rank in [-1, 0]:
 
