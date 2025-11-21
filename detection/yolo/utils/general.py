@@ -84,9 +84,18 @@ def check_git_status():
         assert check_online(), "skipping check (offline)"
 
         subprocess.check_output(["git", "fetch"], shell=False)
-        url = subprocess.check_output(["git", "config", "--get", "remote.origin.url"], shell=False).decode().strip().rstrip(".git")
+        url = (
+            subprocess.check_output(
+                ["git", "config", "--get", "remote.origin.url"], shell=False
+            )
+            .decode()
+            .strip()
+            .rstrip(".git")
+        )
         branch = (
-            subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"], shell=False)
+            subprocess.check_output(
+                ["git", "rev-parse", "--abbrev-ref", "HEAD"], shell=False
+            )
             .decode()
             .strip()
         )
@@ -135,7 +144,9 @@ def check_requirements(requirements="requirements.txt", exclude=()):
                 f"{prefix} {e.req} not found and is required by YOLOR, attempting auto-update..."
             )
             print(
-                subprocess.check_output(["pip", "install", str(e.req)], shell=False).decode()
+                subprocess.check_output(
+                    ["pip", "install", str(e.req)], shell=False
+                ).decode()
             )
 
     if n:
@@ -191,7 +202,8 @@ def check_dataset(dict):
 
     val, s = dict.get("val"), dict.get("download")
     if val and len(val):
-        val = [Path(x).resolve() for x in (val if isinstance(val, list) else [val])]
+        val = [Path(x).resolve()
+               for x in (val if isinstance(val, list) else [val])]
         if not all(x.exists() for x in val):
             print(
                 "\nWARNING: Dataset not found, nonexistent paths: %s"
@@ -202,8 +214,11 @@ def check_dataset(dict):
                 if s.startswith("http") and s.endswith(".zip"):
                     f = Path(s).name
                     torch.hub.download_url_to_file(s, f)
-                    result1 = subprocess.run(["unzip", "-q", f, "-d", "../"], shell=False, check=False)
-                    result2 = subprocess.run(["rm", f], shell=False, check=False)
+                    result1 = subprocess.run(
+                        ["unzip", "-q", f, "-d", "../"], shell=False, check=False
+                    )
+                    result2 = subprocess.run(
+                        ["rm", f], shell=False, check=False)
                     r = result1.returncode or result2.returncode
                 else:
                     # Only allow http/https URLs for safety, not arbitrary shell commands
@@ -211,10 +226,12 @@ def check_dataset(dict):
                         torch.hub.download_url_to_file(s, Path(s).name)
                         r = 0
                     else:
-                        print(f"WARNING: Skipping potentially unsafe command: {s}")
+                        print(
+                            f"WARNING: Skipping potentially unsafe command: {s}")
                         r = 1
                 print(
-                    "Dataset autodownload %s\n" % ("success" if r == 0 else "failure")
+                    "Dataset autodownload %s\n" % (
+                        "success" if r == 0 else "failure")
                 )
             else:
                 raise Exception("Dataset not found.")
@@ -424,7 +441,8 @@ def segment2box(segment, width=640, height=640):
         y[inside],
     )
     return (
-        np.array([x.min(), y.min(), x.max(), y.max()]) if any(x) else np.zeros((1, 4))
+        np.array([x.min(), y.min(), x.max(), y.max()]
+                 ) if any(x) else np.zeros((1, 4))
     )
 
 
@@ -454,7 +472,8 @@ def resample_segments(segments, n=1000):
 def scale_coords(img1_shape, coords, img0_shape, ratio_pad=None):
 
     if ratio_pad is None:
-        gain = min(img1_shape[0] / img0_shape[0], img1_shape[1] / img0_shape[1])
+        gain = min(img1_shape[0] / img0_shape[0],
+                   img1_shape[1] / img0_shape[1])
         pad = (img1_shape[1] - img0_shape[1] * gain) / 2, (
             img1_shape[0] - img0_shape[0] * gain
         ) / 2
@@ -513,7 +532,8 @@ def bbox_iou(box1, box2, x1y1x2y2=True, GIoU=False, DIoU=False, CIoU=False, eps=
                 return iou - rho2 / c2
             elif CIoU:
                 v = (4 / math.pi**2) * torch.pow(
-                    torch.atan(w2 / (h2 + eps)) - torch.atan(w1 / (h1 + eps)), 2
+                    torch.atan(w2 / (h2 + eps)) -
+                    torch.atan(w1 / (h1 + eps)), 2
                 )
                 with torch.no_grad():
                     alpha = v / (v - iou + (1 + eps))
@@ -791,7 +811,8 @@ def non_max_suppression(
     merge = False
 
     t = time.time()
-    output = [torch.zeros((0, 6), device=prediction.device)] * prediction.shape[0]
+    output = [torch.zeros((0, 6), device=prediction.device)
+              ] * prediction.shape[0]
     for xi, x in enumerate(prediction):
 
         x = x[xc[xi]]
@@ -820,7 +841,8 @@ def non_max_suppression(
             x = torch.cat((box[i], x[i, j + 5, None], j[:, None].float()), 1)
         else:
             conf, j = x[:, 5:].max(1, keepdim=True)
-            x = torch.cat((box, conf, j.float()), 1)[conf.view(-1) > conf_thres]
+            x = torch.cat((box, conf, j.float()), 1)[
+                conf.view(-1) > conf_thres]
 
         if classes is not None:
             x = x[(x[:, 5:6] == torch.tensor(classes, device=x.device)).any(1)]
@@ -872,7 +894,8 @@ def non_max_suppression_kpt(
          list of detections, on (n,6) tensor per image [xyxy, conf, cls]
     """
     if nc is None:
-        nc = prediction.shape[2] - 5 if not kpt_label else prediction.shape[2] - 56
+        nc = prediction.shape[2] - \
+            5 if not kpt_label else prediction.shape[2] - 56
     xc = prediction[..., 4] > conf_thres
 
     min_wh, max_wh = 2, 4096
@@ -884,7 +907,8 @@ def non_max_suppression_kpt(
     merge = False
 
     t = time.time()
-    output = [torch.zeros((0, 6), device=prediction.device)] * prediction.shape[0]
+    output = [torch.zeros((0, 6), device=prediction.device)
+              ] * prediction.shape[0]
     for xi, x in enumerate(prediction):
 
         x = x[xc[xi]]
@@ -900,7 +924,7 @@ def non_max_suppression_kpt(
         if not x.shape[0]:
             continue
 
-        x[:, 5 : 5 + nc] *= x[:, 4:5]
+        x[:, 5: 5 + nc] *= x[:, 4:5]
 
         box = xywh2xyxy(x[:, :4])
 
@@ -910,7 +934,8 @@ def non_max_suppression_kpt(
         else:
             if not kpt_label:
                 conf, j = x[:, 5:].max(1, keepdim=True)
-                x = torch.cat((box, conf, j.float()), 1)[conf.view(-1) > conf_thres]
+                x = torch.cat((box, conf, j.float()), 1)[
+                    conf.view(-1) > conf_thres]
             else:
                 kpts = x[:, 6:]
                 conf, j = x[:, 5:6].max(1, keepdim=True)
@@ -978,9 +1003,11 @@ def print_mutation(hyp, results, yaml_file="hyp_evolved.yaml", bucket=""):
     if bucket:
         url = "gs://%s/evolve.txt" % bucket
         if gsutil_getsize(url) > (
-            os.path.getsize("evolve.txt") if os.path.exists("evolve.txt") else 0
+            os.path.getsize("evolve.txt") if os.path.exists(
+                "evolve.txt") else 0
         ):
-            subprocess.run(["gsutil", "cp", url, "."], shell=False, check=False)
+            subprocess.run(["gsutil", "cp", url, "."],
+                           shell=False, check=False)
 
     with open("evolve.txt", "a") as f:
         f.write(c + b + "\n")
@@ -1002,7 +1029,11 @@ def print_mutation(hyp, results, yaml_file="hyp_evolved.yaml", bucket=""):
         yaml.dump(hyp, f, sort_keys=False)
 
     if bucket:
-        subprocess.run(["gsutil", "cp", "evolve.txt", yaml_file, f"gs://{bucket}"], shell=False, check=False)
+        subprocess.run(
+            ["gsutil", "cp", "evolve.txt", yaml_file, f"gs://{bucket}"],
+            shell=False,
+            check=False,
+        )
 
 
 def apply_classifier(x, model, img, im0):
@@ -1022,7 +1053,7 @@ def apply_classifier(x, model, img, im0):
             pred_cls1 = d[:, 5].long()
             ims = []
             for j, a in enumerate(d):
-                cutout = im0[i][int(a[1]) : int(a[3]), int(a[0]) : int(a[2])]
+                cutout = im0[i][int(a[1]): int(a[3]), int(a[0]): int(a[2])]
                 im = cv2.resize(cutout, (224, 224))
 
                 im = im[:, :, ::-1].transpose(2, 0, 1)

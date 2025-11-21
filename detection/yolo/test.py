@@ -96,7 +96,8 @@ def test(
             data = yaml.load(f, Loader=yaml.SafeLoader)
     check_dataset(data)  # check
     nc = 1 if single_cls else int(data["nc"])  # number of classes
-    iouv = torch.linspace(0.5, 0.95, 10).to(device)  # iou vector for mAP@0.5:0.95
+    iouv = torch.linspace(0.5, 0.95, 10).to(
+        device)  # iou vector for mAP@0.5:0.95
     niou = iouv.numel()
 
     # Logging
@@ -269,7 +270,8 @@ def test(
             # Append to pycocotools JSON dictionary
             if save_json:
                 # [{"image_id": 42, "category_id": 18, "bbox": [258.15, 41.29, 348.26, 243.78], "score": 0.236}, ...
-                image_id = int(path.stem) if path.stem.isnumeric() else path.stem
+                image_id = int(
+                    path.stem) if path.stem.isnumeric() else path.stem
                 box = xyxy2xywh(predn[:, :4])  # xywh
                 box[:, :2] -= box[:, 2:] / 2  # xy center to top-left corner
                 for p, b in zip(pred.tolist(), box.tolist()):
@@ -277,7 +279,8 @@ def test(
                         {
                             "image_id": image_id,
                             "category_id": (
-                                coco91class[int(p[5])] if is_coco else int(p[5])
+                                coco91class[int(p[5])] if is_coco else int(
+                                    p[5])
                             ),
                             "bbox": [round(x, 3) for x in b],
                             "score": round(p[4], 5),
@@ -285,7 +288,8 @@ def test(
                     )
 
             # Assign all predictions as incorrect
-            correct = torch.zeros(pred.shape[0], niou, dtype=torch.bool, device=device)
+            correct = torch.zeros(
+                pred.shape[0], niou, dtype=torch.bool, device=device)
             if nl:
                 detected = []  # target indices
                 tcls_tensor = labels[:, 0]
@@ -331,13 +335,15 @@ def test(
                                     break
 
             # Append statistics (correct, conf, pcls, tcls)
-            stats.append((correct.cpu(), pred[:, 4].cpu(), pred[:, 5].cpu(), tcls))
+            stats.append(
+                (correct.cpu(), pred[:, 4].cpu(), pred[:, 5].cpu(), tcls))
 
         # Plot images
         if plots and batch_i < 3:
             f = save_dir / f"test_batch{batch_i}_labels.jpg"  # labels
             Thread(
-                target=plot_images, args=(img, targets, paths, f, names), daemon=True
+                target=plot_images, args=(
+                    img, targets, paths, f, names), daemon=True
             ).start()
             f = save_dir / f"test_batch{batch_i}_pred.jpg"  # predictions
             Thread(
@@ -469,9 +475,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--single-cls", action="store_true", help="treat as single-class dataset"
     )
-    parser.add_argument("--augment", action="store_true", help="augmented inference")
-    parser.add_argument("--verbose", action="store_true", help="report mAP by class")
-    parser.add_argument("--save-txt", action="store_true", help="save results to *.txt")
+    parser.add_argument("--augment", action="store_true",
+                        help="augmented inference")
+    parser.add_argument("--verbose", action="store_true",
+                        help="report mAP by class")
+    parser.add_argument("--save-txt", action="store_true",
+                        help="save results to *.txt")
     parser.add_argument(
         "--save-hybrid",
         action="store_true",
@@ -485,14 +494,16 @@ if __name__ == "__main__":
         action="store_true",
         help="save a cocoapi-compatible JSON results file",
     )
-    parser.add_argument("--project", default="runs/test", help="save to project/name")
+    parser.add_argument("--project", default="runs/test",
+                        help="save to project/name")
     parser.add_argument("--name", default="exp", help="save to project/name")
     parser.add_argument(
         "--exist-ok",
         action="store_true",
         help="existing project/name ok, do not increment",
     )
-    parser.add_argument("--no-trace", action="store_true", help="don`t trace model")
+    parser.add_argument("--no-trace", action="store_true",
+                        help="don`t trace model")
     parser.add_argument(
         "--v5-metric",
         action="store_true",

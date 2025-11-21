@@ -117,7 +117,8 @@ def profile(x, ops, n=100, device=None):
     #     m2 = nn.SiLU()
     #     profile(x, [m1, m2], n=100)  # profile speed over 100 iterations
 
-    device = device or torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = device or torch.device(
+        "cuda:0" if torch.cuda.is_available() else "cpu")
     x = x.to(device)
     x.requires_grad = True
     print(
@@ -139,7 +140,8 @@ def profile(x, ops, n=100, device=None):
         )  # type
         dtf, dtb, t = 0.0, 0.0, [0.0, 0.0, 0.0]  # dt forward, backward
         try:
-            flops = thop.profile(m, inputs=(x,), verbose=False)[0] / 1e9 * 2  # GFLOPS
+            flops = thop.profile(m, inputs=(x,), verbose=False)[
+                0] / 1e9 * 2  # GFLOPS
         except BaseException:
             flops = 0
 
@@ -254,7 +256,8 @@ def fuse_conv_and_bn(conv, bn):
     b_bn = bn.bias - bn.weight.mul(bn.running_mean).div(
         torch.sqrt(bn.running_var + bn.eps)
     )
-    fusedconv.bias.copy_(torch.mm(w_bn, b_conv.reshape(-1, 1)).reshape(-1) + b_bn)
+    fusedconv.bias.copy_(
+        torch.mm(w_bn, b_conv.reshape(-1, 1)).reshape(-1) + b_bn)
 
     return fusedconv
 
@@ -289,7 +292,8 @@ def model_info(model, verbose=False, img_size=640):
     try:  # FLOPS
         from thop import profile
 
-        stride = max(int(model.stride.max()), 32) if hasattr(model, "stride") else 32
+        stride = max(int(model.stride.max()), 32) if hasattr(
+            model, "stride") else 32
         img = torch.zeros(
             (1, model.yaml.get("ch", 3), stride, stride),
             device=next(model.parameters()).device,
@@ -337,7 +341,8 @@ def scale_img(img, ratio=1.0, same_shape=False, gs=32):  # img(16,3,256,416)
     else:
         h, w = img.shape[2:]
         s = (int(h * ratio), int(w * ratio))  # new size
-        img = F.interpolate(img, size=s, mode="bilinear", align_corners=False)  # resize
+        img = F.interpolate(img, size=s, mode="bilinear",
+                            align_corners=False)  # resize
         if not same_shape:  # pad/crop img
             h, w = [math.ceil(x * ratio / gs) * gs for x in (h, w)]
         return F.pad(
@@ -458,7 +463,8 @@ class TracedModel(nn.Module):
 
         rand_example = torch.rand(1, 3, img_size, img_size)
 
-        traced_script_module = torch.jit.trace(self.model, rand_example, strict=False)
+        traced_script_module = torch.jit.trace(
+            self.model, rand_example, strict=False)
         # traced_script_module = torch.jit.script(self.model)
         traced_script_module.save("traced_model.pt")
         print(" traced_script_module saved! ")

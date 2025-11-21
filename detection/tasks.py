@@ -154,7 +154,8 @@ def process_image_detection(
                     f"Task {self.request.id}: Cleaned up temp file {image_path}"
                 )
         except Exception as cleanup_error:
-            logger.warning(f"Task {self.request.id}: Cleanup failed: {cleanup_error}")
+            logger.warning(
+                f"Task {self.request.id}: Cleanup failed: {cleanup_error}")
 
         # Return results
         result = {
@@ -176,7 +177,8 @@ def process_image_detection(
         return result
 
     except Exception as e:
-        logger.error(f"Task {self.request.id}: Fatal error: {e}", exc_info=True)
+        logger.error(
+            f"Task {self.request.id}: Fatal error: {e}", exc_info=True)
 
         # Clean up on failure
         try:
@@ -272,7 +274,8 @@ def cleanup_old_results(self, days_old: int = 30) -> Dict[str, Any]:
 
     try:
         # Get old results
-        old_results = DetectionResult.objects.filter(created_at__lt=cutoff_date)
+        old_results = DetectionResult.objects.filter(
+            created_at__lt=cutoff_date)
         count = old_results.count()
 
         # Delete from database

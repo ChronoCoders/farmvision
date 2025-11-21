@@ -170,7 +170,8 @@ def add_projects(
 
         if request.method == "POST":
             try:
-                form = Projects_Form(request.POST, request.FILES, instance=projes)
+                form = Projects_Form(
+                    request.POST, request.FILES, instance=projes)
                 if form.is_valid():
                     try:
                         with transaction.atomic():
@@ -206,7 +207,8 @@ def add_projects(
                 )
 
         return render(
-            request, "add-projects.html", {"projes": projes, "userss": request.user}
+            request, "add-projects.html", {"projes": projes,
+                                           "userss": request.user}
         )
 
     elif slug == "delete" and id:
@@ -226,7 +228,8 @@ def add_projects(
             return render(
                 request,
                 "add-projects.html",
-                {"projes": projes, "error": "Proje silinemedi", "userss": request.user},
+                {"projes": projes, "error": "Proje silinemedi",
+                    "userss": request.user},
             )
 
     elif slug == "add":
@@ -272,13 +275,16 @@ def add_projects(
                             logger.warning(
                                 f"Path traversal attempt in filename: {image.name}"
                             )
-                            raise ValidationError(f"Geçersiz dosya adı: {image.name}")
+                            raise ValidationError(
+                                f"Geçersiz dosya adı: {image.name}")
 
                         fs = FileSystemStorage(location=str(hass[0]))
                         saved_path = fs.save(safe_filename, image)
                         if not saved_path:
-                            logger.error(f"Dosya kaydetme başarısız: {safe_filename}")
-                            raise IOError(f"Dosya kaydedilemedi: {safe_filename}")
+                            logger.error(
+                                f"Dosya kaydetme başarısız: {safe_filename}")
+                            raise IOError(
+                                f"Dosya kaydedilemedi: {safe_filename}")
                     saved_files_dir = upload_dir
                 except Exception as e:
                     logger.error(f"Görüntü kaydetme hatası: {e}")
@@ -286,9 +292,11 @@ def add_projects(
                     if upload_dir.exists():
                         try:
                             shutil.rmtree(str(upload_dir))
-                            logger.info(f"Hatalı dosyalar temizlendi: {upload_dir}")
+                            logger.info(
+                                f"Hatalı dosyalar temizlendi: {upload_dir}")
                         except Exception as cleanup_error:
-                            logger.error(f"Dosya temizleme hatası: {cleanup_error}")
+                            logger.error(
+                                f"Dosya temizleme hatası: {cleanup_error}")
                     raise ValidationError(f"Dosyalar kaydedilemedi: {str(e)}")
 
                 # Save project to database with transaction
@@ -296,7 +304,8 @@ def add_projects(
                     with transaction.atomic():
                         form.instance.hashing_path = hass[1]
                         project = form.save()
-                        logger.info(f"Proje veritabanına kaydedildi: {project.id}")
+                        logger.info(
+                            f"Proje veritabanına kaydedildi: {project.id}")
                 except Exception as e:
                     logger.error(f"Veritabanı kaydetme hatası: {e}")
                     # Database save failed, clean up saved files
@@ -307,7 +316,8 @@ def add_projects(
                                 f"Veritabanı hatası nedeniyle dosyalar silindi: {saved_files_dir}"
                             )
                         except Exception as cleanup_error:
-                            logger.error(f"Dosya temizleme hatası: {cleanup_error}")
+                            logger.error(
+                                f"Dosya temizleme hatası: {cleanup_error}")
                     raise ValidationError("Proje kaydedilemedi")
 
                 # Process task (non-critical, log but don't fail)
@@ -390,7 +400,8 @@ def maping(request: HttpRequest, id: int) -> HttpResponse:
     if request.method == "POST":
         orthophoto = get_statistics(id=projes.hashing_path, type="orthophoto")
         static = get_statistics(id=projes.hashing_path, type="static")
-        images_info = get_statistics(id=projes.hashing_path, type="images_info")
+        images_info = get_statistics(
+            id=projes.hashing_path, type="images_info")
 
         try:
             range_values = request.POST.getlist("range")
@@ -508,7 +519,8 @@ def maping(request: HttpRequest, id: int) -> HttpResponse:
                 )
 
             except AttributeError as e:
-                logger.error(f"Algoritma metodu bulunamadı: {health_color}: {e}")
+                logger.error(
+                    f"Algoritma metodu bulunamadı: {health_color}: {e}")
                 return render(
                     request,
                     "map.html",
@@ -554,7 +566,8 @@ def maping(request: HttpRequest, id: int) -> HttpResponse:
     else:
         orthophoto = get_statistics(id=projes.hashing_path, type="orthophoto")
         static = get_statistics(id=projes.hashing_path, type="static")
-        images_info = get_statistics(id=projes.hashing_path, type="images_info")
+        images_info = get_statistics(
+            id=projes.hashing_path, type="images_info")
 
         return render(
             request,

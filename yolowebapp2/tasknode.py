@@ -29,7 +29,8 @@ class Node_processing:
             )
 
             if not images:
-                raise ValueError(f"Klasörde JPG dosyası bulunamadı: {image_folder}")
+                raise ValueError(
+                    f"Klasörde JPG dosyası bulunamadı: {image_folder}")
 
             task = self.start_api.create_task(
                 images, {"dsm": True, "dtm": True, "odm": True}

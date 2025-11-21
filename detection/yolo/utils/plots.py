@@ -31,7 +31,7 @@ def color_list():
     # Return first 10 plt colors as (r,g,b)
     # https://stackoverflow.com/questions/51350872/python-from-color-name-to-rgb
     def hex2rgb(h):
-        return tuple(int(h[1 + i : 1 + i + 2], 16) for i in (0, 2, 4))
+        return tuple(int(h[1 + i: 1 + i + 2], 16) for i in (0, 2, 4))
 
     return [
         hex2rgb(h) for h in matplotlib.colors.TABLEAU_COLORS.values()
@@ -40,7 +40,8 @@ def color_list():
 
 def hist2d(x, y, n=100):
     # 2d histogram used in labels.png and evolve.png
-    xedges, yedges = np.linspace(x.min(), x.max(), n), np.linspace(y.min(), y.max(), n)
+    xedges, yedges = np.linspace(
+        x.min(), x.max(), n), np.linspace(y.min(), y.max(), n)
     hist, xedges, yedges = np.histogram2d(x, y, (xedges, yedges))
     xidx = np.clip(np.digitize(x, xedges) - 1, 0, hist.shape[0] - 1)
     yidx = np.clip(np.digitize(y, yedges) - 1, 0, hist.shape[1] - 1)
@@ -128,7 +129,8 @@ def output_to_target(output):
     targets = []
     for i, o in enumerate(output):
         for *box, conf, cls in o.cpu().numpy():
-            targets.append([i, cls, *list(*xyxy2xywh(np.array(box)[None])), conf])
+            targets.append(
+                [i, cls, *list(*xyxy2xywh(np.array(box)[None])), conf])
     return np.array(targets)
 
 
@@ -165,7 +167,8 @@ def plot_images(
         w = math.ceil(scale_factor * w)
 
     colors = color_list()  # list of colors
-    mosaic = np.full((int(ns * h), int(ns * w), 3), 255, dtype=np.uint8)  # init
+    mosaic = np.full((int(ns * h), int(ns * w), 3),
+                     255, dtype=np.uint8)  # init
     for i, img in enumerate(images):
         if i == max_subplots:  # if last batch has fewer images than we expect
             break
@@ -177,7 +180,7 @@ def plot_images(
         if scale_factor < 1:
             img = cv2.resize(img, (w, h))
 
-        mosaic[block_y : block_y + h, block_x : block_x + w, :] = img
+        mosaic[block_y: block_y + h, block_x: block_x + w, :] = img
         if len(targets) > 0:
             image_targets = targets[targets[:, 0] == i]
             boxes = xywh2xyxy(image_targets[:, 2:6]).T
@@ -200,7 +203,8 @@ def plot_images(
                 color = colors[cls % len(colors)]
                 cls = names[cls] if names else cls
                 if labels or conf[j] > 0.25:  # 0.25 conf thresh
-                    label = "%s" % cls if labels else "%s %.1f" % (cls, conf[j])
+                    label = "%s" % cls if labels else "%s %.1f" % (
+                        cls, conf[j])
                     plot_one_box(
                         box, mosaic, label=label, color=color, line_thickness=tl
                     )
@@ -208,7 +212,8 @@ def plot_images(
         # Draw image filename labels
         if paths:
             label = Path(paths[i]).name[:40]  # trim to 40 char
-            t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
+            t_size = cv2.getTextSize(
+                label, 0, fontScale=tl / 3, thickness=tf)[0]
             cv2.putText(
                 mosaic,
                 label,
@@ -242,7 +247,8 @@ def plot_images(
 
 def plot_lr_scheduler(optimizer, scheduler, epochs=300, save_dir=""):
     # Plot LR simulating training for full epochs
-    optimizer, scheduler = copy(optimizer), copy(scheduler)  # do not modify originals
+    optimizer, scheduler = copy(optimizer), copy(
+        scheduler)  # do not modify originals
     y = []
     for _ in range(epochs):
         scheduler.step()
@@ -281,7 +287,8 @@ def plot_targets_txt():  # from utils.plots import *; plot_targets_txt()
     fig, ax = plt.subplots(2, 2, figsize=(8, 8), tight_layout=True)
     ax = ax.ravel()
     for i in range(4):
-        ax[i].hist(x[i], bins=100, label="%.3g +/- %.3g" % (x[i].mean(), x[i].std()))
+        ax[i].hist(x[i], bins=100, label="%.3g +/- %.3g" %
+                   (x[i].mean(), x[i].std()))
         ax[i].legend()
         ax[i].set_title(s[i])
     plt.savefig("targets.jpg", dpi=200)
@@ -296,7 +303,8 @@ def plot_study_txt(path="", x=None):  # from utils.plots import *; plot_study_tx
     # for f in [Path(path) / f'study_coco_{x}.txt' for x in ['yolor-p6',
     # 'yolor-w6', 'yolor-e6', 'yolor-d6']]:
     for f in sorted(Path(path).glob("study*.txt")):
-        y = np.loadtxt(f, dtype=np.float32, usecols=[0, 1, 2, 3, 7, 8, 9], ndmin=2).T
+        y = np.loadtxt(f, dtype=np.float32, usecols=[
+                       0, 1, 2, 3, 7, 8, 9], ndmin=2).T
         x = np.arange(y.shape[1]) if x is None else np.array(x)
         s = [
             "P",
@@ -427,7 +435,8 @@ def plot_evolution(
             y, f, c=hist2d(y, f, 20), cmap="viridis", alpha=0.8, edgecolors="none"
         )
         plt.plot(mu, f.max(), "k+", markersize=15)
-        plt.title("%s = %.3g" % (k, mu), fontdict={"size": 9})  # limit to 40 characters
+        plt.title("%s = %.3g" % (k, mu), fontdict={
+                  "size": 9})  # limit to 40 characters
         if i % 5 != 0:
             plt.yticks([])
         print("%15s: %.3g" % (k, mu))
@@ -460,7 +469,8 @@ def profile_idetection(start=0, stop=0, labels=(), save_dir=""):
             results[0] = x
             for i, a in enumerate(ax):
                 if i < len(results):
-                    label = labels[fi] if len(labels) else f.stem.replace("frames_", "")
+                    label = labels[fi] if len(
+                        labels) else f.stem.replace("frames_", "")
                     a.plot(
                         t,
                         results[i],
@@ -504,7 +514,8 @@ def plot_results_overlay(
     for f in sorted(
         glob.glob("results*.txt") + glob.glob("../../Downloads/results*.txt")
     ):
-        results = np.loadtxt(f, usecols=[2, 3, 4, 8, 9, 12, 13, 14, 10, 11], ndmin=2).T
+        results = np.loadtxt(
+            f, usecols=[2, 3, 4, 8, 9, 12, 13, 14, 10, 11], ndmin=2).T
         n = results.shape[1]  # number of rows
         x = range(start, min(stop, n) if stop else n)
         fig, ax = plt.subplots(1, 5, figsize=(14, 3.5), tight_layout=True)
@@ -564,7 +575,8 @@ def plot_results(start=0, stop=0, bucket="", id=(), labels=(), save_dir=""):
                     y[y == 0] = np.nan  # don't show zero loss values
                     # y /= y[0]  # normalize
                 label = labels[fi] if len(labels) else f.stem
-                ax[i].plot(x, y, marker=".", label=label, linewidth=2, markersize=8)
+                ax[i].plot(x, y, marker=".", label=label,
+                           linewidth=2, markersize=8)
                 ax[i].set_title(s[i])
                 # if i in [5, 6, 7]:  # share train and val loss y axes
                 #     ax[i].get_shared_y_axes().join(ax[i], ax[i - 5])
@@ -647,7 +659,8 @@ def plot_skeleton_kpts(im, kpts, steps, orig_shape=None):
     pose_limb_color = palette[
         [9, 9, 9, 9, 7, 7, 7, 0, 0, 0, 0, 0, 16, 16, 16, 16, 16, 16, 16]
     ]
-    pose_kpt_color = palette[[16, 16, 16, 16, 16, 0, 0, 0, 0, 0, 0, 9, 9, 9, 9, 9, 9]]
+    pose_kpt_color = palette[[16, 16, 16, 16,
+                              16, 0, 0, 0, 0, 0, 0, 9, 9, 9, 9, 9, 9]]
     radius = 5
     num_kpts = len(kpts) // steps
 
@@ -660,13 +673,16 @@ def plot_skeleton_kpts(im, kpts, steps, orig_shape=None):
                 if conf < 0.5:
                     continue
             cv2.circle(
-                im, (int(x_coord), int(y_coord)), radius, (int(r), int(g), int(b)), -1
+                im, (int(x_coord), int(y_coord)
+                     ), radius, (int(r), int(g), int(b)), -1
             )
 
     for sk_id, sk in enumerate(skeleton):
         r, g, b = pose_limb_color[sk_id]
-        pos1 = (int(kpts[(sk[0] - 1) * steps]), int(kpts[(sk[0] - 1) * steps + 1]))
-        pos2 = (int(kpts[(sk[1] - 1) * steps]), int(kpts[(sk[1] - 1) * steps + 1]))
+        pos1 = (int(kpts[(sk[0] - 1) * steps]),
+                int(kpts[(sk[0] - 1) * steps + 1]))
+        pos2 = (int(kpts[(sk[1] - 1) * steps]),
+                int(kpts[(sk[1] - 1) * steps + 1]))
         if steps == 3:
             conf1 = kpts[(sk[0] - 1) * steps + 2]
             conf2 = kpts[(sk[1] - 1) * steps + 2]

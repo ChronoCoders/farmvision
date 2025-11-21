@@ -18,7 +18,8 @@ sys.path.append("./")
 
 def export_torchscript(model, img, opt):
     try:
-        print("\nStarting TorchScript export with torch %s..." % torch.__version__)
+        print("\nStarting TorchScript export with torch %s..." %
+              torch.__version__)
         f = opt.weights.replace(".pt", ".torchscript.pt")
         ts = torch.jit.trace(model, img, strict=False)
         ts.save(f)
@@ -37,7 +38,8 @@ def export_coreml(ts, img, opt):
         ct_model = ct.convert(
             ts,
             inputs=[
-                ct.ImageType("image", shape=img.shape, scale=1 / 255.0, bias=[0, 0, 0])
+                ct.ImageType("image", shape=img.shape,
+                             scale=1 / 255.0, bias=[0, 0, 0])
             ],
         )
 
@@ -50,7 +52,8 @@ def export_coreml(ts, img, opt):
         if bits < 32:
             if sys.platform.lower() == "darwin":
                 with warnings.catch_warnings():
-                    warnings.filterwarnings("ignore", category=DeprecationWarning)
+                    warnings.filterwarnings(
+                        "ignore", category=DeprecationWarning)
                     ct_model = (
                         ct.models.neural_network.quantization_utils.quantize_weights(
                             ct_model, bits, mode
@@ -68,7 +71,8 @@ def export_coreml(ts, img, opt):
 
 def export_torchscript_lite(model, img, opt):
     try:
-        print("\nStarting TorchScript-Lite export with torch %s..." % torch.__version__)
+        print("\nStarting TorchScript-Lite export with torch %s..." %
+              torch.__version__)
         f = opt.weights.replace(".pt", ".torchscript.ptl")
         tsl = torch.jit.trace(model, img, strict=False)
         tsl = optimize_for_mobile(tsl)

@@ -311,7 +311,8 @@ class algos:
         """
         self.input_path = path
         self.output_path = out
-        self.raster = rasterio.open(self.input_path, driver="GTiff", dtype=np.float32)
+        self.raster = rasterio.open(
+            self.input_path, driver="GTiff", dtype=np.float32)
         self.red = self.raster.read(1)
         self.green = self.raster.read(2)
         self.blue = self.raster.read(3)

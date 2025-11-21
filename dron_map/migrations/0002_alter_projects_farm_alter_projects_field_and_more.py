@@ -14,16 +14,19 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="projects",
             name="Farm",
-            field=models.CharField(db_index=True, max_length=250, verbose_name="Farm"),
+            field=models.CharField(
+                db_index=True, max_length=250, verbose_name="Farm"),
         ),
         migrations.AlterField(
             model_name="projects",
             name="Field",
-            field=models.CharField(db_index=True, max_length=250, verbose_name="Field"),
+            field=models.CharField(
+                db_index=True, max_length=250, verbose_name="Field"),
         ),
         migrations.AlterField(
             model_name="projects",
             name="State",
-            field=models.CharField(db_index=True, max_length=250, verbose_name="State"),
+            field=models.CharField(
+                db_index=True, max_length=250, verbose_name="State"),
         ),
     ]

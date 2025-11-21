@@ -43,7 +43,8 @@ def detect(save_img=False):
         or source.lower().startswith(("rtsp://", "rtmp://", "http://", "https://"))
     )
 
-    save_dir = Path(increment_path(Path(opt.project) / opt.name, exist_ok=opt.exist_ok))
+    save_dir = Path(increment_path(Path(opt.project) /
+                    opt.name, exist_ok=opt.exist_ok))
     (save_dir / "labels" if save_txt else save_dir).mkdir(parents=True, exist_ok=True)
 
     set_logging()
@@ -138,7 +139,8 @@ def detect(save_img=False):
                         dataset.count,
                     )
                 else:
-                    p, s, im0, frame = path, "", im0s, getattr(dataset, "frame", 0)
+                    p, s, im0, frame = path, "", im0s, getattr(
+                        dataset, "frame", 0)
 
                 p = Path(p)
                 save_path = str(save_dir / p.name)
@@ -163,9 +165,11 @@ def detect(save_img=False):
                                 .view(-1)
                                 .tolist()
                             )
-                            line = (cls, *xywh, conf) if opt.save_conf else (cls, *xywh)
+                            line = (
+                                cls, *xywh, conf) if opt.save_conf else (cls, *xywh)
                             with open(txt_path + ".txt", "a") as f:
-                                f.write(("%g " * len(line)).rstrip() % line + "\n")
+                                f.write(("%g " * len(line)).rstrip() %
+                                        line + "\n")
 
                         if save_img or view_img:
                             label = f"{names[int(cls)]} {conf:.2f}"
@@ -189,7 +193,8 @@ def detect(save_img=False):
                 if save_img:
                     if dataset.mode == "image":
                         cv2.imwrite(save_path, im0)
-                        print(f" The image with the result is saved in: {save_path}")
+                        print(
+                            f" The image with the result is saved in: {save_path}")
                     else:
                         if vid_path != save_path:
                             vid_path = save_path
@@ -203,7 +208,8 @@ def detect(save_img=False):
                                 fps, w, h = 30, im0.shape[1], im0.shape[0]
                                 save_path += ".mp4"
                             vid_writer = cv2.VideoWriter(
-                                save_path, cv2.VideoWriter_fourcc(*"mp4v"), fps, (w, h)
+                                save_path, cv2.VideoWriter_fourcc(
+                                    *"mp4v"), fps, (w, h)
                             )
                         vid_writer.write(im0)
 

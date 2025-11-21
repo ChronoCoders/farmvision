@@ -37,7 +37,8 @@ from utils.torch_utils import torch_distributed_zero_first
 
 
 help_url = "https://github.com/ultralytics/yolov5/wiki/Train-Custom-Data"
-img_formats = ["bmp", "jpg", "jpeg", "png", "tif", "tiff", "dng", "webp", "mpo"]
+img_formats = ["bmp", "jpg", "jpeg", "png",
+               "tif", "tiff", "dng", "webp", "mpo"]
 vid_formats = ["mov", "avi", "mp4", "mpg", "mpeg", "m4v", "wmv", "mkv"]
 logger = logging.getLogger(__name__)
 
@@ -107,7 +108,8 @@ def create_dataloader(
         [os.cpu_count() // world_size, batch_size if batch_size > 1 else 0, workers]
     )
     sampler = (
-        torch.utils.data.distributed.DistributedSampler(dataset) if rank != -1 else None
+        torch.utils.data.distributed.DistributedSampler(
+            dataset) if rank != -1 else None
     )
     loader = torch.utils.data.DataLoader if image_weights else InfiniteDataLoader
 
@@ -132,7 +134,8 @@ class InfiniteDataLoader(torch.utils.data.dataloader.DataLoader):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        object.__setattr__(self, "batch_sampler", _RepeatSampler(self.batch_sampler))
+        object.__setattr__(self, "batch_sampler",
+                           _RepeatSampler(self.batch_sampler))
         self.iterator = super().__iter__()
 
     def __len__(self):
@@ -311,7 +314,9 @@ class LoadStreams:
         for i, s in enumerate(sources):
 
             print(f"{i + 1}/{n}: {s}... ", end="")
-            url = int(s) if s.isnumeric() else s  # Use int() instead of eval() for safety
+            url = (
+                int(s) if s.isnumeric() else s
+            )  # Use int() instead of eval() for safety
             if "youtube.com/" in str(url) or "youtu.be/" in str(url):
                 check_requirements(("pafy", "youtube_dl"))
                 import pafy
@@ -428,7 +433,8 @@ class LoadImagesAndLabels(Dataset):
                         t = t.read().strip().splitlines()
                         parent = str(p.parent) + os.sep
                         f += [
-                            x.replace("./", parent) if x.startswith("./") else x
+                            x.replace(
+                                "./", parent) if x.startswith("./") else x
                             for x in t
                         ]
 
@@ -505,7 +511,8 @@ class LoadImagesAndLabels(Dataset):
                     shapes[i] = [1, 1 / mini]
 
             self.batch_shapes = (
-                np.ceil(np.array(shapes) * img_size / stride + pad).astype(int) * stride
+                np.ceil(np.array(shapes) * img_size /
+                        stride + pad).astype(int) * stride
             )
 
         self.imgs = [None] * n
@@ -552,7 +559,8 @@ class LoadImagesAndLabels(Dataset):
                 im.verify()
                 shape = exif_size(im)
                 segments = []
-                assert (shape[0] > 9) & (shape[1] > 9), f"image size {shape} <10 pixels"
+                assert (shape[0] > 9) & (
+                    shape[1] > 9), f"image size {shape} <10 pixels"
                 assert (
                     im.format.lower() in img_formats
                 ), f"invalid image format {im.format}"
@@ -562,13 +570,16 @@ class LoadImagesAndLabels(Dataset):
                     with open(lb_file, "r") as f:
                         l = [x.split() for x in f.read().strip().splitlines()]
                         if any([len(x) > 8 for x in l]):
-                            classes = np.array([x[0] for x in l], dtype=np.float32)
+                            classes = np.array([x[0]
+                                               for x in l], dtype=np.float32)
                             segments = [
-                                np.array(x[1:], dtype=np.float32).reshape(-1, 2)
+                                np.array(
+                                    x[1:], dtype=np.float32).reshape(-1, 2)
                                 for x in l
                             ]
                             l = np.concatenate(
-                                (classes.reshape(-1, 1), segments2boxes(segments)), 1
+                                (classes.reshape(-1, 1),
+                                 segments2boxes(segments)), 1
                             )
                         l = np.array(l, dtype=np.float32)
                     if len(l):
@@ -642,8 +653,10 @@ class LoadImagesAndLabels(Dataset):
 
             img, (h0, w0), (h, w) = load_image(self, index)
 
-            shape = self.batch_shapes[self.batch[index]] if self.rect else self.img_size
-            img, ratio, pad = letterbox(img, shape, auto=False, scaleup=self.augment)
+            shape = self.batch_shapes[self.batch[index]
+                                      ] if self.rect else self.img_size
+            img, ratio, pad = letterbox(
+                img, shape, auto=False, scaleup=self.augment)
             shapes = (h0, w0), ((h / h0, w / w0), pad)
 
             labels = self.labels[index].copy()
@@ -665,7 +678,8 @@ class LoadImagesAndLabels(Dataset):
                     perspective=hyp["perspective"],
                 )
 
-            augment_hsv(img, hgain=hyp["hsv_h"], sgain=hyp["hsv_s"], vgain=hyp["hsv_v"])
+            augment_hsv(img, hgain=hyp["hsv_h"],
+                        sgain=hyp["hsv_s"], vgain=hyp["hsv_v"])
 
             if random.random() < hyp["paste_in"]:
                 sample_labels, sample_images, sample_masks = [], [], []
@@ -776,7 +790,8 @@ def load_image(self, index):
         r = self.img_size / max(h0, w0)
         if r != 1:
             interp = cv2.INTER_AREA if r < 1 and not self.augment else cv2.INTER_LINEAR
-            img = cv2.resize(img, (int(w0 * r), int(h0 * r)), interpolation=interp)
+            img = cv2.resize(img, (int(w0 * r), int(h0 * r)),
+                             interpolation=interp)
         return img, (h0, w0), img.shape[:2]
     else:
         return self.imgs[index], self.img_hw0[index], self.img_hw[index]
@@ -837,7 +852,8 @@ def load_mosaic(self, index):
         padw = x1a - x1b
         padh = y1a - y1b
 
-        labels, segments = self.labels[index].copy(), self.segments[index].copy()
+        labels, segments = self.labels[index].copy(
+        ), self.segments[index].copy()
         if labels.size:
             labels[:, 1:] = xywhn2xyxy(labels[:, 1:], w, h, padw, padh)
             segments = [xyn2xy(x, w, h, padw, padh) for x in segments]
@@ -899,18 +915,19 @@ def load_mosaic9(self, index):
         padx, pady = c[:2]
         x1, y1, x2, y2 = [max(x, 0) for x in c]
 
-        labels, segments = self.labels[index].copy(), self.segments[index].copy()
+        labels, segments = self.labels[index].copy(
+        ), self.segments[index].copy()
         if labels.size:
             labels[:, 1:] = xywhn2xyxy(labels[:, 1:], w, h, padx, pady)
             segments = [xyn2xy(x, w, h, padx, pady) for x in segments]
         labels9.append(labels)
         segments9.extend(segments)
 
-        img9[y1:y2, x1:x2] = img[y1 - pady :, x1 - padx :]
+        img9[y1:y2, x1:x2] = img[y1 - pady:, x1 - padx:]
         hp, wp = h, w
 
     yc, xc = [int(random.uniform(0, s)) for _ in self.mosaic_border]
-    img9 = img9[yc : yc + 2 * s, xc : xc + 2 * s]
+    img9 = img9[yc: yc + 2 * s, xc: xc + 2 * s]
 
     labels9 = np.concatenate(labels9, 0)
     labels9[:, [1, 3]] -= xc
@@ -967,7 +984,8 @@ def load_samples(self, index):
         padw = x1a - x1b
         padh = y1a - y1b
 
-        labels, segments = self.labels[index].copy(), self.segments[index].copy()
+        labels, segments = self.labels[index].copy(
+        ), self.segments[index].copy()
         if labels.size:
             labels[:, 1:] = xywhn2xyxy(labels[:, 1:], w, h, padw, padh)
             segments = [xyn2xy(x, w, h, padw, padh) for x in segments]
@@ -1023,7 +1041,8 @@ def remove_background(img, labels, segments):
     img_new = np.ones(img.shape, np.uint8) * 114
     for j in range(n):
         cv2.drawContours(
-            im_new, [segments[j].astype(np.int32)], -1, (255, 255, 255), cv2.FILLED
+            im_new, [segments[j].astype(np.int32)], -
+            1, (255, 255, 255), cv2.FILLED
         )
 
         result = cv2.bitwise_and(src1=img, src2=im_new)
@@ -1059,15 +1078,16 @@ def sample_segments(img, labels, segments, probability=0.5):
             mask = np.zeros(img.shape, np.uint8)
 
             cv2.drawContours(
-                mask, [segments[j].astype(np.int32)], -1, (255, 255, 255), cv2.FILLED
+                mask, [segments[j].astype(np.int32)], -
+                1, (255, 255, 255), cv2.FILLED
             )
-            sample_masks.append(mask[box[1] : box[3], box[0] : box[2], :])
+            sample_masks.append(mask[box[1]: box[3], box[0]: box[2], :])
 
             result = cv2.bitwise_and(src1=img, src2=mask)
             i = result > 0
             mask[i] = result[i]
 
-            sample_images.append(mask[box[1] : box[3], box[0] : box[2], :])
+            sample_images.append(mask[box[1]: box[3], box[0]: box[2], :])
 
     return sample_labels, sample_images, sample_masks
 
@@ -1084,7 +1104,8 @@ def replicate(img, labels):
         yc, xc = int(random.uniform(0, h - bh)), int(random.uniform(0, w - bw))
         x1a, y1a, x2a, y2a = [xc, yc, xc + bw, yc + bh]
         img[y1a:y2a, x1a:x2a] = img[y1b:y2b, x1b:x2b]
-        labels = np.append(labels, [[labels[i, 0], x1a, y1a, x2a, y2a]], axis=0)
+        labels = np.append(
+            labels, [[labels[i, 0], x1a, y1a, x2a, y2a]], axis=0)
 
     return img, labels
 
@@ -1197,12 +1218,14 @@ def random_perspective(
             xy = np.ones((n * 4, 3))
             xy[:, :2] = targets[:, [1, 2, 3, 4, 1, 4, 3, 2]].reshape(n * 4, 2)
             xy = xy @ M.T
-            xy = (xy[:, :2] / xy[:, 2:3] if perspective else xy[:, :2]).reshape(n, 8)
+            xy = (xy[:, :2] / xy[:, 2:3]
+                  if perspective else xy[:, :2]).reshape(n, 8)
 
             x = xy[:, [0, 2, 4, 6]]
             y = xy[:, [1, 3, 5, 7]]
             new = (
-                np.concatenate((x.min(1), y.min(1), x.max(1), y.max(1))).reshape(4, n).T
+                np.concatenate((x.min(1), y.min(1), x.max(1),
+                               y.max(1))).reshape(4, n).T
             )
 
             new[:, [0, 2]] = new[:, [0, 2]].clip(0, width)
@@ -1252,7 +1275,8 @@ def cutout(image, labels):
 
     h, w = image.shape[:2]
 
-    scales = [0.5] * 1 + [0.25] * 2 + [0.125] * 4 + [0.0625] * 8 + [0.03125] * 16
+    scales = [0.5] * 1 + [0.25] * 2 + [0.125] * \
+        4 + [0.0625] * 8 + [0.03125] * 16
     for s in scales:
         mask_h = random.randint(1, int(h * s))
         mask_w = random.randint(1, int(w * s))
@@ -1262,7 +1286,8 @@ def cutout(image, labels):
         xmax = min(w, xmin + mask_w)
         ymax = min(h, ymin + mask_h)
 
-        image[ymin:ymax, xmin:xmax] = [random.randint(64, 191) for _ in range(3)]
+        image[ymin:ymax, xmin:xmax] = [
+            random.randint(64, 191) for _ in range(3)]
 
         if len(labels) and s > 0.03:
             box = np.array([xmin, ymin, xmax, ymax], dtype=np.float32)
@@ -1310,7 +1335,7 @@ def pastein(image, labels, sample_labels, sample_images, sample_masks):
             if (r_w > 10) and (r_h > 10):
                 r_mask = cv2.resize(sample_masks[sel_ind], (r_w, r_h))
                 r_image = cv2.resize(sample_images[sel_ind], (r_w, r_h))
-                temp_crop = image[ymin : ymin + r_h, xmin : xmin + r_w]
+                temp_crop = image[ymin: ymin + r_h, xmin: xmin + r_w]
                 m_ind = r_mask > 0
                 if m_ind.astype(np.int32).sum() > 60:
                     temp_crop[m_ind] = r_image[m_ind]
@@ -1325,7 +1350,7 @@ def pastein(image, labels, sample_labels, sample_images, sample_masks):
                     else:
                         labels = np.array([[sample_labels[sel_ind], *box]])
 
-                    image[ymin : ymin + r_h, xmin : xmin + r_w] = temp_crop
+                    image[ymin: ymin + r_h, xmin: xmin + r_w] = temp_crop
 
     return labels
 
@@ -1382,7 +1407,8 @@ def flatten_recursive(path="../coco"):
 def extract_boxes(path="../coco/"):
 
     path = Path(path)
-    shutil.rmtree(path / "classifier") if (path / "classifier").is_dir() else None
+    shutil.rmtree(path / "classifier") if (path /
+                                           "classifier").is_dir() else None
     files = list(path.rglob("*.*"))
     n = len(files)
     for im_file in tqdm(files, total=n):
@@ -1417,7 +1443,7 @@ def extract_boxes(path="../coco/"):
                     b[[0, 2]] = np.clip(b[[0, 2]], 0, w)
                     b[[1, 3]] = np.clip(b[[1, 3]], 0, h)
                     assert cv2.imwrite(
-                        str(f), im[b[1] : b[3], b[0] : b[2]]
+                        str(f), im[b[1]: b[3], b[0]: b[2]]
                     ), f"box failure in {f}"
 
 
@@ -1430,7 +1456,8 @@ def autosplit(path="../coco", weights=(0.9, 0.1, 0.0), annotated_only=False):
         annotated_only: Only use images with an annotated txt file
     """
     path = Path(path)
-    files = sum([list(path.rglob(f"*.{img_ext}")) for img_ext in img_formats], [])
+    files = sum([list(path.rglob(f"*.{img_ext}"))
+                for img_ext in img_formats], [])
     n = len(files)
     indices = random.choices([0, 1, 2], weights=weights, k=n)
 

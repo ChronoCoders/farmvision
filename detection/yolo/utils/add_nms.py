@@ -142,7 +142,8 @@ class RegisterNMS(object):
             shape=[self.batch_size, detections_per_img],
         )
 
-        op_outputs = [output_num_detections, output_boxes, output_scores, output_labels]
+        op_outputs = [output_num_detections,
+                      output_boxes, output_scores, output_labels]
 
         # Create the NMS Plugin node with the selected inputs. The outputs of the node will also
         # become the final outputs of the graph.

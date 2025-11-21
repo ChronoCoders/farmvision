@@ -204,14 +204,16 @@ def get_cache_statistics() -> Dict[str, Any]:
 
             # Estimate total memory
             if len(prediction_keys) > 100:
-                prediction_memory = int(prediction_memory * len(prediction_keys) / 100)
+                prediction_memory = int(
+                    prediction_memory * len(prediction_keys) / 100)
 
         # Get hit/miss stats
         keyspace_hits = redis_info.get("keyspace_hits", 0)
         keyspace_misses = redis_info.get("keyspace_misses", 0)
         total_requests = keyspace_hits + keyspace_misses
 
-        hit_rate = (keyspace_hits / total_requests * 100) if total_requests > 0 else 0
+        hit_rate = (keyspace_hits / total_requests *
+                    100) if total_requests > 0 else 0
 
         stats = {
             "redis_available": True,
@@ -231,7 +233,8 @@ def get_cache_statistics() -> Dict[str, Any]:
             "uptime_seconds": redis_info.get("uptime_in_seconds", 0),
         }
 
-        logger.info(f"Cache statistics retrieved: {prediction_count} prediction keys")
+        logger.info(
+            f"Cache statistics retrieved: {prediction_count} prediction keys")
         return stats
 
     except Exception as e:

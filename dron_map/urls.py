@@ -7,6 +7,7 @@ app_name = "dron_map"
 urlpatterns = [
     path("projects/", views.projects, name="projects"),
     path("projects/<slug:slug>/", views.add_projects, name="add_projects"),
-    path("projects/<slug:slug>/<int:id>/", views.add_projects, name="edit_project"),
+    path("projects/<slug:slug>/<int:id>/",
+         views.add_projects, name="edit_project"),
     path("map/<int:id>/", views.maping, name="map"),
 ]

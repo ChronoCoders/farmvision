@@ -12,7 +12,8 @@ class Projects(models.Model):
     Field: models.CharField = models.CharField(
         max_length=250, verbose_name="Field", db_index=True
     )
-    Title: models.CharField = models.CharField(max_length=250, verbose_name="Title")
+    Title: models.CharField = models.CharField(
+        max_length=250, verbose_name="Title")
     State: models.CharField = models.CharField(
         max_length=250, verbose_name="State", db_index=True
     )

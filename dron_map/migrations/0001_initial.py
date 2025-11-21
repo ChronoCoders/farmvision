@@ -36,7 +36,8 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "hashing_path",
-                    models.CharField(max_length=250, verbose_name="Hashing Path"),
+                    models.CharField(
+                        max_length=250, verbose_name="Hashing Path"),
                 ),
             ],
         ),

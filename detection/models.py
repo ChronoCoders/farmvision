@@ -5,7 +5,8 @@ from datetime import timedelta
 
 
 class DetectionResult(models.Model):
-    fruit_type: models.CharField = models.CharField(max_length=50, db_index=True)
+    fruit_type: models.CharField = models.CharField(
+        max_length=50, db_index=True)
     tree_count: models.IntegerField = models.IntegerField()
     tree_age: models.IntegerField = models.IntegerField(db_index=True)
     detected_count: models.IntegerField = models.IntegerField()
@@ -85,7 +86,8 @@ class DetectionResult(models.Model):
 
 
 class MultiDetectionBatch(models.Model):
-    fruit_type: models.CharField = models.CharField(max_length=50, db_index=True)
+    fruit_type: models.CharField = models.CharField(
+        max_length=50, db_index=True)
     batch_hash: models.CharField = models.CharField(
         max_length=100, unique=True, db_index=True
     )

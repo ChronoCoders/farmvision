@@ -108,7 +108,8 @@ def sanitize_filename(filename: str) -> str:
         logger.warning(
             f"Path traversal attempt detected in sanitize_filename: {filename}"
         )
-        raise ValidationError("Geçersiz dosya adı - güvenlik ihlali tespit edildi")
+        raise ValidationError(
+            "Geçersiz dosya adı - güvenlik ihlali tespit edildi")
 
     name, ext = os.path.splitext(filename)
     safe_name = "".join(c for c in name if c.isalnum() or c in (" ", "_", "-"))
@@ -146,7 +147,8 @@ def index(request: HttpRequest) -> HttpResponse:
     chart_values = []
     for stat in monthly_stats:
         chart_labels.append(stat["month"].strftime("%Y-%m"))
-        chart_values.append(float(stat["avg_count"]) if stat["avg_count"] else 0)
+        chart_values.append(
+            float(stat["avg_count"]) if stat["avg_count"] else 0)
 
     chart_data = json.dumps(
         {
@@ -181,7 +183,9 @@ def index(request: HttpRequest) -> HttpResponse:
                 # Add range validation for tree count
                 if not (1 <= agac_sayisi_int <= 100000):
                     return render(
-                        request, "main.html", {"error": "Ağaç sayısı 1-100000 arasında olmalı"}
+                        request,
+                        "main.html",
+                        {"error": "Ağaç sayısı 1-100000 arasında olmalı"},
                     )
             except ValueError:
                 return render(request, "main.html", {"error": "Geçersiz sayı formatı"})
@@ -191,7 +195,9 @@ def index(request: HttpRequest) -> HttpResponse:
                 agac_yasi_int = int(agac_yasi)
                 if not (0 <= agac_yasi_int <= 150):
                     return render(
-                        request, "main.html", {"error": "Ağaç yaşı 0-150 arasında olmalı"}
+                        request,
+                        "main.html",
+                        {"error": "Ağaç yaşı 0-150 arasında olmalı"},
                     )
             except ValueError:
                 return render(request, "main.html", {"error": "Geçersiz yaş formatı"})
@@ -220,7 +226,8 @@ def index(request: HttpRequest) -> HttpResponse:
 
                 # Adjust for current tree count
                 cached_weight = (
-                    cached_result["weight_per_fruit"] * cached_result["detected_count"]
+                    cached_result["weight_per_fruit"] *
+                    cached_result["detected_count"]
                 )
 
                 response["count"] = cached_result["detected_count"]
@@ -258,7 +265,8 @@ def index(request: HttpRequest) -> HttpResponse:
 
                     response["count"] = count
                     response["kilo"] = count * weight_per_fruit
-                    response["toplam_agirlik"] = agac_sayisi_int * response["kilo"]
+                    response["toplam_agirlik"] = agac_sayisi_int * \
+                        response["kilo"]
                     response["time"] = f"{processing_time:.2f}"
                     response["image"] = f"detected/{unique_id}/{safe_filename}"
                     response["image_detection"] = (
@@ -304,14 +312,17 @@ def index(request: HttpRequest) -> HttpResponse:
                 except (FileNotFoundError, RuntimeError, ValueError, IOError) as e:
                     logger.error(f"Model algılama hatası: {e}")
                     # Don't expose internal error details to users
-                    raise ValidationError("Algılama işlemi başarısız oldu. Lütfen tekrar deneyin.")
+                    raise ValidationError(
+                        "Algılama işlemi başarısız oldu. Lütfen tekrar deneyin."
+                    )
                 finally:
                     # Clean up temp file
                     try:
                         if os.path.exists(tmp_path):
                             os.unlink(tmp_path)
                     except Exception as e:
-                        logger.error(f"Geçici dosya silme hatası: {tmp_path}: {e}")
+                        logger.error(
+                            f"Geçici dosya silme hatası: {tmp_path}: {e}")
 
         except ValidationError as e:
             return render(request, "main.html", {"error": str(e)})
@@ -387,7 +398,8 @@ def multi_detection_image(request: HttpRequest) -> HttpResponse:
                         logger.warning(
                             f"Path traversal attempt in filename: {image.name}"
                         )
-                        raise ValidationError(f"Geçersiz dosya adı: {image.name}")
+                        raise ValidationError(
+                            f"Geçersiz dosya adı: {image.name}")
 
                     img_path = Path(hass[0]) / safe_image_name
                     with open(img_path, "wb") as f:
@@ -399,9 +411,11 @@ def multi_detection_image(request: HttpRequest) -> HttpResponse:
                 if upload_dir and upload_dir.exists():
                     try:
                         shutil.rmtree(str(upload_dir))
-                        logger.info(f"Hatalı dosyalar temizlendi: {upload_dir}")
+                        logger.info(
+                            f"Hatalı dosyalar temizlendi: {upload_dir}")
                     except Exception as cleanup_error:
-                        logger.error(f"Dosya temizleme hatası: {cleanup_error}")
+                        logger.error(
+                            f"Dosya temizleme hatası: {cleanup_error}")
                 raise ValidationError("Dosyalar kaydedilemedi")
 
             # Run multi prediction
@@ -416,7 +430,8 @@ def multi_detection_image(request: HttpRequest) -> HttpResponse:
                 )
 
                 return render(
-                    request, "multi_detection_fruit.html", {"response": hass[1]}
+                    request, "multi_detection_fruit.html", {
+                        "response": hass[1]}
                 )
 
             except (FileNotFoundError, RuntimeError, ValueError, IOError) as e:
@@ -429,7 +444,8 @@ def multi_detection_image(request: HttpRequest) -> HttpResponse:
                             f"Algılama hatası nedeniyle dosyalar silindi: {upload_dir}"
                         )
                     except Exception as cleanup_error:
-                        logger.error(f"Dosya temizleme hatası: {cleanup_error}")
+                        logger.error(
+                            f"Dosya temizleme hatası: {cleanup_error}")
                 raise ValidationError(f"Algılama başarısız: {str(e)}")
 
         except ValidationError as e:
@@ -437,7 +453,8 @@ def multi_detection_image(request: HttpRequest) -> HttpResponse:
         except Exception as e:
             logger.error(f"Çoklu algılama hatası: {e}")
             return render(
-                request, "multi_detection_fruit.html", {"error": "Bir hata oluştu"}
+                request, "multi_detection_fruit.html", {
+                    "error": "Bir hata oluştu"}
             )
 
     return render(request, "multi_detection_fruit.html")
@@ -514,7 +531,8 @@ def system_monitoring(request: HttpRequest) -> HttpResponse:
         # Boot time - Başlangıç Zamanı
         from django.utils import timezone
 
-        boot_time = timezone.make_aware(datetime.fromtimestamp(psutil.boot_time()))
+        boot_time = timezone.make_aware(
+            datetime.fromtimestamp(psutil.boot_time()))
         uptime = timezone.now() - boot_time
         uptime_str = f"{uptime.days} gün, {uptime.seconds // 3600} saat, {(uptime.seconds % 3600) // 60} dakika"
 
@@ -630,7 +648,8 @@ def async_detection(request: HttpRequest) -> JsonResponse:
 
             # Adjust for current tree count
             cached_weight = (
-                cached_result["weight_per_fruit"] * cached_result["detected_count"]
+                cached_result["weight_per_fruit"] *
+                cached_result["detected_count"]
             )
 
             return JsonResponse(
@@ -673,7 +692,8 @@ def async_detection(request: HttpRequest) -> JsonResponse:
             user_id=request.user.pk if request.user.is_authenticated else None,
         )
 
-        logger.info(f"Async detection task queued: {task.id} for {meyve_grubu}")
+        logger.info(
+            f"Async detection task queued: {task.id} for {meyve_grubu}")
 
         return JsonResponse(
             {

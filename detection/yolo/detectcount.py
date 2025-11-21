@@ -179,7 +179,8 @@ def detect(save_img=False):
                         dataset.count,
                     )
                 else:
-                    p, s, im0, frame = path, "", im0s, getattr(dataset, "frame", 0)
+                    p, s, im0, frame = path, "", im0s, getattr(
+                        dataset, "frame", 0)
 
                 p = Path(p)
                 save_path = str(save_dir / p.name)
@@ -213,9 +214,11 @@ def detect(save_img=False):
                                 .view(-1)
                                 .tolist()
                             )
-                            line = (cls, *xywh, conf) if opt.save_conf else (cls, *xywh)
+                            line = (
+                                cls, *xywh, conf) if opt.save_conf else (cls, *xywh)
                             with open(txt_path + ".txt", "a") as f:
-                                f.write(("%g " * len(line)).rstrip() % line + "\n")
+                                f.write(("%g " * len(line)).rstrip() %
+                                        line + "\n")
 
                         if save_img or view_img:
                             label = f"{names[int(cls)]} {conf:.2f}"
@@ -247,7 +250,8 @@ def detect(save_img=False):
                                 fps, w, h = 30, im0.shape[1], im0.shape[0]
                                 save_path += ".mp4"
                             vid_writer = cv2.VideoWriter(
-                                save_path, cv2.VideoWriter_fourcc(*"mp4v"), fps, (w, h)
+                                save_path, cv2.VideoWriter_fourcc(
+                                    *"mp4v"), fps, (w, h)
                             )
                         vid_writer.write(im0)
 
