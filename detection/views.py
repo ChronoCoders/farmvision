@@ -355,8 +355,8 @@ def multi_detection_image(request: HttpRequest) -> HttpResponse:
                     {"error": "Tüm alanları doldurun"},
                 )
 
-            for file in filelist:
-                validate_image_file(file)
+            for image_file in filelist:
+                validate_image_file(image_file)
 
             if meyve_grubu not in FRUIT_MODELS:
                 return render(

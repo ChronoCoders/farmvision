@@ -3,6 +3,7 @@
 
 import os
 import platform
+import shutil
 import subprocess
 import time
 from pathlib import Path
@@ -14,8 +15,11 @@ import torch
 def gsutil_getsize(url=""):
     # gs://bucket/file size
     # https://cloud.google.com/storage/docs/gsutil/commands/du
+    gsutil_cmd = shutil.which("gsutil")
+    if not gsutil_cmd:
+        raise FileNotFoundError("gsutil command not found in PATH")
     s = subprocess.check_output(
-        ["gsutil", "du", url], shell=False).decode("utf-8")
+        [gsutil_cmd, "du", url], shell=False).decode("utf-8")
     # Use int() instead of eval() for safety
     return int(s.split(" ")[0]) if len(s) else 0  # bytes
 
@@ -64,8 +68,11 @@ def attempt_download(file, repo="WongKinYiu/yolov7"):
                     raise RuntimeError("No secondary mirror")
                 url = f"https://storage.googleapis.com/{repo}/ckpt/{name}"
                 print(f"Downloading {url} to {file}...")
+                curl_cmd = shutil.which("curl")
+                if not curl_cmd:
+                    raise FileNotFoundError("curl command not found in PATH")
                 subprocess.run(
-                    ["curl", "-L", url, "-o", str(file)], shell=False, check=False
+                    [curl_cmd, "-L", url, "-o", str(file)], shell=False, check=False
                 )  # torch.hub.download_url_to_file(url, weights)
             finally:
                 if not file.exists() or file.stat().st_size < 1e6:  # check
@@ -78,6 +85,13 @@ def attempt_download(file, repo="WongKinYiu/yolov7"):
 def gdrive_download(id="", file="tmp.zip"):
     # Downloads a file from Google Drive. from yolov7.utils.google_utils
     # import *; gdrive_download()
+    curl_cmd = shutil.which("curl")
+    if not curl_cmd:
+        raise FileNotFoundError("curl command not found in PATH")
+    unzip_cmd = shutil.which("unzip")
+    if not unzip_cmd:
+        raise FileNotFoundError("unzip command not found in PATH")
+
     t = time.time()
     file = Path(file)
     cookie = Path("cookie")  # gdrive cookie
@@ -93,7 +107,7 @@ def gdrive_download(id="", file="tmp.zip"):
     with open(out, "w") as devnull:
         subprocess.run(
             [
-                "curl",
+                curl_cmd,
                 "-c",
                 "./cookie",
                 "-s",
@@ -108,7 +122,7 @@ def gdrive_download(id="", file="tmp.zip"):
         token = get_token()
         result = subprocess.run(
             [
-                "curl",
+                curl_cmd,
                 "-Lb",
                 "./cookie",
                 f"drive.google.com/uc?export=download&confirm={token}&id={id}",
@@ -121,7 +135,7 @@ def gdrive_download(id="", file="tmp.zip"):
     else:  # small file
         result = subprocess.run(
             [
-                "curl",
+                curl_cmd,
                 "-s",
                 "-L",
                 "-o",
@@ -143,7 +157,7 @@ def gdrive_download(id="", file="tmp.zip"):
     # Unzip if archive
     if file.suffix == ".zip":
         print("unzipping... ", end="")
-        subprocess.run(["unzip", "-q", str(file)],
+        subprocess.run([unzip_cmd, "-q", str(file)],
                        shell=False, check=False)  # unzip
         file.unlink()  # remove zip to free space
 
