@@ -159,7 +159,7 @@ def predict(path_to_weights: str, path_to_source: str) -> Tuple[bytes, str, floa
         )
         return count_str.encode("utf-8"), unique_id, avg_confidence
 
-    except (FileNotFoundError, RuntimeError, ValueError, IOError):
+    except (RuntimeError, ValueError, IOError):
         raise
     except Exception as e:
         logger.error(f"Preddict genel hatası: {e}")
@@ -310,7 +310,7 @@ def multi_predictor(
 
         return hashing
 
-    except (FileNotFoundError, ValueError, IOError, RuntimeError):
+    except (ValueError, IOError, RuntimeError):
         raise
     except Exception as e:
         logger.error(f"Multi predictor genel hatası: {e}")
@@ -404,7 +404,7 @@ def tree_detection(img_path: str) -> Dict[str, Any]:
 
         return {"name": results_dict.get("class_name"), "unique_id": unique_id}
 
-    except (FileNotFoundError, ValueError, IOError, RuntimeError):
+    except (ValueError, IOError, RuntimeError):
         raise
     except Exception as e:
         logger.error(f"Tree detection genel hatası: {e}")

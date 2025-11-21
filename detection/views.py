@@ -94,7 +94,7 @@ def extract_detection_count(detec_result: bytes) -> int:
     try:
         count_str = detec_result.decode("utf-8")
         return int(count_str)
-    except (ValueError, UnicodeDecodeError, AttributeError) as e:
+    except (ValueError, AttributeError) as e:
         logger.error(f"Algılama sonucu parse hatası: {e}")
         raise ValidationError("Algılama sonucu işlenemedi")
 
@@ -309,7 +309,7 @@ def index(request: HttpRequest) -> HttpResponse:
                         logger.error(f"Veritabanı kaydetme hatası: {db_error}")
                         # Don't fail the request if DB save fails, just log it
 
-                except (FileNotFoundError, RuntimeError, ValueError, IOError) as e:
+                except (RuntimeError, ValueError, IOError) as e:
                     logger.error(f"Model algılama hatası: {e}")
                     # Don't expose internal error details to users
                     raise ValidationError(
@@ -434,7 +434,7 @@ def multi_detection_image(request: HttpRequest) -> HttpResponse:
                         "response": hass[1]}
                 )
 
-            except (FileNotFoundError, RuntimeError, ValueError, IOError) as e:
+            except (RuntimeError, ValueError, IOError) as e:
                 logger.error(f"Çoklu algılama işlemi hatası: {e}")
                 # Clean up input files on prediction failure
                 if upload_dir and upload_dir.exists():

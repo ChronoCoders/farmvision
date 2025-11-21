@@ -89,7 +89,7 @@ class Command(BaseCommand):
                         else:
                             skipped_count += 1
 
-                    except (OSError, IOError) as e:
+                    except OSError as e:
                         self.stdout.write(
                             self.style.ERROR(f"Error processing file {file_path}: {e}")
                         )
@@ -109,7 +109,7 @@ class Command(BaseCommand):
                                     )
                                 )
                                 logger.info(f"Removed empty directory: {dir_path}")
-                        except (OSError, IOError):
+                        except OSError:
                             # Directory not empty or other error, skip silently
                             pass
 
