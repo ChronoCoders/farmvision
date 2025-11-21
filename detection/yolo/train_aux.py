@@ -23,8 +23,8 @@ from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
 import test
-from models.experimental import attempt_load
-from models.yolo import Model
+from detection.yolo.models.experimental import attempt_load
+from detection.yolo.models.yolo import Model
 from utils.autoanchor import check_anchors
 from utils.datasets import create_dataloader
 from utils.general import (

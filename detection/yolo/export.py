@@ -3,7 +3,7 @@ from utils.add_nms import RegisterNMS
 from utils.torch_utils import select_device
 from utils.general import set_logging, check_img_size
 from utils.activations import Hardswish, SiLU
-from models.experimental import attempt_load, End2End
+from detection.yolo.models.experimental import attempt_load, End2End
 import models
 from torch.utils.mobile_optimizer import optimize_for_mobile
 import torch.nn as nn
