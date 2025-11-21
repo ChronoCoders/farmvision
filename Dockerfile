@@ -31,7 +31,7 @@ ENV GDAL_CONFIG=/usr/bin/gdal-config \
     GDAL_VERSION=3.8.4
 
 # Upgrade pip
-RUN pip install --upgrade pip==25.3 setuptools==80.9.0 wheel==0.45.1
+RUN pip install --no-cache-dir --upgrade pip==25.3 setuptools==80.9.0 wheel==0.45.1
 
 # Copy requirements file
 COPY requirements.txt .
@@ -39,7 +39,7 @@ COPY requirements.txt .
 # Install Python dependencies
 # Note: GDAL wheel needs to be handled separately or installed via pip
 RUN pip install --no-cache-dir -r requirements.txt || \
-    (pip install GDAL==$(gdal-config --version) && pip install --no-cache-dir -r requirements.txt)
+    (pip install --no-cache-dir GDAL==$(gdal-config --version) && pip install --no-cache-dir -r requirements.txt)
 
 # Copy project files
 COPY . .
