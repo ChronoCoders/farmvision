@@ -61,7 +61,8 @@ logger = logging.getLogger(__name__)
 
 def train(hyp, opt, device, tb_writer=None):
     logger.info(
-        colorstr("hyperparameters: ") + ", ".join(f"{k}={v}" for k, v in hyp.items())
+        colorstr("hyperparameters: ") +
+        ", ".join(f"{k}={v}" for k, v in hyp.items())
     )
     save_dir, epochs, batch_size, total_batch_size, weights, rank = (
         Path(opt.save_dir),
@@ -98,7 +99,8 @@ def train(hyp, opt, device, tb_writer=None):
             if weights.endswith(".pt") and os.path.isfile(weights)
             else None
         )
-        wandb_logger = WandbLogger(opt, Path(opt.save_dir).stem, run_id, data_dict)
+        wandb_logger = WandbLogger(
+            opt, Path(opt.save_dir).stem, run_id, data_dict)
         loggers["wandb"] = wandb_logger.wandb
         data_dict = wandb_logger.data_dict
         if wandb_logger.wandb:
@@ -111,11 +113,14 @@ def train(hyp, opt, device, tb_writer=None):
         else data_dict["names"]
     )
     if len(names) != nc:
-        raise ValueError("%g names found for nc=%g dataset in %s" % (
-            len(names),
-            nc,
-            opt.data,
-        ))
+        raise ValueError(
+            "%g names found for nc=%g dataset in %s"
+            % (
+                len(names),
+                nc,
+                opt.data,
+            )
+        )
 
     pretrained = weights.endswith(".pt")
     if pretrained:
@@ -126,17 +131,20 @@ def train(hyp, opt, device, tb_writer=None):
             opt.cfg or ckpt["model"].yaml, ch=3, nc=nc, anchors=hyp.get("anchors")
         ).to(device)
         exclude = (
-            ["anchor"] if (opt.cfg or hyp.get("anchors")) and not opt.resume else []
+            ["anchor"] if (opt.cfg or hyp.get("anchors")
+                           ) and not opt.resume else []
         )
         state_dict = ckpt["model"].float().state_dict()
-        state_dict = intersect_dicts(state_dict, model.state_dict(), exclude=exclude)
+        state_dict = intersect_dicts(
+            state_dict, model.state_dict(), exclude=exclude)
         model.load_state_dict(state_dict, strict=False)
         logger.info(
             "Transferred %g/%g items from %s"
             % (len(state_dict), len(model.state_dict()), weights)
         )
     else:
-        model = Model(opt.cfg, ch=3, nc=nc, anchors=hyp.get("anchors")).to(device)
+        model = Model(opt.cfg, ch=3, nc=nc,
+                      anchors=hyp.get("anchors")).to(device)
     with torch_distributed_zero_first(rank):
         check_dataset(data_dict)
     train_path = data_dict["train"]
@@ -220,13 +228,15 @@ def train(hyp, opt, device, tb_writer=None):
                 pg0.append(v.rbr_dense.vector)
 
     if opt.adam:
-        optimizer = optim.Adam(pg0, lr=hyp["lr0"], betas=(hyp["momentum"], 0.999))
+        optimizer = optim.Adam(
+            pg0, lr=hyp["lr0"], betas=(hyp["momentum"], 0.999))
     else:
         optimizer = optim.SGD(
             pg0, lr=hyp["lr0"], momentum=hyp["momentum"], nesterov=True
         )
 
-    optimizer.add_param_group({"params": pg1, "weight_decay": hyp["weight_decay"]})
+    optimizer.add_param_group(
+        {"params": pg1, "weight_decay": hyp["weight_decay"]})
     optimizer.add_param_group({"params": pg2})
     logger.info(
         "Optimizer groups: %g .bias, %g conv.weight, %g other"
@@ -262,10 +272,13 @@ def train(hyp, opt, device, tb_writer=None):
         start_epoch = ckpt["epoch"] + 1
         if opt.resume:
             if not start_epoch > 0:
-                raise ValueError("%s training to %g epochs is finished, nothing to resume." % (
-                    weights,
-                    epochs,
-                ))
+                raise ValueError(
+                    "%s training to %g epochs is finished, nothing to resume."
+                    % (
+                        weights,
+                        epochs,
+                    )
+                )
         if epochs < start_epoch:
             logger.info(
                 "%s has been trained for %g epochs. Fine-tuning for %g additional epochs."
@@ -306,12 +319,15 @@ def train(hyp, opt, device, tb_writer=None):
     mlc = np.concatenate(dataset.labels, 0)[:, 0].max()
     nb = len(dataloader)
     if not mlc < nc:
-        raise ValueError("Label class %g exceeds nc=%g in %s. Possible class labels are 0-%g" % (
-            mlc,
-            nc,
-            opt.data,
-            nc - 1,
-        ))
+        raise ValueError(
+            "Label class %g exceeds nc=%g in %s. Possible class labels are 0-%g"
+            % (
+                mlc,
+                nc,
+                opt.data,
+                nc - 1,
+            )
+        )
 
     if rank in [-1, 0]:
         testloader = create_dataloader(
@@ -340,7 +356,8 @@ def train(hyp, opt, device, tb_writer=None):
                     tb_writer.add_histogram("classes", c, 0)
 
             if not opt.noautoanchor:
-                check_anchors(dataset, model=model, thr=hyp["anchor_t"], imgsz=imgsz)
+                check_anchors(dataset, model=model,
+                              thr=hyp["anchor_t"], imgsz=imgsz)
             model.half().float()
 
     if cuda and rank != -1:
@@ -360,7 +377,8 @@ def train(hyp, opt, device, tb_writer=None):
     model.nc = nc
     model.hyp = hyp
     model.gr = 1.0
-    model.class_weights = labels_to_class_weights(dataset.labels, nc).to(device) * nc
+    model.class_weights = labels_to_class_weights(
+        dataset.labels, nc).to(device) * nc
     model.names = names
 
     t0 = time.time()
@@ -386,7 +404,8 @@ def train(hyp, opt, device, tb_writer=None):
 
             if rank in [-1, 0]:
                 cw = model.class_weights.cpu().numpy() * (1 - maps) ** 2 / nc
-                iw = labels_to_image_weights(dataset.labels, nc=nc, class_weights=cw)
+                iw = labels_to_image_weights(
+                    dataset.labels, nc=nc, class_weights=cw)
                 dataset.indices = random.choices(
                     range(dataset.n), weights=iw, k=dataset.n
                 )
@@ -448,7 +467,8 @@ def train(hyp, opt, device, tb_writer=None):
 
             with amp.autocast(enabled=cuda):
                 pred = model(imgs)
-                loss, loss_items = compute_loss_ota(pred, targets.to(device), imgs)
+                loss, loss_items = compute_loss_ota(
+                    pred, targets.to(device), imgs)
                 if rank != -1:
                     loss *= opt.world_size
                 if opt.quad:
@@ -482,14 +502,16 @@ def train(hyp, opt, device, tb_writer=None):
                 if plots and ni < 10:
                     f = save_dir / f"train_batch{ni}.jpg"
                     Thread(
-                        target=plot_images, args=(imgs, targets, paths, f), daemon=True
+                        target=plot_images, args=(
+                            imgs, targets, paths, f), daemon=True
                     ).start()
 
                 elif plots and ni == 10 and wandb_logger.wandb:
                     wandb_logger.log(
                         {
                             "Mosaics": [
-                                wandb_logger.wandb.Image(str(x), caption=x.name)
+                                wandb_logger.wandb.Image(
+                                    str(x), caption=x.name)
                                 for x in save_dir.glob("train*.jpg")
                                 if x.exists()
                             ]
@@ -503,7 +525,8 @@ def train(hyp, opt, device, tb_writer=None):
 
             ema.update_attr(
                 model,
-                include=["yaml", "nc", "hyp", "gr", "names", "stride", "class_weights"],
+                include=["yaml", "nc", "hyp", "gr",
+                         "names", "stride", "class_weights"],
             )
             final_epoch = epoch + 1 == epochs
             if not opt.notest or final_epoch:
@@ -607,7 +630,8 @@ def train(hyp, opt, device, tb_writer=None):
                 wandb_logger.log(
                     {
                         "Results": [
-                            wandb_logger.wandb.Image(str(save_dir / f), caption=f)
+                            wandb_logger.wandb.Image(
+                                str(save_dir / f), caption=f)
                             for f in files
                             if (save_dir / f).exists()
                         ]
@@ -682,7 +706,8 @@ if __name__ == "__main__":
         default=[640, 640],
         help="[train, test] image sizes",
     )
-    parser.add_argument("--rect", action="store_true", help="rectangular training")
+    parser.add_argument("--rect", action="store_true",
+                        help="rectangular training")
     parser.add_argument(
         "--resume",
         nargs="?",
@@ -693,11 +718,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--nosave", action="store_true", help="only save final checkpoint"
     )
-    parser.add_argument("--notest", action="store_true", help="only test final epoch")
+    parser.add_argument("--notest", action="store_true",
+                        help="only test final epoch")
     parser.add_argument(
         "--noautoanchor", action="store_true", help="disable autoanchor check"
     )
-    parser.add_argument("--evolve", action="store_true", help="evolve hyperparameters")
+    parser.add_argument("--evolve", action="store_true",
+                        help="evolve hyperparameters")
     parser.add_argument("--bucket", type=str, default="", help="gsutil bucket")
     parser.add_argument(
         "--cache-images", action="store_true", help="cache images for faster training"
@@ -732,7 +759,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--workers", type=int, default=8, help="maximum number of dataloader workers"
     )
-    parser.add_argument("--project", default="runs/train", help="save to project/name")
+    parser.add_argument("--project", default="runs/train",
+                        help="save to project/name")
     parser.add_argument("--entity", default=None, help="W&B entity")
     parser.add_argument("--name", default="exp", help="save to project/name")
     parser.add_argument(
@@ -775,7 +803,8 @@ if __name__ == "__main__":
     )
     opt = parser.parse_args()
 
-    opt.world_size = int(os.environ["WORLD_SIZE"]) if "WORLD_SIZE" in os.environ else 1
+    opt.world_size = int(os.environ["WORLD_SIZE"]
+                         ) if "WORLD_SIZE" in os.environ else 1
     opt.global_rank = int(os.environ["RANK"]) if "RANK" in os.environ else -1
     set_logging(opt.global_rank)
 
@@ -783,7 +812,8 @@ if __name__ == "__main__":
     if opt.resume and not wandb_run:
         ckpt = opt.resume if isinstance(opt.resume, str) else get_latest_run()
         if not os.path.isfile(ckpt):
-            raise FileNotFoundError("ERROR: --resume checkpoint does not exist")
+            raise FileNotFoundError(
+                "ERROR: --resume checkpoint does not exist")
         apriori = opt.global_rank, opt.local_rank
         with open(Path(ckpt).parent.parent / "opt.yaml") as f:
             opt = argparse.Namespace(**yaml.load(f, Loader=yaml.SafeLoader))
@@ -815,12 +845,15 @@ if __name__ == "__main__":
     device = select_device(opt.device, batch_size=opt.batch_size)
     if opt.local_rank != -1:
         if not torch.cuda.device_count() > opt.local_rank:
-            raise RuntimeError(f"CUDA device count {torch.cuda.device_count()} must be greater than local_rank {opt.local_rank}")
+            raise RuntimeError(
+                f"CUDA device count {torch.cuda.device_count()} must be greater than local_rank {opt.local_rank}"
+            )
         torch.cuda.set_device(opt.local_rank)
         device = torch.device("cuda", opt.local_rank)
         dist.init_process_group(backend="nccl", init_method="env://")
         if opt.batch_size % opt.world_size != 0:
-            raise ValueError("--batch-size must be multiple of CUDA device count")
+            raise ValueError(
+                "--batch-size must be multiple of CUDA device count")
         opt.batch_size = opt.total_batch_size // opt.world_size
 
     with open(opt.hyp) as f:
@@ -906,7 +939,8 @@ if __name__ == "__main__":
                 while all(v == 1):
                     v = (
                         (
-                            g * (npr.random(ng) < mp) * npr.randn(ng) * npr.random() * s
+                            g * (npr.random(ng) < mp) *
+                            npr.randn(ng) * npr.random() * s
                             + 1
                         )
                         .clip(0.3, 3.0)
