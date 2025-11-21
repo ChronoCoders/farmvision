@@ -365,8 +365,6 @@ def multi_detection_image(request: HttpRequest) -> HttpResponse:
                     {"error": "Geçersiz meyve grubu"},
                 )
 
-            start_time = time.time()
-
             try:
                 hass = hashing.add_prefix2(filename=f"{time.time()}")
             except Exception as e:

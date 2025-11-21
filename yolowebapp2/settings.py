@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
 import os
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
 import sys
 import io
+
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Configure stdout/stderr for UTF-8 encoding on Windows to handle Turkish characters
 if sys.platform == "win32":

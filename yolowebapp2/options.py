@@ -52,14 +52,14 @@ colormaps = {
 """                     <option value="rdylgn">RdYlGn</option>
                         <option value="spectral">Spectral</option>
                         <option value="rdylgn_r">RdYlGn (Reverse)</option>
-                        <option value="spectral_r">Spectral (Reverse)</option>                        
+                        <option value="spectral_r">Spectral (Reverse)</option>
                         <option value="viridis">Viridis</option>
                         <option value="plasma">Plasma</option>
                         <option value="inferno">Inferno</option>
                         <option value="magma">Magma</option>
                         <option value="cividis">Cividis</option>
                         <option value="jet">Jet</option>
-                        <option value="terrain">Terrain</option>                        
+                        <option value="terrain">Terrain</option>
                         <option value="pastel1">Pastel</option>
                         <option value="rplumbo">Rplumbo (Better NDVI)</option>
                         <option value="gist_earth">Earth</option>
@@ -92,5 +92,5 @@ colormaps = {
                         <option value="lai" title="Leaf Area Index estimates foliage areas and predicts crop yields." >LAI</option>
                         <option value="evi" title="Enhanced Vegetation Index is useful in areas where NDVI might saturate, by using blue wavelengths to correct soil signals." >EVI</option>
                         <option value="arvi" title="Atmospherically Resistant Vegetation Index. Useful when working with imagery for regions with high atmospheric aerosol content." >ARVI</option>
-                         
+
 """
