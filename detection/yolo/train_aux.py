@@ -268,20 +268,17 @@ def train(hyp, opt, device, tb_writer=None):
             results_file.write_text(ckpt["training_results"])
 
         start_epoch = ckpt["epoch"] + 1
-        if opt.resume:
-            if not start_epoch > 0:
-                raise ValueError(
-                    "%s training to %g epochs is finished, nothing to resume."
-                    % (
-                        weights,
-                        epochs,
-                    )
+        if opt.resume and start_epoch <= 0:
+            raise ValueError(
+                "%s training to %g epochs is finished, nothing to resume."
+                % (
+                    weights,
+                    epochs,
                 )
+            )
         if epochs < start_epoch:
             logger.info(
-                "%s has been trained for %g epochs. Fine-tuning for %g additional epochs."
-                % (weights, ckpt["epoch"], epochs)
-            )
+                "%s has been trained for %g epochs. Fine-tuning for %g additional epochs.", weights, ckpt["epoch"], epochs)
             epochs += ckpt["epoch"]
 
     gs = max(int(model.stride.max()), 32)
@@ -346,10 +343,8 @@ def train(hyp, opt, device, tb_writer=None):
             labels = np.concatenate(dataset.labels, 0)
             c = torch.tensor(labels[:, 0])
 
-            if plots:
-
-                if tb_writer:
-                    tb_writer.add_histogram("classes", c, 0)
+            if plots and tb_writer:
+                tb_writer.add_histogram("classes", c, 0)
 
             if not opt.noautoanchor:
                 check_anchors(dataset, model=model,
@@ -421,9 +416,7 @@ def train(hyp, opt, device, tb_writer=None):
             dataloader.sampler.set_epoch(epoch)
         pbar = enumerate(dataloader)
         logger.info(
-            ("\n" + "%10s" * 8)
-            % ("Epoch", "gpu_mem", "box", "obj", "cls", "total", "labels", "img_size")
-        )
+            ("\n" + "%10s" * 8), "Epoch", "gpu_mem", "box", "obj", "cls", "total", "labels", "img_size")
         if rank in [-1, 0]:
             pbar = tqdm(pbar, total=nb)
         optimizer.zero_grad()
@@ -604,13 +597,16 @@ def train(hyp, opt, device, tb_writer=None):
                     torch.save(ckpt, wdir / "epoch_{:03d}.pt".format(epoch))
                 elif epoch >= (epochs - 5):
                     torch.save(ckpt, wdir / "epoch_{:03d}.pt".format(epoch))
-                if wandb_logger.wandb:
-                    if (
-                        (epoch + 1) % opt.save_period == 0 and not final_epoch
-                    ) and opt.save_period != -1:
-                        wandb_logger.log_model(
-                            last.parent, opt, epoch, fi, best_model=best_fitness == fi
-                        )
+                if (
+                    wandb_logger.wandb
+                    and (
+                    (epoch + 1) % opt.save_period == 0 and not final_epoch
+                )
+                    and opt.save_period != -1
+                ):
+                    wandb_logger.log_model(
+                        last.parent, opt, epoch, fi, best_model=best_fitness == fi
+                    )
 
     if rank in [-1, 0]:
 
@@ -634,9 +630,7 @@ def train(hyp, opt, device, tb_writer=None):
                 )
 
         logger.info(
-            "%g epochs completed in %.3f hours.\n"
-            % (epoch - start_epoch + 1, (time.time() - t0) / 3600)
-        )
+            "%g epochs completed in %.3f hours.\n", epoch - start_epoch + 1, (time.time() - t0) / 3600)
         if opt.data.endswith("coco.yaml") and nc == 80:
             for m in (last, best) if best.exists() else (last):
                 results, _, _ = test.test(

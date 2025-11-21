@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-# Loss functions
 
 import torch
 import torch.nn as nn
@@ -983,7 +981,6 @@ class ComputeLossOTA:
                     [0, 1],
                     [-1, 0],
                     [0, -1],  # j,k,l,m
-                    # [1, 1], [1, -1], [-1, 1], [-1, -1],  # jk,jm,lk,lm
                 ],
                 device=targets.device,
             ).float()
@@ -1046,7 +1043,6 @@ class ComputeLossBinOTA:
         BCEobj = nn.BCEWithLogitsLoss(
             pos_weight=torch.tensor([h["obj_pw"]], device=device)
         )
-        # MSEangle = nn.MSELoss().to(device)
 
         # Class label smoothing https://arxiv.org/pdf/1902.04103.pdf eqn 3
         self.cp, self.cn = smooth_BCE(
@@ -1393,7 +1389,6 @@ class ComputeLossBinOTA:
                     [0, 1],
                     [-1, 0],
                     [0, -1],  # j,k,l,m
-                    # [1, 1], [1, -1], [-1, 1], [-1, -1],  # jk,jm,lk,lm
                 ],
                 device=targets.device,
             ).float()
@@ -1564,7 +1559,6 @@ class ComputeLossAuxOTA:
                 ]  # prediction subset corresponding to targets
                 grid_aux = torch.stack([gi_aux, gj_aux], dim=1)
                 pxy_aux = ps_aux[:, :2].sigmoid() * 2.0 - 0.5
-                # pxy_aux = ps_aux[:, :2].sigmoid() * 3. - 1.
                 pwh_aux = (ps_aux[:, 2:4].sigmoid() * 2) ** 2 * anchors_aux[i]
                 pbox_aux = torch.cat((pxy_aux, pwh_aux), 1)  # predicted box
                 selected_tbox_aux = targets_aux[i][:,
@@ -1971,7 +1965,6 @@ class ComputeLossAuxOTA:
                     [0, 1],
                     [-1, 0],
                     [0, -1],  # j,k,l,m
-                    # [1, 1], [1, -1], [-1, 1], [-1, -1],  # jk,jm,lk,lm
                 ],
                 device=targets.device,
             ).float()
@@ -2043,7 +2036,6 @@ class ComputeLossAuxOTA:
                     [0, 1],
                     [-1, 0],
                     [0, -1],  # j,k,l,m
-                    # [1, 1], [1, -1], [-1, 1], [-1, -1],  # jk,jm,lk,lm
                 ],
                 device=targets.device,
             ).float()
