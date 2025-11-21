@@ -53,23 +53,23 @@ def validate_uploaded_files(files: List[Any]) -> None:
     if not files:
         raise ValidationError("Dosya bulunamadı")
 
-    for file in files:
-        if not file:
+    for uploaded_file in files:
+        if not uploaded_file:
             raise ValidationError("Geçersiz dosya")
 
-        if file.size > MAX_FILE_SIZE:
-            raise ValidationError(f"Dosya çok büyük: {file.name}")
+        if uploaded_file.size > MAX_FILE_SIZE:
+            raise ValidationError(f"Dosya çok büyük: {uploaded_file.name}")
 
-        if file.size == 0:
-            raise ValidationError(f"Boş dosya: {file.name}")
+        if uploaded_file.size == 0:
+            raise ValidationError(f"Boş dosya: {uploaded_file.name}")
 
         # Extract basename to prevent path traversal
-        filename = os.path.basename(file.name)
+        filename = os.path.basename(uploaded_file.name)
 
         # Check for path traversal attempts
         if ".." in filename or "/" in filename or "\\" in filename:
-            logger.warning(f"Path traversal attempt detected: {file.name}")
-            raise ValidationError(f"Geçersiz dosya adı: {file.name}")
+            logger.warning(f"Path traversal attempt detected: {uploaded_file.name}")
+            raise ValidationError(f"Geçersiz dosya adı: {uploaded_file.name}")
 
         ext = filename.split(".")[-1].lower()
         if ext not in ALLOWED_EXTENSIONS:
@@ -398,10 +398,10 @@ def maping(request: HttpRequest, project_id: int) -> HttpResponse:
     colors = options.colormaps
 
     if request.method == "POST":
-        orthophoto = get_statistics(id=projes.hashing_path, type="orthophoto")
-        static = get_statistics(id=projes.hashing_path, type="static")
+        orthophoto = get_statistics(task_id=projes.hashing_path, stat_type="orthophoto")
+        static = get_statistics(task_id=projes.hashing_path, stat_type="static")
         images_info = get_statistics(
-            id=projes.hashing_path, type="images_info")
+            task_id=projes.hashing_path, stat_type="images_info")
 
         try:
             range_values = request.POST.getlist("range")
@@ -564,10 +564,10 @@ def maping(request: HttpRequest, project_id: int) -> HttpResponse:
             },
         )
     else:
-        orthophoto = get_statistics(id=projes.hashing_path, type="orthophoto")
-        static = get_statistics(id=projes.hashing_path, type="static")
+        orthophoto = get_statistics(task_id=projes.hashing_path, stat_type="orthophoto")
+        static = get_statistics(task_id=projes.hashing_path, stat_type="static")
         images_info = get_statistics(
-            id=projes.hashing_path, type="images_info")
+            task_id=projes.hashing_path, stat_type="images_info")
 
         return render(
             request,
