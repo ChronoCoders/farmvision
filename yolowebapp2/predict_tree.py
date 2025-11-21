@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from utils.datasets import LoadImages
-from utils.torch_utils import select_device
-from utils.plots import plot_one_box
-from utils.general import non_max_suppression, scale_coords
-from models.experimental import attempt_load
+from detection.yolo.utils.datasets import LoadImages
+from detection.yolo.utils.torch_utils import select_device
+from detection.yolo.utils.plots import plot_one_box
+from detection.yolo.utils.general import non_max_suppression, scale_coords
+from detection.yolo.models.experimental import attempt_load
 from pathlib import Path
 import openpyxl
 from natsort import natsorted
