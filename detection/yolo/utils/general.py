@@ -200,7 +200,7 @@ def check_file(file):
         return file
     else:
         files = glob.glob("./**/" + file, recursive=True)
-        if not len(files):
+        if not files:
             raise FileNotFoundError(f"File Not Found: {file}")
         if len(files) != 1:
             raise ValueError(

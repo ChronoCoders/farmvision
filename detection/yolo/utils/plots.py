@@ -466,8 +466,7 @@ def profile_idetection(start=0, stop=0, labels=(), save_dir=""):
             results[0] = x
             for i, a in enumerate(ax):
                 if i < len(results):
-                    label = labels[fi] if len(
-                        labels) else f.stem.replace("frames_", "")
+                    label = labels[fi] if labels else f.stem.replace("frames_", "")
                     a.plot(
                         t,
                         results[i],
@@ -551,7 +550,7 @@ def plot_results(start=0, stop=0, bucket="", id=(), labels=(), save_dir=""):
         os.system(c)
     else:
         files = list(Path(save_dir).glob("results*.txt"))
-    if not len(files):
+    if not files:
         raise FileNotFoundError(
             "No results.txt files found in %s, nothing to plot."
             % os.path.abspath(save_dir)
@@ -568,7 +567,7 @@ def plot_results(start=0, stop=0, bucket="", id=(), labels=(), save_dir=""):
                 if i in [0, 1, 2, 5, 6, 7]:
                     y[y == 0] = np.nan  # don't show zero loss values
                     # y /= y[0]  # normalize
-                label = labels[fi] if len(labels) else f.stem
+                label = labels[fi] if labels else f.stem
                 ax[i].plot(x, y, marker=".", label=label,
                            linewidth=2, markersize=8)
                 ax[i].set_title(s[i])

@@ -394,7 +394,7 @@ def test(
         wandb_logger.log({"Bounding Box Debugger/Images": wandb_images})
 
     # Save JSON
-    if save_json and len(jdict):
+    if save_json and jdict:
         w = (
             Path(weights[0] if isinstance(weights, list) else weights).stem
             if weights is not None

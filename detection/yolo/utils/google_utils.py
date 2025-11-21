@@ -21,7 +21,7 @@ def gsutil_getsize(url=""):
     s = subprocess.check_output(
         [gsutil_cmd, "du", url], shell=False).decode("utf-8")
     # Use int() instead of eval() for safety
-    return int(s.split(" ")[0]) if len(s) else 0  # bytes
+    return int(s.split(" ")[0]) if s else 0  # bytes
 
 
 def attempt_download(file, repo="WongKinYiu/yolov7"):
