@@ -88,12 +88,11 @@ class SigmoidBin(nn.Module):
         return self.length
 
     def forward(self, pred):
-        assert (
-            pred.shape[-1] == self.length
-        ), "pred.shape[-1]=%d is not equal to self.length=%d" % (
-            pred.shape[-1],
-            self.length,
-        )
+        if pred.shape[-1] != self.length:
+            raise ValueError("pred.shape[-1]=%d is not equal to self.length=%d" % (
+                pred.shape[-1],
+                self.length,
+            ))
 
         pred_reg = (pred[..., 0] * self.reg_scale - self.reg_scale / 2.0) * self.step
         pred_bin = pred[..., 1 : (1 + self.bin_count)]
@@ -110,18 +109,16 @@ class SigmoidBin(nn.Module):
         return result
 
     def training_loss(self, pred, target):
-        assert (
-            pred.shape[-1] == self.length
-        ), "pred.shape[-1]=%d is not equal to self.length=%d" % (
-            pred.shape[-1],
-            self.length,
-        )
-        assert (
-            pred.shape[0] == target.shape[0]
-        ), "pred.shape=%d is not equal to the target.shape=%d" % (
-            pred.shape[0],
-            target.shape[0],
-        )
+        if pred.shape[-1] != self.length:
+            raise ValueError("pred.shape[-1]=%d is not equal to self.length=%d" % (
+                pred.shape[-1],
+                self.length,
+            ))
+        if pred.shape[0] != target.shape[0]:
+            raise ValueError("pred.shape=%d is not equal to the target.shape=%d" % (
+                pred.shape[0],
+                target.shape[0],
+            ))
         device = pred.device
 
         pred_reg = (

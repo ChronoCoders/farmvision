@@ -110,11 +110,12 @@ def train(hyp, opt, device, tb_writer=None):
         if opt.single_cls and len(data_dict["names"]) != 1
         else data_dict["names"]
     )
-    assert len(names) == nc, "%g names found for nc=%g dataset in %s" % (
-        len(names),
-        nc,
-        opt.data,
-    )
+    if len(names) != nc:
+        raise ValueError("%g names found for nc=%g dataset in %s" % (
+            len(names),
+            nc,
+            opt.data,
+        ))
 
     pretrained = weights.endswith(".pt")
     if pretrained:
@@ -260,12 +261,11 @@ def train(hyp, opt, device, tb_writer=None):
 
         start_epoch = ckpt["epoch"] + 1
         if opt.resume:
-            assert (
-                start_epoch > 0
-            ), "%s training to %g epochs is finished, nothing to resume." % (
-                weights,
-                epochs,
-            )
+            if not start_epoch > 0:
+                raise ValueError("%s training to %g epochs is finished, nothing to resume." % (
+                    weights,
+                    epochs,
+                ))
         if epochs < start_epoch:
             logger.info(
                 "%s has been trained for %g epochs. Fine-tuning for %g additional epochs."
@@ -305,14 +305,13 @@ def train(hyp, opt, device, tb_writer=None):
     )
     mlc = np.concatenate(dataset.labels, 0)[:, 0].max()
     nb = len(dataloader)
-    assert (
-        mlc < nc
-    ), "Label class %g exceeds nc=%g in %s. Possible class labels are 0-%g" % (
-        mlc,
-        nc,
-        opt.data,
-        nc - 1,
-    )
+    if not mlc < nc:
+        raise ValueError("Label class %g exceeds nc=%g in %s. Possible class labels are 0-%g" % (
+            mlc,
+            nc,
+            opt.data,
+            nc - 1,
+        ))
 
     if rank in [-1, 0]:
         testloader = create_dataloader(
@@ -783,7 +782,8 @@ if __name__ == "__main__":
     wandb_run = check_wandb_resume(opt)
     if opt.resume and not wandb_run:
         ckpt = opt.resume if isinstance(opt.resume, str) else get_latest_run()
-        assert os.path.isfile(ckpt), "ERROR: --resume checkpoint does not exist"
+        if not os.path.isfile(ckpt):
+            raise FileNotFoundError("ERROR: --resume checkpoint does not exist")
         apriori = opt.global_rank, opt.local_rank
         with open(Path(ckpt).parent.parent / "opt.yaml") as f:
             opt = argparse.Namespace(**yaml.load(f, Loader=yaml.SafeLoader))
@@ -803,9 +803,8 @@ if __name__ == "__main__":
             check_file(opt.cfg),
             check_file(opt.hyp),
         )
-        assert len(opt.cfg) or len(
-            opt.weights
-        ), "either --cfg or --weights must be specified"
+        if not (len(opt.cfg) or len(opt.weights)):
+            raise ValueError("either --cfg or --weights must be specified")
         opt.img_size.extend([opt.img_size[-1]] * (2 - len(opt.img_size)))
         opt.name = "evolve" if opt.evolve else opt.name
         opt.save_dir = increment_path(
@@ -815,13 +814,13 @@ if __name__ == "__main__":
     opt.total_batch_size = opt.batch_size
     device = select_device(opt.device, batch_size=opt.batch_size)
     if opt.local_rank != -1:
-        assert torch.cuda.device_count() > opt.local_rank
+        if not torch.cuda.device_count() > opt.local_rank:
+            raise RuntimeError(f"CUDA device count {torch.cuda.device_count()} must be greater than local_rank {opt.local_rank}")
         torch.cuda.set_device(opt.local_rank)
         device = torch.device("cuda", opt.local_rank)
         dist.init_process_group(backend="nccl", init_method="env://")
-        assert (
-            opt.batch_size % opt.world_size == 0
-        ), "--batch-size must be multiple of CUDA device count"
+        if opt.batch_size % opt.world_size != 0:
+            raise ValueError("--batch-size must be multiple of CUDA device count")
         opt.batch_size = opt.total_batch_size // opt.world_size
 
     with open(opt.hyp) as f:
@@ -876,7 +875,8 @@ if __name__ == "__main__":
             if "anchors" not in hyp:
                 hyp["anchors"] = 3
 
-        assert opt.local_rank == -1, "DDP mode not implemented for --evolve"
+        if opt.local_rank != -1:
+            raise RuntimeError("DDP mode not implemented for --evolve")
         opt.notest, opt.nosave = True, True
 
         yaml_file = Path(opt.save_dir) / "hyp_evolved.yaml"

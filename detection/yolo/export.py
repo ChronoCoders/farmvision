@@ -175,7 +175,8 @@ def export_onnx(model, img, opt, labels):
 
                 print("\nStarting to simplify ONNX...")
                 onnx_model, check = onnxsim.simplify(onnx_model)
-                assert check, "assert check failed"
+                if not check:
+                    raise RuntimeError("ONNX simplification check failed")
             except Exception as e:
                 print(f"Simplifier failure: {e}")
 

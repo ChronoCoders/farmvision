@@ -50,10 +50,12 @@ def attempt_download(file, repo="WongKinYiu/yolov7"):
                 url = f"https://github.com/{repo}/releases/download/{tag}/{name}"
                 print(f"Downloading {url} to {file}...")
                 torch.hub.download_url_to_file(url, file)
-                assert file.exists() and file.stat().st_size > 1e6  # check
+                if not (file.exists() and file.stat().st_size > 1e6):  # check
+                    raise RuntimeError(f"Download failed or file too small: {file}")
             except Exception as e:  # GCP
                 print(f"Download error: {e}")
-                assert redundant, "No secondary mirror"
+                if not redundant:
+                    raise RuntimeError("No secondary mirror")
                 url = f"https://storage.googleapis.com/{repo}/ckpt/{name}"
                 print(f"Downloading {url} to {file}...")
                 subprocess.run(
