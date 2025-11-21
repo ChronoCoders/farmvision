@@ -109,12 +109,7 @@ def time_synchronized():
 
 
 def profile(x, ops, n=100, device=None):
-    # profile a pytorch module or list of modules. Example usage:
-    #     x = torch.randn(16, 3, 640, 640)  # input
-    #     m1 = lambda x: x * torch.sigmoid(x)
-    #     m2 = nn.SiLU()
-    #     profile(x, [m1, m2], n=100)  # profile speed over 100 iterations
-
+    # profile a pytorch module or list of modules
     device = device or torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     x = x.to(device)
     x.requires_grad = True
@@ -457,7 +452,6 @@ class TracedModel(nn.Module):
         rand_example = torch.rand(1, 3, img_size, img_size)
 
         traced_script_module = torch.jit.trace(self.model, rand_example, strict=False)
-        # traced_script_module = torch.jit.script(self.model)
         traced_script_module.save("traced_model.pt")
         print(" traced_script_module saved! ")
         self.model = traced_script_module
