@@ -32,7 +32,7 @@ def calculate_image_hash(image_data: bytes) -> str:
         sha256_hash.update(image_data)
         return sha256_hash.hexdigest()
     except Exception as e:
-        logger.error(f"Error calculating image hash: {e}")
+        logger.error("Error calculating image hash: %s", e)
         raise
 
 
@@ -49,9 +49,7 @@ def get_prediction_cache_key(image_hash: str, fruit_type: str) -> str:
     Returns:
         str: Cache key
     """
-    cache_key_format = getattr(
-        settings, "PREDICTION_CACHE_KEY_FORMAT", "prediction:{image_hash}:{fruit_type}"
-    )
+    cache_key_format = getattr(settings, "PREDICTION_CACHE_KEY_FORMAT", "prediction:{image_hash}:{fruit_type}")
     return cache_key_format.format(image_hash=image_hash, fruit_type=fruit_type)
 
 
@@ -71,14 +69,14 @@ def get_cached_prediction(image_hash: str, fruit_type: str) -> Optional[Dict[str
         cached_result = cache.get(cache_key)
 
         if cached_result:
-            logger.info(f"Cache HIT: {cache_key}")
+            logger.info("Cache HIT: %s", cache_key)
             return cached_result
         else:
-            logger.info(f"Cache MISS: {cache_key}")
+            logger.info("Cache MISS: %s", cache_key)
             return None
 
     except Exception as e:
-        logger.warning(f"Cache retrieval error (Redis unavailable?): {e}")
+        logger.warning("Cache retrieval error (Redis unavailable?): %s", e)
         return None
 
 
@@ -107,11 +105,11 @@ def set_cached_prediction(
             timeout = getattr(settings, "PREDICTION_CACHE_TIMEOUT", 86400)
 
         cache.set(cache_key, prediction_data, timeout)
-        logger.info(f"Cache SET: {cache_key} (timeout={timeout}s)")
+        logger.info("Cache SET: %s (timeout=%ss)", cache_key, timeout)
         return True
 
     except Exception as e:
-        logger.warning(f"Cache set error (Redis unavailable?): {e}")
+        logger.warning("Cache set error (Redis unavailable?): %s", e)
         return False
 
 
@@ -129,11 +127,11 @@ def invalidate_prediction_cache(image_hash: str, fruit_type: str) -> bool:
     try:
         cache_key = get_prediction_cache_key(image_hash, fruit_type)
         cache.delete(cache_key)
-        logger.info(f"Cache INVALIDATED: {cache_key}")
+        logger.info("Cache INVALIDATED: %s", cache_key)
         return True
 
     except Exception as e:
-        logger.warning(f"Cache invalidation error: {e}")
+        logger.warning("Cache invalidation error: %s", e)
         return False
 
 
@@ -161,16 +159,14 @@ def invalidate_all_predictions(fruit_type: Optional[str] = None) -> int:
 
         if keys:
             deleted_count = redis_conn.delete(*keys)
-            logger.info(
-                f"Cache BULK INVALIDATED: {deleted_count} keys (pattern={pattern})"
-            )
+            logger.info("Cache BULK INVALIDATED: %s keys (pattern=%s)", deleted_count, pattern)
             return deleted_count
         else:
-            logger.info(f"No cache keys found for pattern: {pattern}")
+            logger.info("No cache keys found for pattern: %s", pattern)
             return 0
 
     except Exception as e:
-        logger.warning(f"Bulk cache invalidation error: {e}")
+        logger.warning("Bulk cache invalidation error: %s", e)
         return 0
 
 
@@ -221,21 +217,17 @@ def get_cache_statistics() -> Dict[str, Any]:
             "keyspace_hits": keyspace_hits,
             "keyspace_misses": keyspace_misses,
             "hit_rate_percent": round(hit_rate, 2),
-            "total_memory_used_mb": round(
-                redis_info.get("used_memory", 0) / (1024 * 1024), 2
-            ),
-            "total_memory_peak_mb": round(
-                redis_info.get("used_memory_peak", 0) / (1024 * 1024), 2
-            ),
+            "total_memory_used_mb": round(redis_info.get("used_memory", 0) / (1024 * 1024), 2),
+            "total_memory_peak_mb": round(redis_info.get("used_memory_peak", 0) / (1024 * 1024), 2),
             "connected_clients": redis_info.get("connected_clients", 0),
             "uptime_seconds": redis_info.get("uptime_in_seconds", 0),
         }
 
-        logger.info(f"Cache statistics retrieved: {prediction_count} prediction keys")
+        logger.info("Cache statistics retrieved: %s prediction keys", prediction_count)
         return stats
 
     except Exception as e:
-        logger.warning(f"Cache statistics error (Redis unavailable?): {e}")
+        logger.warning("Cache statistics error (Redis unavailable?): %s", e)
         return {
             "redis_available": False,
             "error": str(e),

@@ -67,9 +67,7 @@ def process_image_detection(
     """
     try:
         # Update task state to PROCESSING
-        self.update_state(
-            state="PROCESSING", meta={"status": "Görüntü işleniyor...", "progress": 10}
-        )
+        self.update_state(state="PROCESSING", meta={"status": "Görüntü işleniyor...", "progress": 10})
 
         # Validate fruit type
         if fruit_type not in FRUIT_MODELS:
@@ -79,14 +77,11 @@ def process_image_detection(
         model_path = FRUIT_MODELS[fruit_type]
 
         logger.info(
-            f"Task {self.request.id}: Starting detection for {fruit_type} "
-            f"on image {image_path}"
+            "Task %s: Starting detection for %s on image %s", self.request.id, fruit_type, image_path
         )
 
         # Update state
-        self.update_state(
-            state="PROCESSING", meta={"status": "Model yükleniyor...", "progress": 30}
-        )
+        self.update_state(state="PROCESSING", meta={"status": "Model yükleniyor...", "progress": 30})
 
         start_time = time.time()
 
@@ -101,7 +96,7 @@ def process_image_detection(
             detected_count = int(count_str)
 
         except Exception as e:
-            logger.error(f"Task {self.request.id}: Detection failed: {e}")
+            logger.error("Task %s: Detection failed: %s", self.request.id, e)
             raise
 
         # Update state
@@ -143,16 +138,14 @@ def process_image_detection(
             )
 
         except Exception as db_error:
-            logger.error(f"Task {self.request.id}: DB save failed: {db_error}")
+            logger.error("Task %s: DB save failed: %s", self.request.id, db_error)
             # Continue even if DB save fails
 
         # Clean up temp file
         try:
             if os.path.exists(image_path):
                 os.unlink(image_path)
-                logger.debug(
-                    f"Task {self.request.id}: Cleaned up temp file {image_path}"
-                )
+                logger.debug("Task %s: Cleaned up temp file %s", self.request.id, image_path)
         except Exception as cleanup_error:
             logger.warning(
                 f"Task {self.request.id}: Cleanup failed: {cleanup_error}")
@@ -169,9 +162,7 @@ def process_image_detection(
             "processing_time": float(processing_time),
             "image_path": f"detected/{unique_id}/{Path(image_path).name}",
             "unique_id": str(unique_id),
-            "detection_result_id": (
-                int(detection_result.pk) if "detection_result" in locals() else None
-            ),
+            "detection_result_id": (int(detection_result.pk) if "detection_result" in locals() else None),
         }
 
         return result
@@ -220,9 +211,7 @@ def check_model_health() -> Dict[str, Any]:
 
     for fruit in fruits:
         try:
-            status = DetectionResult.check_model_degradation(
-                fruit_type=fruit, days=7, threshold=0.7
-            )
+            status = DetectionResult.check_model_degradation(fruit_type=fruit, days=7, threshold=0.7)
 
             results[fruit] = status
 
@@ -242,7 +231,7 @@ def check_model_health() -> Dict[str, Any]:
                 )
 
         except Exception as e:
-            logger.error(f"Health check failed for {fruit}: {e}")
+            logger.error("Health check failed for %s: %s", fruit, e)
             results[fruit] = {"error": str(e)}
 
     return {
@@ -268,7 +257,7 @@ def cleanup_old_results(self, days_old: int = 30) -> Dict[str, Any]:
     from datetime import timedelta
     from django.utils import timezone
 
-    logger.info(f"Starting cleanup of results older than {days_old} days...")
+    logger.info("Starting cleanup of results older than %s days...", days_old)
 
     cutoff_date = timezone.now() - timedelta(days=days_old)
 
@@ -280,7 +269,7 @@ def cleanup_old_results(self, days_old: int = 30) -> Dict[str, Any]:
         # Delete from database
         deleted_count, _ = old_results.delete()
 
-        logger.info(f"Cleanup completed: {deleted_count} records removed")
+        logger.info("Cleanup completed: %s records removed", deleted_count)
 
         return {
             "status": "SUCCESS",
@@ -289,5 +278,5 @@ def cleanup_old_results(self, days_old: int = 30) -> Dict[str, Any]:
         }
 
     except Exception as e:
-        logger.error(f"Cleanup failed: {e}", exc_info=True)
+        logger.error("Cleanup failed: %s", e, exc_info=True)
         return {"status": "FAILURE", "error": str(e)}
