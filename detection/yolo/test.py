@@ -10,7 +10,7 @@ import torch
 import yaml
 from tqdm import tqdm
 
-from detection.yolo.models.experimental import attempt_load
+from models.experimental import attempt_load
 from utils.datasets import create_dataloader
 from utils.general import (
     coco80_to_coco91_class,
