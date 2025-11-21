@@ -130,12 +130,9 @@ def test(
 
     seen = 0
     confusion_matrix = ConfusionMatrix(nc=nc)
-    names = {
-        k: v
-        for k, v in enumerate(
+    names = dict(enumerate(
             model.names if hasattr(model, "names") else model.module.names
-        )
-    }
+        ))
     coco91class = coco80_to_coco91_class()
     s = ("%20s" + "%12s" * 6) % (
         "Class",
