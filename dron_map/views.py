@@ -68,7 +68,8 @@ def validate_uploaded_files(files: List[Any]) -> None:
 
         # Check for path traversal attempts
         if ".." in filename or "/" in filename or "\\" in filename:
-            logger.warning(f"Path traversal attempt detected: {uploaded_file.name}")
+            logger.warning(
+                f"Path traversal attempt detected: {uploaded_file.name}")
             raise ValidationError(f"Geçersiz dosya adı: {uploaded_file.name}")
 
         ext = filename.split(".")[-1].lower()
@@ -398,10 +399,13 @@ def maping(request: HttpRequest, project_id: int) -> HttpResponse:
     colors = options.colormaps
 
     if request.method == "POST":
-        orthophoto = get_statistics(task_id=projes.hashing_path, stat_type="orthophoto")
-        static = get_statistics(task_id=projes.hashing_path, stat_type="static")
+        orthophoto = get_statistics(
+            task_id=projes.hashing_path, stat_type="orthophoto")
+        static = get_statistics(
+            task_id=projes.hashing_path, stat_type="static")
         images_info = get_statistics(
-            task_id=projes.hashing_path, stat_type="images_info")
+            task_id=projes.hashing_path, stat_type="images_info"
+        )
 
         try:
             range_values = request.POST.getlist("range")
@@ -564,10 +568,13 @@ def maping(request: HttpRequest, project_id: int) -> HttpResponse:
             },
         )
     else:
-        orthophoto = get_statistics(task_id=projes.hashing_path, stat_type="orthophoto")
-        static = get_statistics(task_id=projes.hashing_path, stat_type="static")
+        orthophoto = get_statistics(
+            task_id=projes.hashing_path, stat_type="orthophoto")
+        static = get_statistics(
+            task_id=projes.hashing_path, stat_type="static")
         images_info = get_statistics(
-            task_id=projes.hashing_path, stat_type="images_info")
+            task_id=projes.hashing_path, stat_type="images_info"
+        )
 
         return render(
             request,
