@@ -8,6 +8,7 @@ import os
 import platform
 import random
 import re
+import shutil
 import subprocess
 import time
 from pathlib import Path
@@ -224,8 +225,11 @@ def check_dataset(dict):
                 if s.startswith("http") and s.endswith(".zip"):
                     f = Path(s).name
                     torch.hub.download_url_to_file(s, f)
+                    unzip_cmd = shutil.which("unzip")
+                    if not unzip_cmd:
+                        raise FileNotFoundError("unzip command not found in PATH")
                     result1 = subprocess.run(
-                        ["unzip", "-q", f, "-d", "../"], shell=False, check=False
+                        [unzip_cmd, "-q", f, "-d", "../"], shell=False, check=False
                     )
                     result2 = subprocess.run(
                         ["rm", f], shell=False, check=False)
@@ -1004,6 +1008,9 @@ def strip_optimizer(f="best.pt", s=""):
 
 
 def print_mutation(hyp, results, yaml_file="hyp_evolved.yaml", bucket=""):
+    gsutil_cmd = shutil.which("gsutil")
+    if bucket and not gsutil_cmd:
+        raise FileNotFoundError("gsutil command not found in PATH")
 
     a = "%10s" * len(hyp) % tuple(hyp.keys())
     b = "%10.3g" * len(hyp) % tuple(hyp.values())
@@ -1016,7 +1023,7 @@ def print_mutation(hyp, results, yaml_file="hyp_evolved.yaml", bucket=""):
             os.path.getsize("evolve.txt") if os.path.exists(
                 "evolve.txt") else 0
         ):
-            subprocess.run(["gsutil", "cp", url, "."],
+            subprocess.run([gsutil_cmd, "cp", url, "."],
                            shell=False, check=False)
 
     with open("evolve.txt", "a") as f:
@@ -1040,7 +1047,7 @@ def print_mutation(hyp, results, yaml_file="hyp_evolved.yaml", bucket=""):
 
     if bucket:
         subprocess.run(
-            ["gsutil", "cp", "evolve.txt", yaml_file, f"gs://{bucket}"],
+            [gsutil_cmd, "cp", "evolve.txt", yaml_file, f"gs://{bucket}"],
             shell=False,
             check=False,
         )
