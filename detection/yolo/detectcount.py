@@ -188,7 +188,7 @@ def detect(save_img=False):
                 )
                 gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]
 
-                if len(det):
+                if det:
                     det[:, :4] = scale_coords(
                         img.shape[2:], det[:, :4], im0.shape
                     ).round()

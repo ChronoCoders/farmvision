@@ -561,7 +561,7 @@ class LoadImagesAndLabels(Dataset):
                     nf += 1
                     with open(lb_file, "r") as f:
                         l = [x.split() for x in f.read().strip().splitlines()]
-                        if any([len(x) > 8 for x in l]):
+                        if any(len(x) > 8 for x in l):
                             classes = np.array([x[0] for x in l], dtype=np.float32)
                             segments = [
                                 np.array(x[1:], dtype=np.float32).reshape(-1, 2)
@@ -571,7 +571,7 @@ class LoadImagesAndLabels(Dataset):
                                 (classes.reshape(-1, 1), segments2boxes(segments)), 1
                             )
                         l = np.array(l, dtype=np.float32)
-                    if len(l):
+                    if l:
                         assert l.shape[1] == 5, "labels require 5 columns each"
                         assert (l >= 0).all(), "negative labels"
                         assert (
@@ -677,7 +677,7 @@ class LoadImagesAndLabels(Dataset):
                     sample_images += sample_images_
                     sample_masks += sample_masks_
 
-                    if len(sample_labels) == 0:
+                    if not sample_labels:
                         break
                 labels = pastein(
                     img, labels, sample_labels, sample_images, sample_masks
@@ -1264,7 +1264,7 @@ def cutout(image, labels):
 
         image[ymin:ymax, xmin:xmax] = [random.randint(64, 191) for _ in range(3)]
 
-        if len(labels) and s > 0.03:
+        if labels and s > 0.03:
             box = np.array([xmin, ymin, xmax, ymax], dtype=np.float32)
             ioa = bbox_ioa(box, labels[:, 1:5])
             labels = labels[ioa < 0.60]
@@ -1289,7 +1289,7 @@ def pastein(image, labels, sample_labels, sample_images, sample_masks):
         ymax = min(h, ymin + mask_h)
 
         box = np.array([xmin, ymin, xmax, ymax], dtype=np.float32)
-        if len(labels):
+        if labels:
             ioa = bbox_ioa(box, labels[:, 1:5])
         else:
             ioa = np.zeros(1)
@@ -1318,7 +1318,7 @@ def pastein(image, labels, sample_labels, sample_images, sample_masks):
                     box = np.array(
                         [xmin, ymin, xmin + r_w, ymin + r_h], dtype=np.float32
                     )
-                    if len(labels):
+                    if labels:
                         labels = np.concatenate(
                             (labels, [[sample_labels[sel_ind], *box]]), 0
                         )

@@ -164,7 +164,7 @@ def index(request: HttpRequest) -> HttpResponse:
             ekim_sirasi = request.POST.get("ekim_sirasi")
             filename = request.FILES.get("file")
 
-            if not all([meyve_grubu, agac_sayisi, agac_yasi, ekim_sirasi, filename]):
+            if not all((meyve_grubu, agac_sayisi, agac_yasi, ekim_sirasi, filename)):
                 return render(request, "main.html", {"error": "Tüm alanları doldurun"})
 
             if filename is None:
@@ -585,7 +585,7 @@ def async_detection(request: HttpRequest) -> JsonResponse:
         agac_yasi = request.POST.get("agac_yasi")
         filename = request.FILES.get("file")
 
-        if not all([meyve_grubu, agac_sayisi, agac_yasi, filename]):
+        if not all((meyve_grubu, agac_sayisi, agac_yasi, filename)):
             return JsonResponse({"error": "Tüm alanları doldurun"}, status=400)
 
         if filename is None:
