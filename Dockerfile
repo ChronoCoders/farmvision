@@ -31,7 +31,7 @@ ENV GDAL_CONFIG=/usr/bin/gdal-config \
     GDAL_VERSION=3.8.4
 
 # Upgrade pip
-RUN pip install --upgrade pip setuptools wheel
+RUN pip install --upgrade pip==25.3 setuptools==80.9.0 wheel==0.45.1
 
 # Copy requirements file
 COPY requirements.txt .
