@@ -8,8 +8,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Configure stdout/stderr for UTF-8 encoding on Windows to handle Turkish characters
 if sys.platform == "win32":
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+    sys.stdout = io.TextIOWrapper(
+        sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stderr = io.TextIOWrapper(
+        sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 ENVIRONMENT = os.environ.get("DJANGO_ENVIRONMENT", "development")
 IS_DEVELOPMENT = ENVIRONMENT == "development"
@@ -31,7 +33,8 @@ if not SECRET_KEY:
             "DJANGO_SECRET_KEY environment variable must be set in production"
         )
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+ALLOWED_HOSTS = os.environ.get(
+    "DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"
 
 INSTALLED_APPS = [
@@ -291,7 +294,8 @@ CORS_ALLOW_HEADERS = [
 # ==============================================================================
 
 # Celery broker URL (Redis)
-CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
+CELERY_BROKER_URL = os.environ.get(
+    "CELERY_BROKER_URL", "redis://localhost:6379/0")
 
 # Celery result backend (Redis)
 CELERY_RESULT_BACKEND = os.environ.get(
@@ -314,7 +318,8 @@ CELERY_TASK_TIME_LIMIT = 30 * 60  # Hard time limit: 30 minutes
 CELERY_TASK_SOFT_TIME_LIMIT = 25 * 60  # Soft time limit: 25 minutes
 
 # Celery worker configuration
-CELERY_WORKER_PREFETCH_MULTIPLIER = 1  # Process one task at a time (for ML tasks)
+# Process one task at a time (for ML tasks)
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 CELERY_WORKER_MAX_TASKS_PER_CHILD = (
     10  # Restart worker after 10 tasks (memory management)
 )
