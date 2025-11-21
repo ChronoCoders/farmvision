@@ -76,17 +76,17 @@ def validate_uploaded_files(files: List[Any]) -> None:
             raise ValidationError(f"Geçersiz dosya tipi: {ext}")
 
 
-def task_path(id: str, path: str, file: str) -> str:
-    return f"results/{id}/{path}/{file}"
+def task_path(task_id: str, dir_path: str, filename: str) -> str:
+    return f"results/{task_id}/{dir_path}/{filename}"
 
 
-def get_full_task_path(id: str, path: str, file: str) -> str:
-    return os.path.join(BASE_DIR, f"static/results/{id}/{path}", file)
+def get_full_task_path(task_id: str, dir_path: str, filename: str) -> str:
+    return os.path.join(BASE_DIR, f"static/results/{task_id}/{dir_path}", filename)
 
 
-def get_statistics(id: str, type: str) -> Dict[str, Any]:
-    if type == "static":
-        task = get_full_task_path(id, "odm_report", "stats.json")
+def get_statistics(task_id: str, stat_type: str) -> Dict[str, Any]:
+    if stat_type == "static":
+        task = get_full_task_path(task_id, "odm_report", "stats.json")
 
         if os.path.isfile(task):
             try:
@@ -105,20 +105,20 @@ def get_statistics(id: str, type: str) -> Dict[str, Any]:
         else:
             return {}
 
-    elif type in ("orthophoto", "plant"):
-        task = task_path(id, "odm_orthophoto", "odm_orthophoto.tif")
+    elif stat_type in ("orthophoto", "plant"):
+        task = task_path(task_id, "odm_orthophoto", "odm_orthophoto.tif")
         return {"odm_orthophoto": task}
 
-    elif type == "dsm":
-        task = task_path(id, "odm_dem", "dsm.tif")
+    elif stat_type == "dsm":
+        task = task_path(task_id, "odm_dem", "dsm.tif")
         return {"dsm": task}
 
-    elif type == "dtm":
-        task = task_path(id, "odm_dem", "dtm.tif")
+    elif stat_type == "dtm":
+        task = task_path(task_id, "odm_dem", "dtm.tif")
         return {"dtm": task}
 
-    elif type == "camera_shots":
-        task = task_path(id, "odm_report", "shots.geojson")
+    elif stat_type == "camera_shots":
+        task = task_path(task_id, "odm_report", "shots.geojson")
         if os.path.isfile(task):
             try:
                 import json
@@ -131,8 +131,8 @@ def get_statistics(id: str, type: str) -> Dict[str, Any]:
         else:
             return {}
 
-    elif type == "images_info":
-        task = get_full_task_path(id, "/", "images.json")
+    elif stat_type == "images_info":
+        task = get_full_task_path(task_id, "/", "images.json")
 
         if os.path.exists(task):
             try:
@@ -160,13 +160,13 @@ def projects(request: HttpRequest) -> HttpResponse:
 
 @login_required
 def add_projects(
-    request: HttpRequest, slug: Optional[str] = None, id: Optional[int] = None
+    request: HttpRequest, slug: Optional[str] = None, project_id: Optional[int] = None
 ) -> HttpResponse:
-    if slug == "update" and id:
+    if slug == "update" and project_id:
         if not hasattr(request.user, "is_staff") or not request.user.is_staff:
             raise PermissionDenied("Güncelleme yetkisi yok")
 
-        projes = get_object_or_404(Projects, id=id)
+        projes = get_object_or_404(Projects, id=project_id)
 
         if request.method == "POST":
             try:
@@ -211,20 +211,20 @@ def add_projects(
                                            "userss": request.user}
         )
 
-    elif slug == "delete" and id:
+    elif slug == "delete" and project_id:
         if not hasattr(request.user, "is_staff") or not request.user.is_staff:
             raise PermissionDenied("Silme yetkisi yok")
 
-        projes = get_object_or_404(Projects, id=id)
+        projes = get_object_or_404(Projects, id=project_id)
 
         try:
-            project_id = projes.id
+            deleted_project_id = projes.id
             with transaction.atomic():
                 projes.delete()
-            logger.info(f"Proje silindi: {project_id}")
+            logger.info(f"Proje silindi: {deleted_project_id}")
             return redirect("dron_map:projects")
         except Exception as e:
-            logger.error(f"Proje silme hatası: {id}: {e}")
+            logger.error(f"Proje silme hatası: {project_id}: {e}")
             return render(
                 request,
                 "add-projects.html",
@@ -392,8 +392,8 @@ def convert(input_path: str, output_path: str) -> None:
 
 
 @login_required
-def maping(request: HttpRequest, id: int) -> HttpResponse:
-    projes = get_object_or_404(Projects, id=id)
+def maping(request: HttpRequest, project_id: int) -> HttpResponse:
+    projes = get_object_or_404(Projects, id=project_id)
     algo = options.algorithm
     colors = options.colormaps
 
