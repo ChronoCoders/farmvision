@@ -23,10 +23,10 @@ def export_torchscript(model, img, opt):
         f = opt.weights.replace(".pt", ".torchscript.pt")
         ts = torch.jit.trace(model, img, strict=False)
         ts.save(f)
-        print("TorchScript export success, saved as %s" % f)
+        print(f"TorchScript export success, saved as {f}")
         return ts
     except Exception as e:
-        print("TorchScript export failure: %s" % e)
+        print(f"TorchScript export failure: {e}")
         return None
 
 
@@ -34,7 +34,7 @@ def export_coreml(ts, img, opt):
     try:
         import coremltools as ct
 
-        print("\nStarting CoreML export with coremltools %s..." % ct.__version__)
+        print(f"\nStarting CoreML export with coremltools {ct.__version__}...")
         ct_model = ct.convert(
             ts,
             inputs=[
@@ -64,9 +64,9 @@ def export_coreml(ts, img, opt):
 
         f = opt.weights.replace(".pt", ".mlmodel")
         ct_model.save(f)
-        print("CoreML export success, saved as %s" % f)
+        print(f"CoreML export success, saved as {f}")
     except Exception as e:
-        print("CoreML export failure: %s" % e)
+        print(f"CoreML export failure: {e}")
 
 
 def export_torchscript_lite(model, img, opt):

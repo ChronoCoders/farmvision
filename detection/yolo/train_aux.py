@@ -154,7 +154,7 @@ def train(hyp, opt, device, tb_writer=None):
     for k, v in model.named_parameters():
         v.requires_grad = True
         if any(x in k for x in freeze):
-            print("freezing %s" % k)
+            print(f"freezing {k}")
             v.requires_grad = False
 
     nbs = 64
@@ -825,7 +825,7 @@ if __name__ == "__main__":
             opt.global_rank,
             opt.local_rank,
         ) = ("", ckpt, True, opt.total_batch_size, *apriori)
-        logger.info("Resuming training from %s" % ckpt)
+        logger.info(f"Resuming training from {ckpt}")
     else:
 
         opt.data, opt.cfg, opt.hyp = (

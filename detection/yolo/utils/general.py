@@ -221,7 +221,7 @@ def check_dataset(dict):
                 % [str(x) for x in val if not x.exists()]
             )
             if s and len(s):
-                print("Downloading %s ..." % s)
+                print(f"Downloading {s} ...")
                 if s.startswith("http") and s.endswith(".zip"):
                     f = Path(s).name
                     torch.hub.download_url_to_file(s, f)
@@ -244,8 +244,7 @@ def check_dataset(dict):
                             f"WARNING: Skipping potentially unsafe command: {s}")
                         r = 1
                 print(
-                    "Dataset autodownload %s\n" % (
-                        "success" if r == 0 else "failure")
+                    f"Dataset autodownload {'success' if r == 0 else 'failure'}\n"
                 )
             else:
                 raise Exception("Dataset not found.")
