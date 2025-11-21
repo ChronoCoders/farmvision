@@ -76,17 +76,17 @@ def validate_uploaded_files(files: List[Any]) -> None:
             raise ValidationError(f"Geçersiz dosya tipi: {ext}")
 
 
-def task_path(id: str, path: str, file: str) -> str:
-    return f"results/{id}/{path}/{file}"
+def task_path(task_id: str, dir_path: str, filename: str) -> str:
+    return f"results/{task_id}/{dir_path}/{filename}"
 
 
-def get_full_task_path(id: str, path: str, file: str) -> str:
-    return os.path.join(BASE_DIR, f"static/results/{id}/{path}", file)
+def get_full_task_path(task_id: str, dir_path: str, filename: str) -> str:
+    return os.path.join(BASE_DIR, f"static/results/{task_id}/{dir_path}", filename)
 
 
-def get_statistics(id: str, type: str) -> Dict[str, Any]:
-    if type == "static":
-        task = get_full_task_path(id, "odm_report", "stats.json")
+def get_statistics(task_id: str, stat_type: str) -> Dict[str, Any]:
+    if stat_type == "static":
+        task = get_full_task_path(task_id, "odm_report", "stats.json")
 
         if os.path.isfile(task):
             try:
@@ -105,20 +105,20 @@ def get_statistics(id: str, type: str) -> Dict[str, Any]:
         else:
             return {}
 
-    elif type in ("orthophoto", "plant"):
-        task = task_path(id, "odm_orthophoto", "odm_orthophoto.tif")
+    elif stat_type in ("orthophoto", "plant"):
+        task = task_path(task_id, "odm_orthophoto", "odm_orthophoto.tif")
         return {"odm_orthophoto": task}
 
-    elif type == "dsm":
-        task = task_path(id, "odm_dem", "dsm.tif")
+    elif stat_type == "dsm":
+        task = task_path(task_id, "odm_dem", "dsm.tif")
         return {"dsm": task}
 
-    elif type == "dtm":
-        task = task_path(id, "odm_dem", "dtm.tif")
+    elif stat_type == "dtm":
+        task = task_path(task_id, "odm_dem", "dtm.tif")
         return {"dtm": task}
 
-    elif type == "camera_shots":
-        task = task_path(id, "odm_report", "shots.geojson")
+    elif stat_type == "camera_shots":
+        task = task_path(task_id, "odm_report", "shots.geojson")
         if os.path.isfile(task):
             try:
                 import json
@@ -131,8 +131,8 @@ def get_statistics(id: str, type: str) -> Dict[str, Any]:
         else:
             return {}
 
-    elif type == "images_info":
-        task = get_full_task_path(id, "/", "images.json")
+    elif stat_type == "images_info":
+        task = get_full_task_path(task_id, "/", "images.json")
 
         if os.path.exists(task):
             try:
@@ -160,17 +160,18 @@ def projects(request: HttpRequest) -> HttpResponse:
 
 @login_required
 def add_projects(
-    request: HttpRequest, slug: Optional[str] = None, id: Optional[int] = None
+    request: HttpRequest, slug: Optional[str] = None, project_id: Optional[int] = None
 ) -> HttpResponse:
-    if slug == "update" and id:
+    if slug == "update" and project_id:
         if not hasattr(request.user, "is_staff") or not request.user.is_staff:
             raise PermissionDenied("Güncelleme yetkisi yok")
 
-        projes = get_object_or_404(Projects, id=id)
+        projes = get_object_or_404(Projects, id=project_id)
 
         if request.method == "POST":
             try:
-                form = Projects_Form(request.POST, request.FILES, instance=projes)
+                form = Projects_Form(
+                    request.POST, request.FILES, instance=projes)
                 if form.is_valid():
                     try:
                         with transaction.atomic():
@@ -206,27 +207,29 @@ def add_projects(
                 )
 
         return render(
-            request, "add-projects.html", {"projes": projes, "userss": request.user}
+            request, "add-projects.html", {"projes": projes,
+                                           "userss": request.user}
         )
 
-    elif slug == "delete" and id:
+    elif slug == "delete" and project_id:
         if not hasattr(request.user, "is_staff") or not request.user.is_staff:
             raise PermissionDenied("Silme yetkisi yok")
 
-        projes = get_object_or_404(Projects, id=id)
+        projes = get_object_or_404(Projects, id=project_id)
 
         try:
-            project_id = projes.id
+            deleted_project_id = projes.id
             with transaction.atomic():
                 projes.delete()
-            logger.info(f"Proje silindi: {project_id}")
+            logger.info(f"Proje silindi: {deleted_project_id}")
             return redirect("dron_map:projects")
         except Exception as e:
-            logger.error(f"Proje silme hatası: {id}: {e}")
+            logger.error(f"Proje silme hatası: {project_id}: {e}")
             return render(
                 request,
                 "add-projects.html",
-                {"projes": projes, "error": "Proje silinemedi", "userss": request.user},
+                {"projes": projes, "error": "Proje silinemedi",
+                    "userss": request.user},
             )
 
     elif slug == "add":
@@ -272,13 +275,16 @@ def add_projects(
                             logger.warning(
                                 f"Path traversal attempt in filename: {image.name}"
                             )
-                            raise ValidationError(f"Geçersiz dosya adı: {image.name}")
+                            raise ValidationError(
+                                f"Geçersiz dosya adı: {image.name}")
 
                         fs = FileSystemStorage(location=str(hass[0]))
                         saved_path = fs.save(safe_filename, image)
                         if not saved_path:
-                            logger.error(f"Dosya kaydetme başarısız: {safe_filename}")
-                            raise IOError(f"Dosya kaydedilemedi: {safe_filename}")
+                            logger.error(
+                                f"Dosya kaydetme başarısız: {safe_filename}")
+                            raise IOError(
+                                f"Dosya kaydedilemedi: {safe_filename}")
                     saved_files_dir = upload_dir
                 except Exception as e:
                     logger.error(f"Görüntü kaydetme hatası: {e}")
@@ -286,9 +292,11 @@ def add_projects(
                     if upload_dir.exists():
                         try:
                             shutil.rmtree(str(upload_dir))
-                            logger.info(f"Hatalı dosyalar temizlendi: {upload_dir}")
+                            logger.info(
+                                f"Hatalı dosyalar temizlendi: {upload_dir}")
                         except Exception as cleanup_error:
-                            logger.error(f"Dosya temizleme hatası: {cleanup_error}")
+                            logger.error(
+                                f"Dosya temizleme hatası: {cleanup_error}")
                     raise ValidationError(f"Dosyalar kaydedilemedi: {str(e)}")
 
                 # Save project to database with transaction
@@ -296,7 +304,8 @@ def add_projects(
                     with transaction.atomic():
                         form.instance.hashing_path = hass[1]
                         project = form.save()
-                        logger.info(f"Proje veritabanına kaydedildi: {project.id}")
+                        logger.info(
+                            f"Proje veritabanına kaydedildi: {project.id}")
                 except Exception as e:
                     logger.error(f"Veritabanı kaydetme hatası: {e}")
                     # Database save failed, clean up saved files
@@ -307,7 +316,8 @@ def add_projects(
                                 f"Veritabanı hatası nedeniyle dosyalar silindi: {saved_files_dir}"
                             )
                         except Exception as cleanup_error:
-                            logger.error(f"Dosya temizleme hatası: {cleanup_error}")
+                            logger.error(
+                                f"Dosya temizleme hatası: {cleanup_error}")
                     raise ValidationError("Proje kaydedilemedi")
 
                 # Process task (non-critical, log but don't fail)
@@ -382,15 +392,16 @@ def convert(input_path: str, output_path: str) -> None:
 
 
 @login_required
-def maping(request: HttpRequest, id: int) -> HttpResponse:
-    projes = get_object_or_404(Projects, id=id)
+def maping(request: HttpRequest, project_id: int) -> HttpResponse:
+    projes = get_object_or_404(Projects, id=project_id)
     algo = options.algorithm
     colors = options.colormaps
 
     if request.method == "POST":
         orthophoto = get_statistics(id=projes.hashing_path, type="orthophoto")
         static = get_statistics(id=projes.hashing_path, type="static")
-        images_info = get_statistics(id=projes.hashing_path, type="images_info")
+        images_info = get_statistics(
+            id=projes.hashing_path, type="images_info")
 
         try:
             range_values = request.POST.getlist("range")
@@ -508,7 +519,8 @@ def maping(request: HttpRequest, id: int) -> HttpResponse:
                 )
 
             except AttributeError as e:
-                logger.error(f"Algoritma metodu bulunamadı: {health_color}: {e}")
+                logger.error(
+                    f"Algoritma metodu bulunamadı: {health_color}: {e}")
                 return render(
                     request,
                     "map.html",
@@ -554,7 +566,8 @@ def maping(request: HttpRequest, id: int) -> HttpResponse:
     else:
         orthophoto = get_statistics(id=projes.hashing_path, type="orthophoto")
         static = get_statistics(id=projes.hashing_path, type="static")
-        images_info = get_statistics(id=projes.hashing_path, type="images_info")
+        images_info = get_statistics(
+            id=projes.hashing_path, type="images_info")
 
         return render(
             request,

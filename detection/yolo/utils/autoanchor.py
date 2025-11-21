@@ -30,9 +30,11 @@ def check_anchors(dataset, model, thr=4.0, imgsz=640):
         model.module.model[-1] if hasattr(model, "module") else model.model[-1]
     )  # Detect()
     shapes = imgsz * dataset.shapes / dataset.shapes.max(1, keepdims=True)
-    scale = np.random.uniform(0.9, 1.1, size=(shapes.shape[0], 1))  # augment scale
+    scale = np.random.uniform(0.9, 1.1, size=(
+        shapes.shape[0], 1))  # augment scale
     wh = torch.tensor(
-        np.concatenate([l[:, 3:5] * s for s, l in zip(shapes * scale, dataset.labels)])
+        np.concatenate(
+            [l[:, 3:5] * s for s, l in zip(shapes * scale, dataset.labels)])
     ).float()  # wh
 
     def metric(k):  # compute metric
@@ -45,7 +47,8 @@ def check_anchors(dataset, model, thr=4.0, imgsz=640):
 
     anchors = m.anchor_grid.clone().cpu().view(-1, 2)  # current anchors
     bpr, aat = metric(anchors)
-    print(f"anchors/target = {aat:.2f}, Best Possible Recall (BPR) = {bpr:.4f}", end="")
+    print(
+        f"anchors/target = {aat:.2f}, Best Possible Recall (BPR) = {bpr:.4f}", end="")
     if bpr < 0.98:  # threshold to recompute
         print(". Attempting to improve anchors, please wait...")
         na = m.anchor_grid.numel() // 2  # number of anchors
@@ -57,8 +60,10 @@ def check_anchors(dataset, model, thr=4.0, imgsz=640):
             print(f"{prefix}ERROR: {e}")
         new_bpr = metric(anchors)[0]
         if new_bpr > bpr:  # replace anchors
-            anchors = torch.tensor(anchors, device=m.anchors.device).type_as(m.anchors)
-            m.anchor_grid[:] = anchors.clone().view_as(m.anchor_grid)  # for inference
+            anchors = torch.tensor(
+                anchors, device=m.anchors.device).type_as(m.anchors)
+            m.anchor_grid[:] = anchors.clone().view_as(
+                m.anchor_grid)  # for inference
             check_anchor_order(m)
             m.anchors[:] = anchors.clone().view_as(m.anchors) / m.stride.to(
                 m.anchors.device
@@ -132,13 +137,15 @@ def kmean_anchors(
             data_dict = yaml.load(f, Loader=yaml.SafeLoader)  # model dict
         from utils.datasets import LoadImagesAndLabels
 
-        dataset = LoadImagesAndLabels(data_dict["train"], augment=True, rect=True)
+        dataset = LoadImagesAndLabels(
+            data_dict["train"], augment=True, rect=True)
     else:
         dataset = path  # dataset
 
     # Get label wh
     shapes = img_size * dataset.shapes / dataset.shapes.max(1, keepdims=True)
-    wh0 = np.concatenate([l[:, 3:5] * s for s, l in zip(shapes, dataset.labels)])  # wh
+    wh0 = np.concatenate(
+        [l[:, 3:5] * s for s, l in zip(shapes, dataset.labels)])  # wh
 
     # Filter
     i = (wh0 < 3.0).any(1).sum()
