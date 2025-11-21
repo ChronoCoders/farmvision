@@ -49,18 +49,17 @@ def export_coreml(ts, img, opt):
             else (16, "linear") if opt.fp16 else (32, None)
         )
 
-        if bits < 32:
-            if sys.platform.lower() == "darwin":
-                with warnings.catch_warnings():
-                    warnings.filterwarnings(
-                        "ignore", category=DeprecationWarning)
-                    ct_model = (
-                        ct.models.neural_network.quantization_utils.quantize_weights(
-                            ct_model, bits, mode
-                        )
+        if bits < 32 and sys.platform.lower() == "darwin":
+            with warnings.catch_warnings():
+                warnings.filterwarnings(
+                    "ignore", category=DeprecationWarning)
+                ct_model = (
+                    ct.models.neural_network.quantization_utils.quantize_weights(
+                        ct_model, bits, mode
                     )
-            else:
-                print("quantization only supported on macOS, skipping...")
+                )
+        elif bits < 32:
+            print("quantization only supported on macOS, skipping...")
 
         f = opt.weights.replace(".pt", ".mlmodel")
         ct_model.save(f)
@@ -115,44 +114,43 @@ def export_onnx(model, img, opt, labels):
 
             dynamic_axes.update(output_axes)
 
-        if opt.grid:
-            if opt.end2end:
-                print(
-                    "\nStarting export end2end onnx model for %s..."
-                    % ("TensorRT" if opt.max_wh is None else "onnxruntime")
-                )
-                model = End2End(
-                    model,
-                    opt.topk_all,
-                    opt.iou_thres,
-                    opt.conf_thres,
-                    opt.max_wh,
-                    device,
-                    len(labels),
-                )
+        if opt.grid and opt.end2end:
+            print(
+                "\nStarting export end2end onnx model for %s..."
+                % ("TensorRT" if opt.max_wh is None else "onnxruntime")
+            )
+            model = End2End(
+                model,
+                opt.topk_all,
+                opt.iou_thres,
+                opt.conf_thres,
+                opt.max_wh,
+                device,
+                len(labels),
+            )
 
-                if opt.end2end and opt.max_wh is None:
-                    output_names = [
-                        "num_dets",
-                        "det_boxes",
-                        "det_scores",
-                        "det_classes",
-                    ]
-                    shapes = [
-                        opt.batch_size,
-                        1,
-                        opt.batch_size,
-                        opt.topk_all,
-                        4,
-                        opt.batch_size,
-                        opt.topk_all,
-                        opt.batch_size,
-                        opt.topk_all,
-                    ]
-                else:
-                    output_names = ["output"]
+            if opt.end2end and opt.max_wh is None:
+                output_names = [
+                    "num_dets",
+                    "det_boxes",
+                    "det_scores",
+                    "det_classes",
+                ]
+                shapes = [
+                    opt.batch_size,
+                    1,
+                    opt.batch_size,
+                    opt.topk_all,
+                    4,
+                    opt.batch_size,
+                    opt.topk_all,
+                    opt.batch_size,
+                    opt.topk_all,
+                ]
             else:
-                model.model[-1].concat = True
+                output_names = ["output"]
+        elif opt.grid:
+            model.model[-1].concat = True
 
         torch.onnx.export(
             model,
@@ -237,11 +235,10 @@ if __name__ == "__main__":
 
         for k, m in model.named_modules():
             m._non_persistent_buffers_set = set()
-            if isinstance(m, models.common.Conv):
-                if isinstance(m.act, nn.Hardswish):
-                    m.act = Hardswish()
-                elif isinstance(m.act, nn.SiLU):
-                    m.act = SiLU()
+            if isinstance(m, models.common.Conv) and isinstance(m.act, nn.Hardswish):
+                m.act = Hardswish()
+            elif isinstance(m, models.common.Conv) and isinstance(m.act, nn.SiLU):
+                m.act = SiLU()
 
         model.model[-1].export = not opt.grid
         y = model(img)

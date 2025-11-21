@@ -14,7 +14,7 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 
-class RegisterNMS(object):
+class RegisterNMS:
     def __init__(
         self,
         onnx_model_path: str,

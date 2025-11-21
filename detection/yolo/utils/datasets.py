@@ -146,7 +146,7 @@ class InfiniteDataLoader(torch.utils.data.dataloader.DataLoader):
             yield next(self.iterator)
 
 
-class _RepeatSampler(object):
+class _RepeatSampler:
     """Sampler that repeats forever
 
     Args:
@@ -596,7 +596,7 @@ class LoadImagesAndLabels(Dataset):
                             raise ValueError(
                                 "non-normalized or out of bounds coordinate labels"
                             )
-                        if not np.unique(l, axis=0).shape[0] == l.shape[0]:
+                        if np.unique(l, axis=0).shape[0] != l.shape[0]:
                             raise ValueError("duplicate labels")
                     else:
                         ne += 1
