@@ -4,6 +4,10 @@
 # Production-specific packages
 # Add production database drivers, monitoring, etc.
 
+# WSGI Servers (choose based on platform)
+gunicorn==23.0.0; platform_system != "Windows"  # Unix/Linux
+waitress==3.0.2; platform_system == "Windows"   # Windows
+
 # PostgreSQL Database (uncomment when migrating from SQLite)
 # psycopg2-binary==2.9.10
 

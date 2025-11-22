@@ -40,5 +40,6 @@ PyYAML==6.0.2
 psutil==7.1.0
 python-dotenv==1.1.0
 
-# WSGI Server for Production
-gunicorn==23.1.0
+# WSGI Server for Production (Unix/Linux only - not available on Windows)
+# Use waitress on Windows: pip install waitress
+# gunicorn==23.0.0; platform_system != "Windows"
