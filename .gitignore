@@ -94,6 +94,7 @@ celerybeat.pid
 *.engine
 *.tflite
 models/
+!detection/yolo/models/
 weights/
 checkpoints/
 

@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-from utils.datasets import LoadImages
-from utils.torch_utils import select_device
-from utils.plots import plot_one_box
-from utils.general import non_max_suppression, scale_coords
-from models.experimental import attempt_load
 from pathlib import Path
 import openpyxl
 from natsort import natsorted
@@ -23,6 +18,12 @@ logger = logging.getLogger(__name__)
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 sys.path.append(str(BASE_DIR / "detection" / "yolo"))
+
+from utils.datasets import LoadImages
+from utils.torch_utils import select_device
+from utils.plots import plot_one_box
+from utils.general import non_max_suppression, scale_coords
+from models.experimental import attempt_load
 
 _model_cache = {}
 _device = None
