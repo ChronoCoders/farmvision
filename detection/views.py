@@ -286,16 +286,20 @@ def index(request: HttpRequest) -> HttpResponse:
                 response["from_cache"] = True
             else:
                 # Cache MISS - run prediction
-                temp_dir = tempfile.gettempdir()
-                tmp_path = os.path.join(temp_dir, safe_filename)
+                temp_dir = Path(tempfile.gettempdir())
+                tmp_path = (temp_dir / safe_filename).resolve()
+
+                # Security: Verify path is within temp directory
+                if not str(tmp_path).startswith(str(temp_dir.resolve())):
+                    logger.warning("Path traversal attempt detected: %s", tmp_path)
+                    raise ValidationError("Geçersiz dosya yolu")
 
                 # Write uploaded file to temp directory
                 try:
                     with open(tmp_path, "wb") as tmp:
                         tmp.write(image_data)
                 except Exception as e:
-                    logger.error(
-                        "Geçici dosya yazma hatası: %s: %s", tmp_path, e)
+                    logger.error("Geçici dosya yazma hatası: %s: %s", tmp_path, e)
                     raise ValidationError("Dosya yüklenirken hata oluştu")
 
                 start_time = time.time()
@@ -303,7 +307,7 @@ def index(request: HttpRequest) -> HttpResponse:
                 try:
                     model_path = FRUIT_MODELS[meyve_grubu]
                     detec, unique_id, confidence_score = predict_tree.predict(
-                        path_to_weights=model_path, path_to_source=tmp_path
+                        path_to_weights=model_path, path_to_source=str(tmp_path)
                     )
 
                     count = extract_detection_count(detec)
@@ -366,11 +370,10 @@ def index(request: HttpRequest) -> HttpResponse:
                 finally:
                     # Clean up temp file
                     try:
-                        if os.path.exists(tmp_path):
-                            os.unlink(tmp_path)
+                        if tmp_path.exists():
+                            tmp_path.unlink()
                     except Exception as e:
-                        logger.error(
-                            "Geçici dosya silme hatası: %s: %s", tmp_path, e)
+                        logger.error("Geçici dosya silme hatası: %s: %s", tmp_path, e)
 
         except ValidationError as e:
             return render(request, "main.html", {"error": str(e)})
@@ -719,21 +722,37 @@ def async_detection(request: HttpRequest) -> JsonResponse:
             )
 
         # Cache MISS - save to temp directory and queue async task
-        temp_dir = tempfile.gettempdir()
-        tmp_path = os.path.join(temp_dir, safe_filename)
+        temp_dir = Path(tempfile.gettempdir())
+        tmp_path = (temp_dir / safe_filename).resolve()
+
+        # Security: Verify path is within temp directory
+        if not str(tmp_path).startswith(str(temp_dir.resolve())):
+            logger.warning("Path traversal attempt detected: %s", tmp_path)
+            return JsonResponse({"error": "Geçersiz dosya yolu"}, status=400)
 
         try:
             with open(tmp_path, "wb") as tmp:
                 tmp.write(image_data)
+
+            # Re-validate MIME type after writing to disk for security
+            import magic
+            actual_mime = magic.from_file(str(tmp_path), mime=True)
+            if actual_mime not in ALLOWED_MIME_TYPES:
+                tmp_path.unlink()  # Delete the file
+                logger.warning("MIME type mismatch after upload: %s", actual_mime)
+                return JsonResponse({"error": "Geçersiz dosya formatı"}, status=400)
+
         except Exception as e:
             logger.error("Geçici dosya yazma hatası: %s: %s", tmp_path, e)
+            if tmp_path.exists():
+                tmp_path.unlink()
             return JsonResponse({"error": "Dosya yüklenirken hata oluştu"}, status=500)
 
         # Queue async task
         from detection.tasks import process_image_detection
 
         task = process_image_detection.delay(
-            image_path=tmp_path,
+            image_path=str(tmp_path),
             fruit_type=meyve_grubu,
             tree_count=agac_sayisi_int,
             tree_age=agac_yasi_int,

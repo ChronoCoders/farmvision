@@ -21,6 +21,32 @@ DEBUG = IS_DEVELOPMENT and os.environ.get("DJANGO_DEBUG", "False") == "True"
 if not IS_DEVELOPMENT and DEBUG:
     raise ValueError("DEBUG cannot be True in non-development environments")
 
+# ==============================================================================
+# ENVIRONMENT VARIABLE VALIDATION
+# ==============================================================================
+
+def validate_environment():
+    """Validate required environment variables at startup."""
+    required_vars = {
+        "production": ["DJANGO_SECRET_KEY", "DJANGO_ALLOWED_HOSTS"],
+        "development": [],  # More lenient in development
+    }
+
+    env_type = "production" if not IS_DEVELOPMENT else "development"
+    missing_vars = []
+
+    for var in required_vars[env_type]:
+        if not os.environ.get(var):
+            missing_vars.append(var)
+
+    if missing_vars and not IS_DEVELOPMENT:
+        raise ValueError(
+            f"Missing required environment variables for {env_type}: {', '.join(missing_vars)}"
+        )
+
+# Run validation at startup
+validate_environment()
+
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
 if not SECRET_KEY:
@@ -230,20 +256,31 @@ LOGGING = {
     "handlers": {
         "file": {
             "level": "INFO",
-            "class": "logging.FileHandler",
-            "filename": os.path.join(BASE_DIR, "django.log"),
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(BASE_DIR, "logs", "django.log"),
+            "maxBytes": 10 * 1024 * 1024,  # 10 MB
+            "backupCount": 5,  # Keep 5 backup files
             "formatter": "verbose",
-            "encoding": "utf-8",  # Write log file in UTF-8
+            "encoding": "utf-8",
         },
         "console": {
-            "level": "WARNING",  # Only show warnings and errors in console
+            "level": "DEBUG" if DEBUG else "WARNING",  # More verbose in debug mode
             "class": "logging.StreamHandler",
             "formatter": "simple",
-            "stream": sys.stderr,  # Use UTF-8 wrapped stream
+            "stream": sys.stderr,
+        },
+        "error_file": {
+            "level": "ERROR",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(BASE_DIR, "logs", "django_errors.log"),
+            "maxBytes": 10 * 1024 * 1024,  # 10 MB
+            "backupCount": 10,  # Keep more error logs
+            "formatter": "verbose",
+            "encoding": "utf-8",
         },
     },
     "root": {
-        "handlers": ["file", "console"],
+        "handlers": ["file", "console", "error_file"],
         "level": "INFO",
     },
     "loggers": {

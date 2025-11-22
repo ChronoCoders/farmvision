@@ -1,0 +1,44 @@
+# Core Django and Web Framework
+Django==4.2.17
+djangorestframework==3.16.1
+django-cors-headers==4.3.1
+django-redis==5.4.0
+django-csp==4.0
+django-filter==25.1
+django-guardian==3.2.0
+drf-spectacular==0.28.0
+drf-spectacular-sidecar==2025.10.1
+
+# Async Task Processing
+celery==5.3.4
+redis==5.0.1
+amqp==5.3.1
+billiard==4.2.2
+kombu==5.4.2
+
+# Machine Learning and Computer Vision
+torch==2.5.1
+torchvision==0.20.1
+opencv-python==4.10.0.84
+numpy==2.2.6
+scipy==1.15.3
+
+# Data Processing
+pandas==2.3.3
+openpyxl==3.1.5
+natsort==8.4.0
+
+# Visualization
+matplotlib==3.10.7
+seaborn==0.13.2
+Pillow==11.1.0
+
+# Utilities
+requests==2.32.3
+python-magic-bin==0.4.14
+PyYAML==6.0.2
+psutil==7.1.0
+python-dotenv==1.1.0
+
+# WSGI Server for Production
+gunicorn==23.1.0

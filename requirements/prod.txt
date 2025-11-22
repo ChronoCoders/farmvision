@@ -1,0 +1,14 @@
+# Include base requirements
+-r base.txt
+
+# Production-specific packages
+# Add production database drivers, monitoring, etc.
+
+# PostgreSQL Database (uncomment when migrating from SQLite)
+# psycopg2-binary==2.9.10
+
+# Production Monitoring
+# sentry-sdk==2.23.0
+
+# Performance Monitoring
+# django-silk==5.3.2
