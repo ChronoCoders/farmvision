@@ -22,30 +22,46 @@ from detection.cache_utils import (
 )
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+from detection.constants import (
+    DETECTION_ALLOWED_EXTENSIONS,
+    DETECTION_ALLOWED_MIME_TYPES,
+    FRUIT_MODEL_PATHS,
+    FRUIT_WEIGHTS,
+    MAX_DETECTION_FILE_SIZE,
+    MAX_TREE_AGE,
+    MAX_TREE_COUNT,
+    MIN_TREE_AGE,
+    MIN_TREE_COUNT,
+)
+
 logger = logging.getLogger(__name__)
 
-ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "bmp"}
-ALLOWED_MIME_TYPES = {"image/jpeg", "image/png", "image/bmp", "image/x-ms-bmp"}
-MAX_FILE_SIZE = 10 * 1024 * 1024
-
-FRUIT_WEIGHTS = {
-    "mandalina": 0.125,
-    "elma": 0.105,
-    "armut": 0.220,
-    "seftale": 0.185,
-    "nar": 0.300,
-}
-
-FRUIT_MODELS = {
-    "mandalina": "mandalina.pt",
-    "elma": "elma.pt",
-    "armut": "armut.pt",
-    "seftale": "seftale.pt",
-    "nar": "nar.pt",
-}
+# Use constants from central configuration
+ALLOWED_EXTENSIONS = DETECTION_ALLOWED_EXTENSIONS
+ALLOWED_MIME_TYPES = DETECTION_ALLOWED_MIME_TYPES
+MAX_FILE_SIZE = MAX_DETECTION_FILE_SIZE
+FRUIT_MODELS = {k: str(v) for k, v in FRUIT_MODEL_PATHS.items()}
 
 
 def validate_image_file(file: UploadedFile) -> bool:
+    """
+    Validate uploaded image file for security and format requirements.
+
+    Performs comprehensive validation including:
+    - File size limits
+    - Extension whitelist checking
+    - Path traversal attack prevention
+    - MIME type verification using magic bytes
+
+    Args:
+        file: Django UploadedFile instance to validate
+
+    Returns:
+        bool: True if validation passes
+
+    Raises:
+        ValidationError: If any validation check fails
+    """
     if not file:
         raise ValidationError("Dosya bulunamadı")
 
@@ -93,6 +109,18 @@ def validate_image_file(file: UploadedFile) -> bool:
 
 
 def extract_detection_count(detec_result: bytes) -> int:
+    """
+    Extract integer detection count from bytes result.
+
+    Args:
+        detec_result: Raw bytes containing detection count
+
+    Returns:
+        int: Parsed detection count
+
+    Raises:
+        ValidationError: If parsing fails
+    """
     try:
         count_str = detec_result.decode("utf-8")
         return int(count_str)
@@ -102,6 +130,18 @@ def extract_detection_count(detec_result: bytes) -> int:
 
 
 def sanitize_filename(filename: str) -> str:
+    """
+    Sanitize filename to prevent security issues.
+
+    Removes path components, replaces unsafe characters, and ensures
+    the filename is safe to use in file operations.
+
+    Args:
+        filename: Original filename to sanitize
+
+    Returns:
+        str: Sanitized filename safe for file operations
+    """
     # Extract basename to prevent path traversal
     filename = os.path.basename(filename)
 

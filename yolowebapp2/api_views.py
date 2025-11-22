@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status, serializers
 from django.db import connection
@@ -17,7 +18,7 @@ class HealthCheckResponseSerializer(serializers.Serializer):
 
 @extend_schema(
     summary="Health Check",
-    description="Check the health status of the FarmVision API and database connectivity",
+    description="Check the health status of the FarmVision API and database connectivity. Requires authentication.",
     responses={
         200: OpenApiResponse(response=HealthCheckResponseSerializer, description="Service is healthy"),
         503: OpenApiResponse(response=HealthCheckResponseSerializer, description="Service is degraded"),
@@ -25,6 +26,7 @@ class HealthCheckResponseSerializer(serializers.Serializer):
     tags=["System"],
 )
 @api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def health_check(request):
     health_status = {
         "status": "ok",

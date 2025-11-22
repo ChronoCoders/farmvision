@@ -18,25 +18,16 @@ from celery import shared_task
 from yolowebapp2 import predict_tree
 from detection.models import DetectionResult
 
+from detection.constants import (
+    BASE_DIR,
+    FRUIT_MODEL_PATHS,
+    FRUIT_WEIGHTS,
+)
+
 logger = logging.getLogger(__name__)
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-FRUIT_WEIGHTS = {
-    "mandalina": 0.125,
-    "elma": 0.105,
-    "armut": 0.220,
-    "seftale": 0.185,
-    "nar": 0.300,
-}
-
-FRUIT_MODELS = {
-    "mandalina": "mandalina.pt",
-    "elma": "elma.pt",
-    "armut": "armut.pt",
-    "seftale": "seftale.pt",
-    "nar": "nar.pt",
-}
+# Use constants from central configuration
+FRUIT_MODELS = {k: str(v) for k, v in FRUIT_MODEL_PATHS.items()}
 
 
 @shared_task(bind=True, name="detection.tasks.process_image_detection")
