@@ -22,7 +22,7 @@ from torch.utils.data import Dataset
 from tqdm import tqdm
 
 
-from utils.general import (
+from .general import (
     check_requirements,
     xyxy2xywh,
     xywh2xyxy,
@@ -33,7 +33,7 @@ from utils.general import (
     resample_segments,
     clean_str,
 )
-from utils.torch_utils import torch_distributed_zero_first
+from .torch_utils import torch_distributed_zero_first
 
 
 help_url = "https://github.com/ultralytics/yolov5/wiki/Train-Custom-Data"
