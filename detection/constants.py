@@ -4,6 +4,7 @@ Shared constants for the detection application.
 This module contains all configuration constants used across the detection
 and dron_map applications to ensure consistency and prevent duplication.
 """
+
 from pathlib import Path
 from typing import Dict
 

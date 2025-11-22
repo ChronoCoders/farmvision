@@ -1,4 +1,15 @@
 # -*- coding: utf-8 -*-
+from detection.constants import (
+    DETECTION_ALLOWED_EXTENSIONS,
+    DETECTION_ALLOWED_MIME_TYPES,
+    FRUIT_MODEL_PATHS,
+    FRUIT_WEIGHTS,
+    MAX_DETECTION_FILE_SIZE,
+    MAX_TREE_AGE,
+    MAX_TREE_COUNT,
+    MIN_TREE_AGE,
+    MIN_TREE_COUNT,
+)
 from django.shortcuts import render
 from pathlib import Path
 from django.core.exceptions import ValidationError
@@ -22,17 +33,6 @@ from detection.cache_utils import (
 )
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-from detection.constants import (
-    DETECTION_ALLOWED_EXTENSIONS,
-    DETECTION_ALLOWED_MIME_TYPES,
-    FRUIT_MODEL_PATHS,
-    FRUIT_WEIGHTS,
-    MAX_DETECTION_FILE_SIZE,
-    MAX_TREE_AGE,
-    MAX_TREE_COUNT,
-    MIN_TREE_AGE,
-    MIN_TREE_COUNT,
-)
 
 logger = logging.getLogger(__name__)
 

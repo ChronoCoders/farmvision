@@ -27,15 +27,19 @@ if not SECRET_KEY:
     if IS_DEVELOPMENT:
         # Generate a random secret key for development (never use in production)
         from django.core.management.utils import get_random_secret_key
+
         SECRET_KEY = get_random_secret_key()
         import warnings
+
         warnings.warn(
             "Using auto-generated SECRET_KEY in development. "
             "Set DJANGO_SECRET_KEY environment variable for consistent sessions.",
-            RuntimeWarning
+            RuntimeWarning,
         )
     else:
-        raise ValueError("DJANGO_SECRET_KEY environment variable must be set in production")
+        raise ValueError(
+            "DJANGO_SECRET_KEY environment variable must be set in production"
+        )
 
 ALLOWED_HOSTS = os.environ.get(
     "DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
@@ -326,7 +330,9 @@ CELERY_BROKER_URL = os.environ.get(
     "CELERY_BROKER_URL", "redis://localhost:6379/0")
 
 # Celery result backend (Redis)
-CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get(
+    "CELERY_RESULT_BACKEND", "redis://localhost:6379/0"
+)
 
 # Celery task serializer
 CELERY_TASK_SERIALIZER = "json"
@@ -338,14 +344,18 @@ CELERY_TIMEZONE = TIME_ZONE
 CELERY_ENABLE_UTC = True
 
 # Celery task results
-CELERY_RESULT_EXPIRES = 86400  # Results expire after 24 hours (user-facing tasks)
+# Results expire after 24 hours (user-facing tasks)
+CELERY_RESULT_EXPIRES = 86400
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60  # Hard time limit: 30 minutes
 CELERY_TASK_SOFT_TIME_LIMIT = 25 * 60  # Soft time limit: 25 minutes
 
 # Celery worker configuration
-CELERY_WORKER_PREFETCH_MULTIPLIER = 1  # Process one task at a time (for ML tasks)
-CELERY_WORKER_MAX_TASKS_PER_CHILD = 10  # Restart worker after 10 tasks (memory management)
+# Process one task at a time (for ML tasks)
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
+CELERY_WORKER_MAX_TASKS_PER_CHILD = (
+    10  # Restart worker after 10 tasks (memory management)
+)
 
 # Task routes (optional - for future scaling)
 CELERY_TASK_ROUTES = {

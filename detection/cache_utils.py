@@ -49,7 +49,9 @@ def get_prediction_cache_key(image_hash: str, fruit_type: str) -> str:
     Returns:
         str: Cache key
     """
-    cache_key_format = getattr(settings, "PREDICTION_CACHE_KEY_FORMAT", "prediction:{image_hash}:{fruit_type}")
+    cache_key_format = getattr(
+        settings, "PREDICTION_CACHE_KEY_FORMAT", "prediction:{image_hash}:{fruit_type}"
+    )
     return cache_key_format.format(image_hash=image_hash, fruit_type=fruit_type)
 
 
@@ -170,10 +172,12 @@ def invalidate_all_predictions(fruit_type: Optional[str] = None) -> int:
             batch_size = 1000
             total_deleted = 0
             for i in range(0, len(keys_to_delete), batch_size):
-                batch = keys_to_delete[i:i + batch_size]
+                batch = keys_to_delete[i: i + batch_size]
                 total_deleted += redis_conn.delete(*batch)
 
-            logger.info("Cache BULK INVALIDATED: %s keys (pattern=%s)", total_deleted, pattern)
+            logger.info(
+                "Cache BULK INVALIDATED: %s keys (pattern=%s)", total_deleted, pattern
+            )
             return total_deleted
         else:
             logger.info("No cache keys found for pattern: %s", pattern)
@@ -214,14 +218,16 @@ def get_cache_statistics() -> Dict[str, Any]:
 
             # Estimate total memory
             if len(prediction_keys) > 100:
-                prediction_memory = int(prediction_memory * len(prediction_keys) / 100)
+                prediction_memory = int(
+                    prediction_memory * len(prediction_keys) / 100)
 
         # Get hit/miss stats
         keyspace_hits = redis_info.get("keyspace_hits", 0)
         keyspace_misses = redis_info.get("keyspace_misses", 0)
         total_requests = keyspace_hits + keyspace_misses
 
-        hit_rate = (keyspace_hits / total_requests * 100) if total_requests > 0 else 0
+        hit_rate = (keyspace_hits / total_requests *
+                    100) if total_requests > 0 else 0
 
         stats = {
             "redis_available": True,
@@ -231,13 +237,18 @@ def get_cache_statistics() -> Dict[str, Any]:
             "keyspace_hits": keyspace_hits,
             "keyspace_misses": keyspace_misses,
             "hit_rate_percent": round(hit_rate, 2),
-            "total_memory_used_mb": round(redis_info.get("used_memory", 0) / (1024 * 1024), 2),
-            "total_memory_peak_mb": round(redis_info.get("used_memory_peak", 0) / (1024 * 1024), 2),
+            "total_memory_used_mb": round(
+                redis_info.get("used_memory", 0) / (1024 * 1024), 2
+            ),
+            "total_memory_peak_mb": round(
+                redis_info.get("used_memory_peak", 0) / (1024 * 1024), 2
+            ),
             "connected_clients": redis_info.get("connected_clients", 0),
             "uptime_seconds": redis_info.get("uptime_in_seconds", 0),
         }
 
-        logger.info("Cache statistics retrieved: %s prediction keys", prediction_count)
+        logger.info(
+            "Cache statistics retrieved: %s prediction keys", prediction_count)
         return stats
 
     except Exception as e:
