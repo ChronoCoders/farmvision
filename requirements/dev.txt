@@ -15,7 +15,7 @@ ruff==0.9.7
 mypy==1.18.2
 flake8==7.3.0
 autopep8==2.3.2
-isort==6.1.7
+isort==7.0.0
 
 # Type Stubs
 django-stubs==5.2.7
