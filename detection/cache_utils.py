@@ -151,16 +151,30 @@ def invalidate_all_predictions(fruit_type: Optional[str] = None) -> int:
         else:
             pattern = "farmvision:prediction:*"
 
-        # Get all matching keys
+        # Get all matching keys using SCAN (non-blocking alternative to KEYS)
         from django_redis import get_redis_connection
 
         redis_conn = get_redis_connection("default")
-        keys = redis_conn.keys(pattern)
 
-        if keys:
-            deleted_count = redis_conn.delete(*keys)
-            logger.info("Cache BULK INVALIDATED: %s keys (pattern=%s)", deleted_count, pattern)
-            return deleted_count
+        # Use SCAN instead of KEYS to avoid blocking Redis
+        cursor = 0
+        keys_to_delete = []
+        while True:
+            cursor, keys = redis_conn.scan(cursor, match=pattern, count=100)
+            keys_to_delete.extend(keys)
+            if cursor == 0:
+                break
+
+        if keys_to_delete:
+            # Delete keys in batches to avoid overwhelming Redis
+            batch_size = 1000
+            total_deleted = 0
+            for i in range(0, len(keys_to_delete), batch_size):
+                batch = keys_to_delete[i:i + batch_size]
+                total_deleted += redis_conn.delete(*batch)
+
+            logger.info("Cache BULK INVALIDATED: %s keys (pattern=%s)", total_deleted, pattern)
+            return total_deleted
         else:
             logger.info("No cache keys found for pattern: %s", pattern)
             return 0

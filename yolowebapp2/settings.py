@@ -16,7 +16,7 @@ if sys.platform == "win32":
 ENVIRONMENT = os.environ.get("DJANGO_ENVIRONMENT", "development")
 IS_DEVELOPMENT = ENVIRONMENT == "development"
 
-DEBUG = IS_DEVELOPMENT and os.environ.get("DJANGO_DEBUG", "True") == "True"
+DEBUG = IS_DEVELOPMENT and os.environ.get("DJANGO_DEBUG", "False") == "True"
 
 if not IS_DEVELOPMENT and DEBUG:
     raise ValueError("DEBUG cannot be True in non-development environments")
@@ -25,7 +25,15 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
 if not SECRET_KEY:
     if IS_DEVELOPMENT:
-        SECRET_KEY = "django-insecure-skit=zl3tcyh6*-zoxegu%@4*5k)-k5jnt(1fzfqyt4@jl%a%9"
+        # Generate a random secret key for development (never use in production)
+        from django.core.management.utils import get_random_secret_key
+        SECRET_KEY = get_random_secret_key()
+        import warnings
+        warnings.warn(
+            "Using auto-generated SECRET_KEY in development. "
+            "Set DJANGO_SECRET_KEY environment variable for consistent sessions.",
+            RuntimeWarning
+        )
     else:
         raise ValueError("DJANGO_SECRET_KEY environment variable must be set in production")
 
@@ -133,14 +141,29 @@ CSRF_COOKIE_SECURE = not DEBUG and not IS_DEVELOPMENT
 SESSION_COOKIE_SECURE = not DEBUG and not IS_DEVELOPMENT
 SECURE_SSL_REDIRECT = not DEBUG and not IS_DEVELOPMENT
 
+# Additional security headers
+SECURE_REFERRER_POLICY = "same-origin"
+PERMISSIONS_POLICY = {
+    "geolocation": [],
+    "microphone": [],
+    "camera": [],
+}
+
 if not DEBUG and not IS_DEVELOPMENT:
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
 
+# Content Security Policy - allow unsafe-inline only in development
+# Production should use nonces or hashes
 CSP_DEFAULT_SRC = ("'self'",)
-CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'")
-CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")
+if IS_DEVELOPMENT:
+    CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'")
+    CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")
+else:
+    # Production: more restrictive CSP
+    CSP_SCRIPT_SRC = ("'self'",)
+    CSP_STYLE_SRC = ("'self'",)
 CSP_IMG_SRC = ("'self'", "data:", "https:")
 CSP_FONT_SRC = ("'self'", "data:")
 CSP_CONNECT_SRC = ("'self'",)
@@ -172,9 +195,14 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_RATES": {
         "anon": "10/hour",
         "user": "100/hour",
+        # File upload specific rates (more restrictive)
+        "file_upload_anon": "3/hour",  # Anonymous users very limited
+        "file_upload_user": "20/hour",  # Authenticated users reasonable limit
+        "file_upload_burst": "5/minute",  # Prevent rapid-fire uploads
     },
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 50,
+    "MAX_PAGE_SIZE": 1000,  # Prevent users from requesting unlimited results
 }
 
 SPECTACULAR_SETTINGS = {
@@ -248,20 +276,24 @@ LOGGING = {
 }
 
 # CORS Configuration
-if IS_DEVELOPMENT:
-    # Development: Allow all origins for easier testing
-    CORS_ALLOW_ALL_ORIGINS = True
-    CORS_ALLOW_CREDENTIALS = True
+# Always use whitelist - never allow all origins even in development
+cors_origins = os.environ.get("CORS_ALLOWED_ORIGINS", "")
+if cors_origins:
+    CORS_ALLOWED_ORIGINS = cors_origins.split(",")
 else:
-    # Production: Use whitelist from environment variable
-    cors_origins = os.environ.get("CORS_ALLOWED_ORIGINS", "")
-    if cors_origins:
-        CORS_ALLOWED_ORIGINS = cors_origins.split(",")
+    # Default localhost origins for development
+    if IS_DEVELOPMENT:
+        CORS_ALLOWED_ORIGINS = [
+            "http://localhost:3000",
+            "http://localhost:8000",
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:8000",
+        ]
     else:
-        # Default to empty list in production for security
+        # Empty list in production - must be explicitly configured
         CORS_ALLOWED_ORIGINS = []
 
-    CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True
 
 # CORS settings that apply to both environments
 CORS_ALLOW_METHODS = [
@@ -306,7 +338,7 @@ CELERY_TIMEZONE = TIME_ZONE
 CELERY_ENABLE_UTC = True
 
 # Celery task results
-CELERY_RESULT_EXPIRES = 3600  # Results expire after 1 hour
+CELERY_RESULT_EXPIRES = 86400  # Results expire after 24 hours (user-facing tasks)
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60  # Hard time limit: 30 minutes
 CELERY_TASK_SOFT_TIME_LIMIT = 25 * 60  # Soft time limit: 25 minutes
@@ -359,18 +391,12 @@ CACHES = {
             },
             "IGNORE_EXCEPTIONS": True,  # Don't break if Redis is unavailable
         },
-        "KEY_PREFIX": "farmvision",
+        "KEY_PREFIX": "farmvision:v1",  # Version prefix for cache invalidation
+        "VERSION": 1,  # Cache version number
         "TIMEOUT": 86400,  # Default cache timeout: 24 hours
     }
 }
 
-# Alternative: Use dummy cache if Redis is not available
-# Uncomment the following to disable Redis completely:
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-#     }
-# }
 
 # Cache key format for predictions
 PREDICTION_CACHE_KEY_FORMAT = "prediction:{image_hash}:{fruit_type}"
