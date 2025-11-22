@@ -19,11 +19,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 sys.path.append(str(BASE_DIR / "detection" / "yolo"))
 
-from utils.datasets import LoadImages
-from utils.torch_utils import select_device
-from utils.plots import plot_one_box
-from utils.general import non_max_suppression, scale_coords
-from models.experimental import attempt_load
+from utils.datasets import LoadImages  # noqa: E402
+from utils.torch_utils import select_device  # noqa: E402
+from utils.plots import plot_one_box  # noqa: E402
+from utils.general import non_max_suppression, scale_coords  # noqa: E402
+from models.experimental import attempt_load  # noqa: E402
 
 _model_cache = {}
 _device = None
@@ -111,7 +111,9 @@ def predict(path_to_weights: str, path_to_source: str) -> Tuple[bytes, str, floa
                     im0 = im0s.copy()
 
                     if det:
-                        det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
+                        det[:, :4] = scale_coords(
+                            img.shape[2:], det[:, :4], im0.shape
+                        ).round()
                         total_detections = len(det)
 
                         from numpy import random
@@ -149,7 +151,11 @@ def predict(path_to_weights: str, path_to_source: str) -> Tuple[bytes, str, floa
                 raise
 
         count_str = f"{total_detections:02d}"
-        avg_confidence = sum(confidence_scores) / len(confidence_scores) if confidence_scores else 0.0
+        avg_confidence = (
+            sum(confidence_scores) / len(confidence_scores)
+            if confidence_scores
+            else 0.0
+        )
         return count_str.encode("utf-8"), unique_id, avg_confidence
 
     except (FileNotFoundError, RuntimeError, ValueError, IOError):
@@ -159,7 +165,9 @@ def predict(path_to_weights: str, path_to_source: str) -> Tuple[bytes, str, floa
         raise RuntimeError(f"Algılama işlemi başarısız: {e}")
 
 
-def multi_predictor(path_to_weights: str, path_to_source: str, ekim_sirasi: str, hashing: str) -> str:
+def multi_predictor(
+    path_to_weights: str, path_to_source: str, ekim_sirasi: str, hashing: str
+) -> str:
     try:
         try:
             a_str, b_str = ekim_sirasi.split("-")
@@ -216,7 +224,9 @@ def multi_predictor(path_to_weights: str, path_to_source: str, ekim_sirasi: str,
                         im0 = im0s.copy()
 
                         if det:
-                            det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
+                            det[:, :4] = scale_coords(
+                                img.shape[2:], det[:, :4], im0.shape
+                            ).round()
                             total_detections = len(det)
 
                             from numpy import random
@@ -251,7 +261,10 @@ def multi_predictor(path_to_weights: str, path_to_source: str, ekim_sirasi: str,
             expected_size = a * b
             actual_size = len(detection_counts)
             if expected_size != actual_size:
-                logger.error(f"Reshape boyut uyumsuzluğu: beklenen {expected_size} " f"({a}x{b}), gerçek {actual_size}")
+                logger.error(
+                    f"Reshape boyut uyumsuzluğu: beklenen {expected_size} "
+                    f"({a}x{b}), gerçek {actual_size}"
+                )
                 raise ValueError(
                     f"Ekim sırası ({a}x{b}={expected_size}) ile görüntü sayısı "
                     f"({actual_size}) uyuşmuyor. Lütfen doğru ekim sırası giriniz."
@@ -277,7 +290,9 @@ def multi_predictor(path_to_weights: str, path_to_source: str, ekim_sirasi: str,
             zip_path = BASE_DIR / "media" / f"{hashing}_result.zip"
             zip_path.parent.mkdir(parents=True, exist_ok=True)
 
-            with zipfile.ZipFile(str(zip_path), mode="w", compression=zipfile.ZIP_DEFLATED) as archive:
+            with zipfile.ZipFile(
+                str(zip_path), mode="w", compression=zipfile.ZIP_DEFLATED
+            ) as archive:
                 archive.write(str(excel_dir / "output.xlsx"), "output.xlsx")
                 for img in natsorted(output_dir.glob("*")):
                     archive.write(str(img), f"detected/{img.name}")
@@ -354,7 +369,9 @@ def tree_detection(img_path: str) -> Dict[str, Any]:
                     im0 = im0s.copy()
 
                     if det:
-                        det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
+                        det[:, :4] = scale_coords(
+                            img.shape[2:], det[:, :4], im0.shape
+                        ).round()
 
                         for *xyxy, conf, cls in reversed(det):
                             results_dict["class_name"] = "agac"
