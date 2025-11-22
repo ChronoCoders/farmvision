@@ -23,3 +23,9 @@ select = [
 ignore = [
     "E402",  # Module level import not at top of file (allowed with noqa)
 ]
+
+[lint.per-file-ignores]
+# Options file has long HTML strings
+"yolowebapp2/options.py" = ["E501"]
+# Test settings uses star imports intentionally
+"yolowebapp2/test_settings.py" = ["F403"]
