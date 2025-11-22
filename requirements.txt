@@ -162,7 +162,7 @@ thop==0.1.1.post2209072238
 toml==0.10.2
 tomli==2.3.0
 tomlkit==0.13.3
-torch==2.5.1
+torch==2.8.0
 torchvision==0.20.1
 tornado==6.5.2
 tqdm==4.67.1
