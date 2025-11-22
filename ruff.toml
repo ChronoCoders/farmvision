@@ -1,0 +1,25 @@
+# Ruff configuration
+# https://docs.astral.sh/ruff/configuration/
+
+# Exclude upstream YOLOv7 files from linting
+extend-exclude = [
+    "detection/yolo/models/",
+    "detection/yolo/utils/",
+    "detection/yolo/*.py",
+]
+
+line-length = 120
+
+[lint]
+# Enable recommended rules
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+]
+
+# Ignore specific rules
+ignore = [
+    "E402",  # Module level import not at top of file (allowed with noqa)
+]
