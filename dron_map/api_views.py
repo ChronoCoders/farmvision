@@ -52,18 +52,21 @@ class ProjectViewSet(viewsets.ModelViewSet):
         GET /api/projects/by_farm/
         """
         from django.db.models import Count
+        from itertools import groupby
+        from operator import attrgetter
 
-        farms = Projects.objects.values("Farm").annotate(project_count=Count("id")).order_by("Farm")
+        # Fetch all projects in one query, ordered by farm
+        all_projects = Projects.objects.all().order_by("Farm")
 
         result = []
-        for farm_data in farms:
-            farm_name = farm_data["Farm"]
-            projects = Projects.objects.filter(Farm=farm_name)
-            serializer = ProjectSummarySerializer(projects, many=True)
+        # Group by farm name using itertools.groupby (efficient, no N+1)
+        for farm_name, projects in groupby(all_projects, key=attrgetter("Farm")):
+            projects_list = list(projects)
+            serializer = ProjectSummarySerializer(projects_list, many=True)
             result.append(
                 {
                     "farm": farm_name,
-                    "project_count": farm_data["project_count"],
+                    "project_count": len(projects_list),
                     "projects": serializer.data,
                 }
             )

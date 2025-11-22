@@ -245,8 +245,8 @@ def add_projects(request: HttpRequest, slug: Optional[str] = None, project_id: O
 
                 # Create hashing path
                 try:
-                    hass = hashing.add_prefix(filename=f"{title}{field}")
-                    upload_dir = Path(hass[0])
+                    hashing_result = hashing.add_prefix(filename=f"{title}{field}")
+                    upload_dir = Path(hashing_result[0])
                 except Exception as e:
                     logger.error("Hashing path oluşturma hatası: %s", e)
                     raise ValidationError("Proje dizini oluşturulamadı")
@@ -264,7 +264,7 @@ def add_projects(request: HttpRequest, slug: Optional[str] = None, project_id: O
                             logger.warning("Path traversal attempt in filename: %s", image.name)
                             raise ValidationError(f"Geçersiz dosya adı: {image.name}")
 
-                        fs = FileSystemStorage(location=str(hass[0]))
+                        fs = FileSystemStorage(location=str(hashing_result[0]))
                         saved_path = fs.save(safe_filename, image)
                         if not saved_path:
                             logger.error("Dosya kaydetme başarısız: %s", safe_filename)
@@ -284,7 +284,7 @@ def add_projects(request: HttpRequest, slug: Optional[str] = None, project_id: O
                 # Save project to database with transaction
                 try:
                     with transaction.atomic():
-                        form.instance.hashing_path = hass[1]
+                        form.instance.hashing_path = hashing_result[1]
                         project = form.save()
                         logger.info("Proje veritabanına kaydedildi: %s", project.id)
                 except Exception as e:
@@ -300,8 +300,8 @@ def add_projects(request: HttpRequest, slug: Optional[str] = None, project_id: O
 
                 # Process task (non-critical, log but don't fail)
                 try:
-                    p = tasknode.Node_processing(str(hass[0]))
-                    p.download_task(f"{BASE_DIR}/static/results/{hass[1]}")
+                    p = tasknode.Node_processing(str(hashing_result[0]))
+                    p.download_task(f"{BASE_DIR}/static/results/{hashing_result[1]}")
                 except Exception as e:
                     logger.error("Task processing error: %s", e)
                     # Don't raise, just log - this is not critical
@@ -480,8 +480,8 @@ def maping(request: HttpRequest, project_id: int) -> HttpResponse:
                         },
                     )
 
-                a = hs.algos(orthophoto_path, projes.hashing_path)
-                method = getattr(a, HEALTH_ALGORITHMS[health_color])
+                health_algorithm = hs.algos(orthophoto_path, projes.hashing_path)
+                method = getattr(health_algorithm, HEALTH_ALGORITHMS[health_color])
                 result = method(post_range, cmap)
                 return render(
                     request,
