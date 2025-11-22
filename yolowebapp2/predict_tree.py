@@ -140,10 +140,8 @@ def predict(path_to_weights: str, path_to_source: str) -> Tuple[bytes, str, floa
                         output_path = output_dir / img_name
 
                         if not cv2.imwrite(str(output_path), im0):
-                            logger.error(
-                                "Görüntü yazma hatası: %s", output_path)
-                            raise IOError(
-                                f"Görüntü kaydedilemedi: {output_path}")
+                            logger.error("Görüntü yazma hatası: %s", output_path)
+                            raise IOError(f"Görüntü kaydedilemedi: {output_path}")
 
                     except Exception as e:
                         logger.error("Çıktı dosyası yazma hatası: %s", e)
@@ -183,10 +181,8 @@ def multi_predictor(
         try:
             path_to_source_images = natsorted(glob.glob(f"{path_to_source}/*"))
             if not path_to_source_images:
-                logger.error(
-                    "Kaynak dizinde görüntü bulunamadı: %s", path_to_source)
-                raise FileNotFoundError(
-                    f"Görüntü bulunamadı: {path_to_source}")
+                logger.error("Kaynak dizinde görüntü bulunamadı: %s", path_to_source)
+                raise FileNotFoundError(f"Görüntü bulunamadı: {path_to_source}")
         except Exception as e:
             logger.error("Görüntü listesi oluşturma hatası: %s", e)
             raise
@@ -236,8 +232,7 @@ def multi_predictor(
 
                             from numpy import random
 
-                            colors = [[random.randint(0, 255)
-                                       for _ in range(3)]]
+                            colors = [[random.randint(0, 255) for _ in range(3)]]
 
                             for *xyxy, conf, cls in reversed(det):
                                 label = f"{conf:.2f}"
@@ -252,8 +247,7 @@ def multi_predictor(
                         img_name = Path(path).name
                         output_path = output_dir / img_name
                         if not cv2.imwrite(str(output_path), im0):
-                            logger.error(
-                                "Görüntü kaydetme hatası: %s", output_path)
+                            logger.error("Görüntü kaydetme hatası: %s", output_path)
 
                     detection_counts.append(total_detections)
 
@@ -392,8 +386,7 @@ def tree_detection(img_path: str) -> Dict[str, Any]:
                     output_path = output_dir / "detection.jpg"
 
                     if not cv2.imwrite(str(output_path), im0):
-                        logger.error(
-                            "Algılama görüntüsü yazma hatası: %s", output_path)
+                        logger.error("Algılama görüntüsü yazma hatası: %s", output_path)
                         raise IOError("Sonuç görüntüsü kaydedilemedi")
 
                 except Exception as e:
@@ -414,8 +407,7 @@ def tree_detection(img_path: str) -> Dict[str, Any]:
 
 
 def preload_all_models() -> None:
-    models = ["mandalina.pt", "elma.pt", "armut.pt",
-              "seftale.pt", "nar.pt", "agac.pt"]
+    models = ["mandalina.pt", "elma.pt", "armut.pt", "seftale.pt", "nar.pt", "agac.pt"]
     loaded_count = 0
 
     for model_name in models:

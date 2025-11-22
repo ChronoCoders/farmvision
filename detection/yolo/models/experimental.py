@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 from utils.google_utils import attempt_download
 
-from models.common import Conv, DWConv
+from models.common import Conv
 
 
 class CrossConv(nn.Module):
@@ -52,8 +52,7 @@ class MixConv2d(nn.Module):
         groups = len(k)
         if equal_ch:  # equal c_ per group
             i = torch.linspace(0, groups - 1e-6, c2).floor()  # c2 indices
-            c_ = [(i == g).sum()
-                  for g in range(groups)]  # intermediate channels
+            c_ = [(i == g).sum() for g in range(groups)]  # intermediate channels
         else:  # equal weight.numel() per group
             b = [c2] + [0] * groups
             a = np.eye(groups + 1, groups, k=-1)
@@ -147,8 +146,7 @@ class TRT_NMS(torch.autograd.Function):
         score_threshold=0.25,
     ):
         batch_size, num_boxes, num_classes = scores.shape
-        num_det = torch.randint(0, max_output_boxes,
-                                (batch_size, 1), dtype=torch.int32)
+        num_det = torch.randint(0, max_output_boxes, (batch_size, 1), dtype=torch.int32)
         det_boxes = torch.randn(batch_size, max_output_boxes, 4)
         det_scores = torch.randn(batch_size, max_output_boxes)
         det_classes = torch.randint(
