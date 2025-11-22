@@ -137,7 +137,7 @@ rasterio==1.4.3
 redis==5.0.1
 referencing==0.36.2
 regex==2025.9.18
-requests==2.32.3
+requests==2.32.4
 requests-toolbelt==1.0.0
 rich==14.2.0
 rio-tiler==6.1.0
