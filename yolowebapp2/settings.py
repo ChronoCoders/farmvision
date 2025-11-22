@@ -3,8 +3,12 @@ from pathlib import Path
 import os
 import sys
 import io
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from .env file
+load_dotenv(BASE_DIR / ".env")
 
 # Configure stdout/stderr for UTF-8 encoding on Windows to handle Turkish characters
 if sys.platform == "win32":
