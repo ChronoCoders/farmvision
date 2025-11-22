@@ -184,6 +184,8 @@ def index(request: HttpRequest) -> HttpResponse:
 
             # Validate tree age with range check
             try:
+                if agac_yasi is None:
+                    return render(request, "main.html", {"error": "Ağaç yaşı gerekli"})
                 agac_yasi_int = int(agac_yasi)
                 if not (0 <= agac_yasi_int <= 150):
                     return render(
@@ -444,8 +446,7 @@ def download_image(request: HttpRequest, slug: str) -> FileResponse | HttpRespon
             as_attachment=True,
             filename=f"{safe_slug}_result.zip",
         )
-        # FileResponse will close the file when done, but we explicitly mark it
-        response.file_to_stream.close_file = True
+        # FileResponse will automatically close the file when done
         return response
     except Exception as e:
         logger.error("Dosya indirme hatası: %s", e)
