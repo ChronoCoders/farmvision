@@ -1,22 +1,24 @@
-from utils.loss import SigmoidBin
-from utils.torch_utils import (
-    time_synchronized,
-    fuse_conv_and_bn,
-    model_info,
-    scale_img,
-    initialize_weights,
-    select_device,
-    copy_attr,
-)
-from utils.general import make_divisible, check_file, set_logging
-from utils.autoanchor import check_anchor_order
-from models.experimental import *
-from models.common import *
-import torch
 import argparse
 import logging
 import sys
 from copy import deepcopy
+
+import torch
+from utils.autoanchor import check_anchor_order
+from utils.general import check_file, make_divisible, set_logging
+from utils.loss import SigmoidBin
+from utils.torch_utils import (
+    copy_attr,
+    fuse_conv_and_bn,
+    initialize_weights,
+    model_info,
+    scale_img,
+    select_device,
+    time_synchronized,
+)
+
+from models.common import *
+from models.experimental import *
 
 sys.path.append("./")  # to run '$ python *.py' files in subdirectories
 logger = logging.getLogger(__name__)

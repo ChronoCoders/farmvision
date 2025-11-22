@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
-from pathlib import Path
-import openpyxl
-from natsort import natsorted
-import numpy as np
 import glob
-import zipfile
-import torch
-import cv2
+import logging
 import sys
 import threading
 import uuid
-import logging
-from typing import Tuple, Dict, Any
+import zipfile
+from pathlib import Path
+from typing import Any, Dict, Tuple
+
+import cv2
+import numpy as np
+import openpyxl
+import torch
+from natsort import natsorted
 
 logger = logging.getLogger(__name__)
 
@@ -19,11 +20,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 sys.path.append(str(BASE_DIR / "detection" / "yolo"))
 
-from utils.datasets import LoadImages  # noqa: E402
-from utils.torch_utils import select_device  # noqa: E402
-from utils.plots import plot_one_box  # noqa: E402
-from utils.general import non_max_suppression, scale_coords  # noqa: E402
 from models.experimental import attempt_load  # noqa: E402
+from utils.datasets import LoadImages  # noqa: E402
+from utils.general import non_max_suppression, scale_coords  # noqa: E402
+from utils.plots import plot_one_box  # noqa: E402
+from utils.torch_utils import select_device  # noqa: E402
 
 _model_cache = {}
 _device = None
