@@ -597,7 +597,6 @@ class IBin(nn.Module):
         self.no = (
             nc + 3 + self.w_bin_sigmoid.get_length() + self.h_bin_sigmoid.get_length()
         )  # w-bce, h-bce
-        # + self.x_bin_sigmoid.get_length() + self.y_bin_sigmoid.get_length()
 
         self.nl = len(anchors)  # number of detection layers
         self.na = len(anchors[0]) // 2  # number of anchors
@@ -643,10 +642,7 @@ class IBin(nn.Module):
                 y[..., 0:2] = (y[..., 0:2] * 2.0 - 0.5 + self.grid[i]) * self.stride[
                     i
                 ]  # xy
-                # y[..., 2:4] = (y[..., 2:4] * 2) ** 2 * self.anchor_grid[i]  # wh
 
-                # px = (self.x_bin_sigmoid.forward(y[..., 0:12]) + self.grid[i][..., 0]) * self.stride[i]
-                # py = (self.y_bin_sigmoid.forward(y[..., 12:24]) + self.grid[i][..., 1]) * self.stride[i]
 
                 pw = (
                     self.w_bin_sigmoid.forward(y[..., 2:24])
@@ -805,12 +801,7 @@ class Model(nn.Module):
                 self.traced = False
 
             if self.traced:
-                if (
-                    isinstance(m, Detect)
-                    or isinstance(m, IDetect)
-                    or isinstance(m, IAuxDetect)
-                    or isinstance(m, IKeypoint)
-                ):
+                if isinstance(m, (Detect, IDetect, IAuxDetect, IKeypoint)):
                     break
 
             if profile:
