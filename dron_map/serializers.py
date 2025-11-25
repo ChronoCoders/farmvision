@@ -33,13 +33,15 @@ class ProjectSerializer(serializers.ModelSerializer):
                 return request.build_absolute_uri(obj.picture.url)
         return None
 
-    def validate_Farm(self, value):
+    @staticmethod
+    def validate_Farm(value):
         """Ensure farm name is not empty"""
         if not value or not value.strip():
             raise serializers.ValidationError("Farm name cannot be empty")
         return value.strip()
 
-    def validate_Field(self, value):
+    @staticmethod
+    def validate_Field(value):
         """Ensure field name is not empty"""
         if not value or not value.strip():
             raise serializers.ValidationError("Field name cannot be empty")

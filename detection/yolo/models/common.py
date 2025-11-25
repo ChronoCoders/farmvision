@@ -49,7 +49,8 @@ class ReOrg(nn.Module):
     def __init__(self):
         super(ReOrg, self).__init__()
 
-    def forward(self, x):  # x(b,c,w,h) -> y(b,4c,w/2,h/2)
+    @staticmethod
+    def forward(x):  # x(b,c,w,h) -> y(b,4c,w/2,h/2)
         return torch.cat([x[..., ::2, ::2], x[..., 1::2, ::2], x[..., ::2, 1::2], x[..., 1::2, 1::2]], 1)
 
 
@@ -82,7 +83,8 @@ class Shortcut(nn.Module):
         super(Shortcut, self).__init__()
         self.d = dimension
 
-    def forward(self, x):
+    @staticmethod
+    def forward(x):
         return x[0]+x[1]
 
 
@@ -515,7 +517,8 @@ class RepConv(nn.Module):
             bias3x3 + bias1x1 + biasid,
         )
 
-    def _pad_1x1_to_3x3_tensor(self, kernel1x1):
+    @staticmethod
+    def _pad_1x1_to_3x3_tensor(kernel1x1):
         if kernel1x1 is None:
             return 0
         else:
@@ -558,7 +561,8 @@ class RepConv(nn.Module):
             bias.detach().cpu().numpy(),
         )
 
-    def fuse_conv_bn(self, conv, bn):
+    @staticmethod
+    def fuse_conv_bn(conv, bn):
 
         std = (bn.running_var + bn.eps).sqrt()
         bias = bn.bias - bn.running_mean * bn.weight / std
@@ -1203,7 +1207,8 @@ class OREPA_3x3_RepConv(nn.Module):
 
         return weight
 
-    def dwsc2full(self, weight_dw, weight_pw, groups):
+    @staticmethod
+    def dwsc2full(weight_dw, weight_pw, groups):
         
         t, ig, h, w = weight_dw.size()
         o, _, _, _ = weight_pw.size()
@@ -1304,7 +1309,8 @@ class RepConv_OREPA(nn.Module):
         kernelid, biasid = self._fuse_bn_tensor(self.rbr_identity)
         return kernel3x3 + self._pad_1x1_to_3x3_tensor(kernel1x1) + kernelid, bias3x3 + bias1x1 + biasid
 
-    def _pad_1x1_to_3x3_tensor(self, kernel1x1):
+    @staticmethod
+    def _pad_1x1_to_3x3_tensor(kernel1x1):
         if kernel1x1 is None:
             return 0
         else:

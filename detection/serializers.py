@@ -22,12 +22,14 @@ class DetectionResultSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["id", "created_at"]
 
-    def validate_tree_count(self, value):
+    @staticmethod
+    def validate_tree_count(value):
         if value <= 0:
             raise serializers.ValidationError("Tree count must be positive")
         return value
 
-    def validate_detected_count(self, value):
+    @staticmethod
+    def validate_detected_count(value):
         """Ensure detected count is non-negative"""
         if value < 0:
             raise serializers.ValidationError("Detected count cannot be negative")
@@ -48,7 +50,8 @@ class MultiDetectionBatchSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["id", "created_at", "batch_hash"]
 
-    def validate_image_count(self, value):
+    @staticmethod
+    def validate_image_count(value):
         """Ensure image count is positive"""
         if value < 1:
             raise serializers.ValidationError("Image count must be at least 1")
