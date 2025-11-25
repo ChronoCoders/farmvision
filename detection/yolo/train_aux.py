@@ -138,9 +138,7 @@ def train(hyp, opt, device, tb_writer=None):
             state_dict, model.state_dict(), exclude=exclude)
         model.load_state_dict(state_dict, strict=False)
         logger.info(
-            "Transferred %g/%g items from %s"
-            % (len(state_dict), len(model.state_dict()), weights)
-        )
+            "Transferred %g/%g items from %s", len(state_dict), len(model.state_dict()), weights)
     else:
         model = Model(opt.cfg, ch=3, nc=nc,
                       anchors=hyp.get("anchors")).to(device)
@@ -238,9 +236,7 @@ def train(hyp, opt, device, tb_writer=None):
         {"params": pg1, "weight_decay": hyp["weight_decay"]})
     optimizer.add_param_group({"params": pg2})
     logger.info(
-        "Optimizer groups: %g .bias, %g conv.weight, %g other"
-        % (len(pg2), len(pg1), len(pg0))
-    )
+        "Optimizer groups: %g .bias, %g conv.weight, %g other", len(pg2), len(pg1), len(pg0))
 
     if opt.linear_lr:
 
@@ -278,9 +274,7 @@ def train(hyp, opt, device, tb_writer=None):
             )
         if epochs < start_epoch:
             logger.info(
-                "%s has been trained for %g epochs. Fine-tuning for %g additional epochs."
-                % (weights, ckpt["epoch"], epochs)
-            )
+                "%s has been trained for %g epochs. Fine-tuning for %g additional epochs.", weights, ckpt["epoch"], epochs)
             epochs += ckpt["epoch"]
 
     gs = max(int(model.stride.max()), 32)
@@ -418,9 +412,7 @@ def train(hyp, opt, device, tb_writer=None):
             dataloader.sampler.set_epoch(epoch)
         pbar = enumerate(dataloader)
         logger.info(
-            ("\n" + "%10s" * 8)
-            % ("Epoch", "gpu_mem", "box", "obj", "cls", "total", "labels", "img_size")
-        )
+            ("\n" + "%10s" * 8), "Epoch", "gpu_mem", "box", "obj", "cls", "total", "labels", "img_size")
         if rank in [-1, 0]:
             pbar = tqdm(pbar, total=nb)
         optimizer.zero_grad()
@@ -634,9 +626,7 @@ def train(hyp, opt, device, tb_writer=None):
                 )
 
         logger.info(
-            "%g epochs completed in %.3f hours.\n"
-            % (epoch - start_epoch + 1, (time.time() - t0) / 3600)
-        )
+            "%g epochs completed in %.3f hours.\n", epoch - start_epoch + 1, (time.time() - t0) / 3600)
         if opt.data.endswith("coco.yaml") and nc == 80:
             for m in (last, best) if best.exists() else (last):
                 results, _, _ = test.test(
