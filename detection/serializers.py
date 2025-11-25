@@ -32,7 +32,8 @@ class DetectionResultSerializer(serializers.ModelSerializer):
     def validate_detected_count(value):
         """Ensure detected count is non-negative"""
         if value < 0:
-            raise serializers.ValidationError("Detected count cannot be negative")
+            raise serializers.ValidationError(
+                "Detected count cannot be negative")
         return value
 
 
