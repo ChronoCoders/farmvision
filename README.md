@@ -344,7 +344,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- YOLOv8 by Ultralytics
+- YOLOv7 by Ultralytics
 - WebODM for drone image processing
 - Django community
 - All contributors
