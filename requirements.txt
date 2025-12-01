@@ -52,7 +52,7 @@ Faker==22.0.0
 filelock==3.20.0
 flake8==7.3.0
 fontawesomefree==6.6.0
-fonttools==4.60.1
+fonttools==4.61.0
 fsspec==2025.9.0
 GDAL @ file:///C:/farmvision/GDAL-3.8.4-cp310-cp310-win_amd64.whl#sha256=af9b1fbded4e6e93a0b26e268562514c5be3cd243f957c569ff1d44fba1bcef3
 gevent==24.2.1
