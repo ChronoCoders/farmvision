@@ -31,7 +31,7 @@ cryptography==46.0.3
 cycler==0.12.1
 decorator==5.2.1
 distlib==0.4.0
-Django==4.2.26
+Django==4.2.27
 django-cors-headers==4.3.1
 django-csp==4.0
 django-filter==25.1
