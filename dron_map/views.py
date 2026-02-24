@@ -384,8 +384,8 @@ def convert(input_path: str, output_path: str) -> None:
 
 
 @login_required
-def maping(request: HttpRequest, project_id: int) -> HttpResponse:
-    projes = get_object_or_404(Projects, id=project_id)
+def maping(request: HttpRequest, id: int) -> HttpResponse:
+    projes = get_object_or_404(Projects, id=id)
     algo = options.algorithm
     colors = options.colormaps
 

@@ -306,6 +306,27 @@ def index(request: HttpRequest) -> HttpResponse:
                 response["image"] = cached_result["image_path"]
                 response["confidence"] = f"{cached_result['confidence_score']:.2%}"
                 response["from_cache"] = True
+
+                # Create DetectionResult even for cached results to enable reporting
+                try:
+                    model_path = FRUIT_MODELS[meyve_grubu]
+                    detection_instance = DetectionResult.objects.create(
+                        fruit_type=meyve_grubu,
+                        tree_count=agac_sayisi_int,
+                        tree_age=agac_yasi_int,
+                        detected_count=cached_result["detected_count"],
+                        weight=response["kilo"],
+                        total_weight=response["toplam_agirlik"],
+                        processing_time=0.0,
+                        confidence_score=cached_result["confidence_score"],
+                        model_version=Path(model_path).name,
+                        threshold_used=DETECTION_CONFIDENCE_THRESHOLD,
+                        image_path=cached_result["image_path"],
+                        bbox_coordinates=cached_result.get("bbox_coordinates"),
+                    )
+                    response["detection_id"] = detection_instance.pk
+                except Exception as e:
+                    logger.error("Cache detection save error: %s", e)
             else:
                 # Cache MISS - run prediction
                 temp_dir = Path(tempfile.gettempdir())
@@ -356,6 +377,7 @@ def index(request: HttpRequest) -> HttpResponse:
                         "image_path": f"detected/{unique_id}/{safe_filename}",
                         "fruit_type": meyve_grubu,
                         "image_hash": image_hash,
+                        "bbox_coordinates": bbox_centers,
                     }
                     set_cached_prediction(image_hash, meyve_grubu, cache_data)
 
