@@ -27,3 +27,7 @@ __pycache__/
 *.pyc
 media/
 .env
+
+.venv/
+venv/
+env/
