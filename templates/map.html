@@ -1,0 +1,353 @@
+{% extends 'header.html' %}
+{% block body %}
+      {% load static %}
+      {% include 'menu3.html' with picture=projes.picture%}
+      {% include 'navbar.html' with picture=userss.picture  orthophoto=orthophoto static=static images_info=images_info%}
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+      integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+      crossorigin=""/>
+      <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+      integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+      crossorigin=""></script>
+      
+      <script src="https://unpkg.com/georaster"></script>
+      <script src="https://unpkg.com/proj4"></script>
+      <script src="https://unpkg.com/georaster-layer-for-leaflet"></script>
+      <style>
+        #map {
+            
+            width:100%;
+            height: 90vh;
+        }
+        
+        .leaflet-container {
+            width:100%;
+            height: 90vh;
+        }
+        
+        </style>
+        
+        <div id="wrapper">
+            <div class="main-content">
+                {% if error %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                      <strong>Hata!</strong> {{ error }}
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Kapat">
+                            <span aria-hidden="true">&times;</span>
+                      </button>
+                </div>
+                {% endif %}
+                  <div class="row small-spacing">
+                    <div id="map"></div>
+                    <div id="dashboard-widgets" style="position:absolute; top:10px; right:10px; z-index:1000;">
+                      <div class="card" style="padding:8px 12px; margin-bottom:6px;">
+                        <strong>Yüksek Stres Alanı:</strong>
+                        <span id="stress-area-percent">-</span>%
+                      </div>
+                      <div class="card" style="padding:8px 12px; margin-bottom:6px;">
+                        <strong>Toplam Stres Alanı:</strong>
+                        <span id="total-stress-area-ha">-</span> ha
+                      </div>
+                      <div class="card" style="padding:8px 12px; margin-bottom:6px;">
+                        <strong>En Büyük Zon:</strong>
+                        <span id="largest-zone-ha">-</span> ha
+                      </div>
+                      <div class="card" style="padding:8px 12px; margin-bottom:6px;">
+                        <strong>Kritik Zon Sayısı:</strong>
+                        <span id="critical-zone-count">-</span>
+                      </div>
+                      <div class="card" style="padding:8px 12px; margin-bottom:6px;">
+                        <strong>Önerilen Müdahale:</strong>
+                        <span id="recommendation-count">-</span>
+                      </div>
+                      <div class="card" style="padding:8px 12px; margin-bottom:6px;">
+                        <strong>Tahmini Toplam Verim:</strong>
+                        <span id="yield-total-kg">-</span> kg
+                      </div>
+                      <div class="card" style="padding:8px 12px; margin-bottom:6px;">
+                        <strong>Hektar Başına Tahmini Verim:</strong>
+                        <span id="yield-per-ha-kg">-</span> kg/ha
+                      </div>
+                      <div class="card" style="padding:8px 12px;">
+                        <strong>Güven Skoru:</strong>
+                        <span id="yield-confidence">-</span>
+                      </div>
+                    </div>
+                  </div>
+                  </div>
+                </div>
+      
+
+<script >   
+
+var popup = L.popup();
+var map = L.map('map'); //.setView([0, 0], 5)
+
+var densityLayer = null;
+var stressZoneLayer = null;
+var decisionLayer = null;
+
+var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    markerZoomAnimation: true,
+    zoomControl: true,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+})//.addTo(map);
+
+
+var osm2 = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    maxZoom: 25,
+          attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+      })//.addTo(map);
+
+
+
+
+
+
+
+
+
+googleStreets = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+        maxZoom: 20,
+        subdomains:['mt0','mt1','mt2','mt3']
+})//.addTo(map);
+googleHybrid = L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+        maxZoom: 25,
+        subdomains:['mt0','mt1','mt2','mt3']
+}).addTo(map);
+googleSat = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+        maxZoom: 20,
+        subdomains:['mt0','mt1','mt2','mt3']
+})//.addTo(map);
+googleTerrain = L.tileLayer('https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',{
+        maxZoom: 20,
+        subdomains:['mt0','mt1','mt2','mt3']
+})//.addTo(map);
+
+
+var baseLayers = {
+    "Uydu Hibrit": googleHybrid
+};
+
+
+var overlayLayers = {};
+
+var layerControl = L.control.layers(baseLayers, overlayLayers).addTo(map);
+
+var projectAreaHa = {{ static.area|default:0 }} / 10000.0;
+
+var url_to_geotiff_file = "{% if orthophoto.path is not None %} {% static orthophoto.path %} {% else %} {% static orthophoto.odm_orthophoto %} {% endif %}";
+
+fetch(url_to_geotiff_file)
+  .then(response => response.arrayBuffer())
+  .then(arrayBuffer => {
+    parseGeoraster(arrayBuffer).then(georaster => {
+      console.log("georaster:", georaster);
+
+      /*
+          GeoRasterLayer is an extension of GridLayer,
+          which means can use GridLayer options like opacity.
+
+          Just make sure to include the georaster option!
+
+          Optionally set the pixelValuesToColorFn function option to customize
+          how values for a pixel are translated to a color.
+
+          https://leafletjs.com/reference.html#gridlayer
+      */
+      var layer = new GeoRasterLayer({
+        georaster: georaster,
+        opacity: 100,
+        resolution: 256
+      });
+      layer.addTo(map);
+
+      map.fitBounds(layer.getBounds());
+
+  });
+});
+
+var projectId = {{ projes.id }};
+
+function loadDensityLayer() {
+  fetch('/api/projects/' + projectId + '/density/')
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
+      if (densityLayer) {
+        map.removeLayer(densityLayer);
+        layerControl.removeLayer(densityLayer);
+      }
+      densityLayer = L.geoJSON(data, {
+        style: function(feature) {
+          var props = feature.properties || {};
+          var label = props.density_label;
+          var color = label === 'yüksek'
+                      ? '#E31A1C'
+                      : label === 'normal'
+                      ? '#FD8D3C'
+                      : '#FFEDA0';
+          return { color: color, weight: 1, fillOpacity: 0.5 };
+        },
+        onEachFeature: function(feature, layer) {
+          var props = feature.properties || {};
+          var count = props.tree_count;
+          var density = props.density_per_ha;
+          var densityText =
+            typeof density === 'number' ? density.toFixed(1) : density;
+          layer.bindPopup(
+            "Ağaç Sayısı: " + count + "<br/>" +
+            "Hektar Başına Yoğunluk: " + densityText
+          );
+        }
+      }).addTo(map);
+      layerControl.addOverlay(densityLayer, "Yoğunluk Haritası");
+    });
+}
+
+function loadStressZones() {
+  fetch('/api/projects/' + projectId + '/stress-zones/')
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
+      if (stressZoneLayer) {
+        map.removeLayer(stressZoneLayer);
+        layerControl.removeLayer(stressZoneLayer);
+      }
+      stressZoneLayer = L.geoJSON(data, {
+        style: function(feature) {
+          var cls = feature.properties && feature.properties.stress_class;
+          var color = cls === 'high_stress' ? '#d73027' :
+                      cls === 'medium' ? '#fc8d59' :
+                      '#1a9850';
+          return { color: color, weight: 1, fillOpacity: 0.3 };
+        },
+        onEachFeature: function(feature, layer) {
+          var props = feature.properties || {};
+          var zoneId = props.zone_id;
+          var label = props.stress_label;
+          var area = props.area_ha;
+          var areaText = (typeof area === 'number') ? area.toFixed(3) : area;
+          layer.bindPopup(
+            "Zon Detayı<br/>" +
+            "Zon: " + zoneId + "<br/>" +
+            "Stres: " + label + "<br/>" +
+            "Alan: " + areaText + " ha"
+          );
+        }
+      }).addTo(map);
+      layerControl.addOverlay(stressZoneLayer, "Stres Zonları");
+
+      if (data.ozet) {
+        if (typeof data.ozet.yuksek_stres_yuzde !== 'undefined') {
+          var v = data.ozet.yuksek_stres_yuzde;
+          document.getElementById('stress-area-percent').textContent = v.toFixed(1);
+        }
+        if (typeof data.ozet.toplam_stres_alani_ha !== 'undefined') {
+          document.getElementById('total-stress-area-ha').textContent =
+            data.ozet.toplam_stres_alani_ha.toFixed(3);
+        }
+        if (typeof data.ozet.en_buyuk_zon_ha !== 'undefined') {
+          document.getElementById('largest-zone-ha').textContent =
+            data.ozet.en_buyuk_zon_ha.toFixed(3);
+        }
+      }
+    });
+}
+
+function loadDecisions() {
+  fetch('/api/projects/' + projectId + '/decisions/')
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
+      if (decisionLayer) {
+        map.removeLayer(decisionLayer);
+        layerControl.removeLayer(decisionLayer);
+      }
+      var features = (data.oneriler || []).map(function(rec) {
+        return {
+          "type": "Feature",
+          "geometry": null,
+          "properties": rec
+        };
+      });
+      decisionLayer = L.featureGroup();
+      features.forEach(function(f) {
+        var p = f.properties || {};
+        var zoneId = p.zone_id;
+        var action = p.aksiyon;
+        var severity = p.oncelik;
+        var area = p.alan_ha;
+
+        var color = severity === 'Kritik' ? '#d73027' :
+                    severity === 'Yüksek' ? '#fc8d59' :
+                    '#fee08b';
+        var badge =
+          '<span style="display:inline-block;padding:2px 6px;border-radius:4px;' +
+          'background:' + color + ';color:#000;font-weight:bold;">' +
+          severity + '</span>';
+
+        var areaText = (typeof area === 'number') ? area.toFixed(3) : area;
+
+        var html =
+          "Zon Detayı<br/>" +
+          "Zon: " + zoneId + "<br/>" +
+          badge + "<br/>" +
+          "Alan: " + areaText + " ha<br/>" +
+          action;
+
+        var marker = L.marker(map.getCenter()).bindPopup(html);
+        decisionLayer.addLayer(marker);
+      });
+      decisionLayer.addTo(map);
+      layerControl.addOverlay(decisionLayer, "Öneriler");
+
+      var recs = data.oneriler || [];
+      var count = recs.length;
+      document.getElementById('recommendation-count').textContent = count;
+
+      var criticalCount = recs.filter(function(r) {
+        return r.oncelik === 'Kritik';
+      }).length;
+      document.getElementById('critical-zone-count').textContent = criticalCount;
+    });
+}
+
+function loadYield() {
+  fetch('/api/projects/' + projectId + '/yield/')
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
+      var total = data.tahmini_verim_kg;
+      var confidence = data.guven_skoru;
+
+      var perHa = null;
+      if (typeof total === 'number' && projectAreaHa > 0) {
+        perHa = total / projectAreaHa;
+      }
+
+      if (typeof total === 'number') {
+        document.getElementById('yield-total-kg').textContent = total.toFixed(1);
+      } else {
+        document.getElementById('yield-total-kg').textContent = '-';
+      }
+
+      if (typeof perHa === 'number') {
+        document.getElementById('yield-per-ha-kg').textContent = perHa.toFixed(1);
+      } else {
+        document.getElementById('yield-per-ha-kg').textContent = '-';
+      }
+
+      if (typeof confidence === 'number') {
+        document.getElementById('yield-confidence').textContent = confidence.toFixed(1) + '%';
+      } else {
+        document.getElementById('yield-confidence').textContent = '-';
+      }
+    });
+}
+
+loadDensityLayer();
+loadStressZones();
+loadDecisions();
+loadYield();
+      </script>
+
+
+{% endblock %}
