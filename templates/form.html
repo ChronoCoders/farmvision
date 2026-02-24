@@ -12,34 +12,35 @@
 						<option value="armut">Armut</option>
 						<option value="seftale">Şeftali</option>
 						<option value="nar">Nar</option>
+						<option value="agac">Ağaç</option>
 					</select>
 				</div>
 
 				<div class="input-group margin-bottom-20">
 					<div class="input-group-btn">
-						<label class="btn btn-default" aria-label="Ağaç Sayısı">
+						<label for="agac_sayisi" class="btn btn-default" aria-label="Ağaç Sayısı">
 							<i class="fa-solid fa-tree" aria-hidden="true"></i>
 						</label>
 					</div>
-					<input type="number" name="agac_sayisi" class="form-control" placeholder="Toplam Ağaç Sayısı" min="1" max="10000" required aria-label="Toplam Ağaç Sayısı">
+					<input id="agac_sayisi" type="number" name="agac_sayisi" class="form-control" placeholder="Toplam Ağaç Sayısı" min="1" max="10000" required aria-label="Toplam Ağaç Sayısı">
 				</div>
 
 				<div class="input-group margin-bottom-20">
 					<div class="input-group-btn">
-						<label class="btn btn-default" aria-label="Ağaç Yaşı">
+						<label for="agac_yasi" class="btn btn-default" aria-label="Ağaç Yaşı">
 							<i class="fa-brands fa-pagelines" aria-hidden="true"></i>
 						</label>
 					</div>
-					<input type="number" name="agac_yasi" class="form-control" placeholder="Ağaç Kaç Yaşında" min="1" max="100" required aria-label="Ağaç Yaşı">
+					<input id="agac_yasi" type="number" name="agac_yasi" class="form-control" placeholder="Ağaç Kaç Yaşında" min="1" max="100" required aria-label="Ağaç Yaşı">
 				</div>
 
 				<div class="input-group">
 					<div class="input-group-btn">
-						<label class="btn btn-default" aria-label="Ekim Sırası">
+						<label for="ekim_sirasi" class="btn btn-default" aria-label="Ekim Sırası">
 							<i class="fa-regular fa-chart-simple" aria-hidden="true"></i>
 						</label>
 					</div>
-					<input type="text" name="ekim_sirasi" class="form-control" placeholder="Ekim Sırası" required pattern="[0-9]+-[0-9]+" title="Ekim sırası formatı: 3-5" aria-label="Ekim Sırası (örn: 3-5)">
+					<input id="ekim_sirasi" type="text" name="ekim_sirasi" class="form-control" placeholder="Ekim Sırası" required pattern="[0-9]+-[0-9]+" title="Ekim sırası formatı: 3-5" aria-label="Ekim Sırası (örn: 3-5)">
 				</div>
 
 				<div class="form-group">

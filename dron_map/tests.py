@@ -118,13 +118,13 @@ class ProjectViewCreateTests(TestCase):
 
     def test_add_project_page_loads(self):
         """Add project page should return 200."""
-        response = self.client.get("/dron-map/add-projects/")
+        response = self.client.get("/dron-map/projects/add/")
         self.assertIn(response.status_code, [200, 302])
 
     def test_map_page_requires_login(self):
         """Map page should redirect unauthenticated users."""
         self.client.logout()
-        response = self.client.get("/dron-map/map/")
+        response = self.client.get("/dron-map/map/1/")
         self.assertEqual(response.status_code, 302)
 
 

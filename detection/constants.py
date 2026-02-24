@@ -22,6 +22,7 @@ FRUIT_WEIGHTS: Dict[str, float] = {
     "armut": 0.220,  # Pear
     "seftale": 0.185,  # Peach
     "nar": 0.300,  # Pomegranate
+    "agac": 0.0,   # Tree (weight not applicable)
 }
 
 # Fruit detection model files (relative to models directory)
@@ -31,6 +32,7 @@ FRUIT_MODEL_FILES: Dict[str, str] = {
     "armut": "armut.pt",
     "seftale": "seftale.pt",
     "nar": "nar.pt",
+    "agac": "agac.pt",
 }
 
 # Absolute paths to fruit models

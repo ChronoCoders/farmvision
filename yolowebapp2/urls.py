@@ -20,6 +20,10 @@ urlpatterns = [
     path("dron-map/", include("dron_map.urls")),
     path("reports/", include("reports.urls")),
     path(
+        ".well-known/appspecific/com.chrome.devtools.json",
+        lambda request: JsonResponse({}),
+    ),
+    path(
         "favicon.ico", RedirectView.as_view(url="/static/favicon.ico", permanent=True)
     ),
     # Backwards compatibility redirects

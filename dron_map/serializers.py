@@ -23,7 +23,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             "picture_url",
             "hashing_path",
         ]
-        read_only_fields = ["id", "Data_time"]
+        read_only_fields = ["id", "Data_time", "hashing_path"]
 
     @extend_schema_field(serializers.CharField(allow_null=True))
     def get_picture_url(self, obj) -> str | None:

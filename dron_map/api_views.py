@@ -146,6 +146,22 @@ class ProjectViewSet(viewsets.ModelViewSet):
             return ProjectSummarySerializer
         return ProjectSerializer
 
+    def perform_create(self, serializer):
+        """Generate hashing_path on creation"""
+        from yolowebapp2 import hashing
+        from rest_framework.exceptions import ValidationError
+
+        title = serializer.validated_data.get("Title", "")
+        field = serializer.validated_data.get("Field", "")
+
+        try:
+            # Generate unique hash based on title and field
+            hashing_result = hashing.add_prefix(filename=f"{title}{field}")
+            # hashing_result is (full_path, hash_string)
+            serializer.save(hashing_path=hashing_result[1])
+        except Exception as e:
+            raise ValidationError(f"Could not generate hashing path: {str(e)}")
+
     def _get_orthophoto_path(self, project: Projects) -> Path | None:
         stats = get_statistics(task_id=project.hashing_path, stat_type="orthophoto")
         rel_path = stats.get("odm_orthophoto")

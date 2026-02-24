@@ -19,7 +19,10 @@ from django.views.decorators.http import require_http_methods
 
 from detection.cache_utils import (
     calculate_image_hash,
+    get_cache_statistics,
     get_cached_prediction,
+    invalidate_all_predictions,
+    invalidate_prediction_cache,
     set_cached_prediction,
 )
 from detection.constants import (
@@ -139,15 +142,15 @@ def sanitize_filename(filename: str) -> str:
     Returns:
         str: Sanitized filename safe for file operations
     """
-    # Extract basename to prevent path traversal
-    filename = os.path.basename(filename)
-
-    # Additional check for path traversal - reject if malicious path detected
+    # Check for path traversal attempts BEFORE stripping path
     if ".." in filename or "/" in filename or "\\" in filename:
         logger.warning(
             "Path traversal attempt detected in sanitize_filename: %s", filename
         )
         raise ValidationError("Geçersiz dosya adı - güvenlik ihlali tespit edildi")
+
+    # Extract basename to ensure we only have the filename
+    filename = os.path.basename(filename)
 
     name, ext = os.path.splitext(filename)
     safe_name = "".join(c for c in name if c.isalnum() or c in (" ", "_", "-"))

@@ -271,18 +271,20 @@ class AsyncDetectionViewTests(TestCase):
         buf = io.BytesIO()
         img.save(buf, format="JPEG")
         buf.seek(0)
+        buf.name = "test.jpg"
         return buf
 
     @patch("detection.views.process_image_detection")
     @patch("detection.views.get_cached_prediction", return_value=None)
-    @patch("detection.views.magic.from_buffer", return_value="image/jpeg")
-    @patch("detection.views.magic.from_file", return_value="image/jpeg")
-    def test_async_detection_queues_task(self, mock_magic_file, mock_magic_buf, mock_cache, mock_task):
+    @patch("magic.from_buffer", return_value="image/jpeg")
+    @patch("magic.from_file", return_value="image/jpeg")
+    @patch("django.core.files.uploadedfile.UploadedFile.chunks")
+    def test_async_detection_queues_task(self, mock_chunks, mock_magic_file, mock_magic_buf, mock_cache, mock_task):
         """Successful upload should queue a Celery task and return 202."""
         mock_task.delay.return_value = MagicMock(id="test-task-id-123")
         buf = self._make_upload_file()
         response = self.client.post(
-            "/detection/async/",
+            "/detection/async-detection/",
             {
                 "meyve_grubu": "mandalina",
                 "agac_sayisi": "100",
@@ -298,19 +300,19 @@ class AsyncDetectionViewTests(TestCase):
     def test_async_detection_requires_login(self):
         """Unauthenticated requests should be redirected."""
         self.client.logout()
-        response = self.client.post("/detection/async/", {})
+        response = self.client.post("/detection/async-detection/", {})
         self.assertIn(response.status_code, [302, 403])
 
     def test_async_detection_missing_fields(self):
         """Missing required fields should return 400."""
-        response = self.client.post("/detection/async/", {"meyve_grubu": "mandalina"})
+        response = self.client.post("/detection/async-detection/", {"meyve_grubu": "mandalina"})
         self.assertEqual(response.status_code, 400)
 
     def test_async_detection_invalid_fruit_type(self):
         """Invalid fruit type should return 400."""
         buf = self._make_upload_file()
         response = self.client.post(
-            "/detection/async/",
+            "/detection/async-detection/",
             {
                 "meyve_grubu": "kavun",  # not a valid type
                 "agac_sayisi": "10",
