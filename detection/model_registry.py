@@ -3,8 +3,11 @@
 Model Registry for tracking ML model versions and metadata
 """
 import logging
+import os
 from datetime import datetime
 from typing import Any, Dict, Optional
+
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -110,11 +113,16 @@ def get_loaded_models_info() -> list:
         List of dictionaries containing model information with model_id and is_loaded status
     """
     loaded_models = []
+    models_dir = os.path.join(settings.BASE_DIR, "models")
+    
     for model_name, info in MODEL_REGISTRY.items():
+        model_path = os.path.join(models_dir, model_name)
+        is_exists = os.path.exists(model_path)
+        
         loaded_models.append(
             {
                 "model_id": model_name,
-                "is_loaded": True,
+                "is_loaded": is_exists,
                 "version": info["version"],
                 "date": info["date"].strftime("%Y-%m-%d"),
                 "accuracy": info["accuracy"],
