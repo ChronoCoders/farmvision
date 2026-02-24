@@ -4,13 +4,14 @@ AI-powered fruit detection and agricultural analysis platform. Detects fruit on 
 
 ## Features
 
-- Fruit detection (mandarin, apple, pear, peach, pomegranate) with confidence scoring
+- Fruit detection (mandarin, apple, pear, peach, pomegranate, and tree counting) with confidence scoring
 - Batch multi-image detection
 - Drone orthophoto processing with vegetation index analysis (NDVI, EVI, SAVI and 20+ others)
 - Yield prediction and decision engine recommendations
 - Async task processing via Celery
 - REST API with OpenAPI documentation
 - System monitoring dashboard
+- Comprehensive test suite
 
 ## Requirements
 
@@ -62,6 +63,43 @@ docker compose exec web python manage.py createsuperuser
 http://localhost:8000/health/     → {"status": "ok", "database": "connected"}
 http://localhost:8000/admin/      → Django admin
 http://localhost:8000/docs/       → Swagger UI
+
+## Development & Testing
+
+**Running Tests**
+
+The project includes a comprehensive test suite. To run all tests without external dependencies (Redis/Celery mocked):
+
+```bash
+# Using Django test runner
+python manage.py test --settings=yolowebapp2.test_settings
+
+# Using pytest (recommended)
+pytest
+```
+
+**Local Setup (Without Docker)**
+
+1. Create a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # Windows: .\venv\Scripts\activate
+   ```
+
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Run migrations:
+   ```bash
+   python manage.py migrate
+   ```
+
+4. Start development server:
+   ```bash
+   python manage.py runserver
+   ```
 
 ## Environment Variables
 
