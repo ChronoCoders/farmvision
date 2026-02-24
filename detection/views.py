@@ -160,6 +160,33 @@ def sanitize_filename(filename: str) -> str:
 
 
 @login_required
+@require_http_methods(["GET"])
+def serve_media_file(request: HttpRequest, file_path: str) -> HttpResponse:
+    """
+    Serve media files with authentication via X-Accel-Redirect.
+    Only nginx should handle the actual file serving.
+    """
+    # Sanitize path
+    clean_path = os.path.normpath(file_path).lstrip("/")
+    if ".." in clean_path:
+        return HttpResponse("Geçersiz dosya yolu", status=400)
+
+    full_path = (BASE_DIR / "media" / clean_path).resolve()
+    media_root = (BASE_DIR / "media").resolve()
+
+    if not str(full_path).startswith(str(media_root)):
+        return HttpResponse("Geçersiz dosya yolu", status=400)
+
+    if not full_path.exists():
+        return HttpResponse("Dosya bulunamadı", status=404)
+
+    response = HttpResponse()
+    response["X-Accel-Redirect"] = f"/media/{clean_path}"
+    response["Content-Type"] = ""  # Let nginx set this
+    return response
+
+
+@login_required
 def index(request: HttpRequest) -> HttpResponse:
     response: Dict[str, Any] = {}
 
@@ -391,6 +418,8 @@ def multi_detection_image(request: HttpRequest) -> HttpResponse:
         try:
             meyve_grubu = request.POST.get("meyve_grubu")
             ekim_sirasi = request.POST.get("ekim_sirasi")
+            agac_sayisi = request.POST.get("agac_sayisi")
+            agac_yasi = request.POST.get("agac_yasi")
             filelist = request.FILES.getlist("file")
 
             if not meyve_grubu or not ekim_sirasi or not filelist:
@@ -402,6 +431,32 @@ def multi_detection_image(request: HttpRequest) -> HttpResponse:
 
             for image_file in filelist:
                 validate_image_file(image_file)
+
+            try:
+                agac_sayisi_int = int(agac_sayisi) if agac_sayisi else 0
+                if agac_sayisi_int and not (1 <= agac_sayisi_int <= 100000):
+                    return render(
+                        request,
+                        "multi_detection_fruit.html",
+                        {"error": "Ağaç sayısı 1-100000 arasında olmalı"},
+                    )
+            except ValueError:
+                return render(
+                    request, "multi_detection_fruit.html", {"error": "Geçersiz ağaç sayısı"}
+                )
+
+            try:
+                agac_yasi_int = int(agac_yasi) if agac_yasi else 0
+                if agac_yasi_int and not (0 <= agac_yasi_int <= 150):
+                    return render(
+                        request,
+                        "multi_detection_fruit.html",
+                        {"error": "Ağaç yaşı 0-150 arasında olmalı"},
+                    )
+            except ValueError:
+                return render(
+                    request, "multi_detection_fruit.html", {"error": "Geçersiz ağaç yaşı"}
+                )
 
             if meyve_grubu not in FRUIT_MODELS:
                 return render(
@@ -468,6 +523,33 @@ def multi_detection_image(request: HttpRequest) -> HttpResponse:
                     ekim_sirasi=ekim_sirasi,
                     hashing=hass[1],
                 )
+
+                # DB Kayıt
+                try:
+                    from detection.models import DetectionResult
+
+                    weight_per_fruit = FRUIT_WEIGHTS.get(meyve_grubu, 0.125)
+
+                    DetectionResult.objects.create(
+                        fruit_type=meyve_grubu,
+                        tree_count=agac_sayisi_int,
+                        tree_age=agac_yasi_int,
+                        detected_count=0,          # multi_predictor does not return count
+                        weight=0.0,
+                        total_weight=0.0,
+                        processing_time=0.0,
+                        confidence_score=0.0,
+                        model_version=Path(weight_file).name,
+                        threshold_used=DETECTION_CONFIDENCE_THRESHOLD,
+                        image_path=f"detected/{hass[1]}/",
+                        bbox_coordinates=None,
+                    )
+                    logger.info(
+                        "Multi-detection batch saved: %s, trees=%s, age=%s, hash=%s",
+                        meyve_grubu, agac_sayisi_int, agac_yasi_int, hass[1],
+                    )
+                except Exception as db_error:
+                    logger.error("Multi-detection DB kayıt hatası: %s", db_error)
 
                 return render(
                     request, "multi_detection_fruit.html", {"response": hass[1]}
@@ -834,12 +916,12 @@ def task_status(request: HttpRequest, task_id: str) -> JsonResponse:
 def cache_invalidate(request: HttpRequest) -> JsonResponse:
     """
     Invalidate cached predictions.
-
+    
     POST/DELETE Parameters:
         - image_hash: (optional) SHA256 hash of specific image
         - fruit_type: (optional) Fruit type to invalidate
         - all: (optional) Set to 'true' to invalidate all predictions
-
+    
     Returns:
         JSON: {
             'success': bool,
@@ -847,6 +929,12 @@ def cache_invalidate(request: HttpRequest) -> JsonResponse:
             'message': str
         }
     """
+    if not request.user.is_staff:
+        return JsonResponse(
+            {"success": False, "error": "Bu işlem için yönetici yetkisi gerekli"},
+            status=403,
+        )
+
     try:
         from detection.cache_utils import (
             invalidate_all_predictions,
@@ -929,6 +1017,12 @@ def cache_statistics(request: HttpRequest) -> JsonResponse:
             'uptime_seconds': int
         }
     """
+    if not request.user.is_staff:
+        return JsonResponse(
+            {"success": False, "error": "Bu işlem için yönetici yetkisi gerekli"},
+            status=403,
+        )
+
     try:
         from detection.cache_utils import get_cache_statistics
 

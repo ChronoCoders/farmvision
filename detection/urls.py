@@ -20,4 +20,5 @@ urlpatterns = [
     # Cache management endpoints
     path("cache/invalidate/", views.cache_invalidate, name="cache_invalidate"),
     path("cache/statistics/", views.cache_statistics, name="cache_statistics"),
+    path("media/<path:file_path>", views.serve_media_file, name="serve-media"),
 ]

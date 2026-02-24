@@ -8,7 +8,7 @@ import numpy as np
 import rasterio
 from pyproj import Transformer
 
-from analysis_config import GRID_SIZE_METERS
+from .config import GRID_SIZE_METERS
 
 
 @dataclass

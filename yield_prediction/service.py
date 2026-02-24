@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Dict, Mapping
 
-from analysis_config import YIELD_MODEL_VERSION
+from spatial_analysis.config import YIELD_MODEL_VERSION
 from detection.constants import FRUIT_WEIGHTS
 
 

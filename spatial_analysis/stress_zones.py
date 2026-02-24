@@ -8,7 +8,7 @@ import rasterio
 from pyproj import Geod, Transformer
 from rasterio import features, windows
 
-from analysis_config import NDVI_HIGH, NDVI_LOW, MIN_ZONE_AREA_HA
+from .config import NDVI_HIGH, NDVI_LOW, MIN_ZONE_AREA_HA
 
 
 def _read_ndvi_raster(ndvi_path: str) -> rasterio.io.DatasetReader:

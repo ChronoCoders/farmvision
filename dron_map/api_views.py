@@ -11,7 +11,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from analysis_config import (
+from spatial_analysis.config import (
     GRID_SIZE_METERS,
     MIN_ZONE_AREA_HA,
     NDVI_HIGH,

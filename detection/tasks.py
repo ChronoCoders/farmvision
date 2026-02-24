@@ -30,6 +30,78 @@ logger = logging.getLogger(__name__)
 FRUIT_MODELS = {k: str(v) for k, v in FRUIT_MODEL_PATHS.items()}
 
 
+def _send_degradation_alert(alerts: list) -> None:
+    """
+    Send model degradation alerts via webhook and/or email.
+    Uses cache to prevent duplicate alerts within cooldown window.
+    """
+    import json
+    import urllib.request
+    from django.conf import settings
+    from django.core.cache import cache
+
+    if not alerts:
+        return
+
+    # Check cooldown — don't spam alerts
+    cache_key = "farmvision:alert:model_degradation"
+    if cache.get(cache_key):
+        logger.info("Alert cooldown active, skipping alert dispatch")
+        return
+
+    alert_text = "\n".join(alerts)
+    cooldown = getattr(settings, "ALERT_COOLDOWN_SECONDS", 3600)
+
+    # Set cooldown flag
+    cache.set(cache_key, True, timeout=cooldown)
+
+    # Webhook alert (Slack/Teams/Discord compatible)
+    webhook_url = getattr(settings, "ALERT_WEBHOOK_URL", "")
+    if webhook_url:
+        try:
+            payload = {
+                "text": f"*FarmVision Model Degradation Alert*\n{alert_text}",
+                "username": "FarmVision Monitor",
+            }
+            data = json.dumps(payload).encode("utf-8")
+            req = urllib.request.Request(
+                webhook_url,
+                data=data,
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            with urllib.request.urlopen(req, timeout=10) as response:
+                if response.status == 200:
+                    logger.info("Degradation alert sent to webhook")
+                else:
+                    logger.warning("Webhook returned status %s", response.status)
+        except Exception as webhook_error:
+            logger.error("Failed to send webhook alert: %s", webhook_error)
+
+    # Email alert
+    recipients = getattr(settings, "ALERT_EMAIL_RECIPIENTS", [])
+    recipients = [r.strip() for r in recipients if r.strip()]
+    if recipients:
+        try:
+            from django.core.mail import send_mail
+            from django.conf import settings as django_settings
+
+            send_mail(
+                subject="[FarmVision] Model Degradation Detected",
+                message=f"Model degradation alerts:\n\n{alert_text}",
+                from_email=getattr(
+                    django_settings, "DEFAULT_FROM_EMAIL", "noreply@farmvision.local"
+                ),
+                recipient_list=recipients,
+                fail_silently=True,
+            )
+            logger.info(
+                "Degradation alert email sent to %s recipients", len(recipients)
+            )
+        except Exception as email_error:
+            logger.error("Failed to send email alert: %s", email_error)
+
+
 @shared_task(bind=True, name="detection.tasks.process_image_detection")
 def process_image_detection(
     self,
@@ -241,6 +313,9 @@ def check_model_health() -> Dict[str, Any]:
             logger.error("Health check failed for %s: %s", fruit, e)
             results[fruit] = {"error": str(e)}
 
+    if alerts:
+        _send_degradation_alert(alerts)
+
     return {
         "timestamp": time.time(),
         "results": results,
@@ -261,26 +336,77 @@ def cleanup_old_results(self, days_old: int = 30) -> Dict[str, Any]:
     Returns:
         dict: Cleanup statistics
     """
+    import shutil
     from datetime import timedelta
+    from pathlib import Path
 
+    from django.conf import settings
     from django.utils import timezone
 
     logger.info("Starting cleanup of results older than %s days...", days_old)
 
     cutoff_date = timezone.now() - timedelta(days=days_old)
+    media_root = Path(settings.MEDIA_ROOT)
+
+    deleted_db_count = 0
+    deleted_file_count = 0
+    failed_file_count = 0
 
     try:
-        # Get old results
         old_results = DetectionResult.objects.filter(created_at__lt=cutoff_date)
 
-        # Delete from database
-        deleted_count, _ = old_results.delete()
+        # Collect file paths before deleting DB records
+        image_paths = list(old_results.values_list("image_path", flat=True))
 
-        logger.info("Cleanup completed: %s records removed", deleted_count)
+        # Delete DB records
+        deleted_db_count, _ = old_results.delete()
+
+        # Delete associated media files
+        deleted_dirs = set()
+        for image_path in image_paths:
+            if not image_path:
+                continue
+            try:
+                full_path = (media_root / image_path).resolve()
+                # Security: ensure path is within media root
+                if not str(full_path).startswith(str(media_root.resolve())):
+                    logger.warning("Path traversal attempt in cleanup: %s", image_path)
+                    continue
+
+                if full_path.exists():
+                    full_path.unlink()
+                    deleted_file_count += 1
+
+                # Track parent directory for potential cleanup
+                parent_dir = full_path.parent
+                if str(parent_dir).startswith(str(media_root.resolve())):
+                    deleted_dirs.add(parent_dir)
+
+            except Exception as file_error:
+                logger.warning("Failed to delete file %s: %s", image_path, file_error)
+                failed_file_count += 1
+
+        # Remove empty directories
+        for dir_path in deleted_dirs:
+            try:
+                if dir_path.exists() and not any(dir_path.iterdir()):
+                    dir_path.rmdir()
+                    logger.debug("Removed empty directory: %s", dir_path)
+            except Exception as dir_error:
+                logger.debug("Could not remove directory %s: %s", dir_path, dir_error)
+
+        logger.info(
+            "Cleanup completed: %s DB records, %s files deleted, %s file failures",
+            deleted_db_count,
+            deleted_file_count,
+            failed_file_count,
+        )
 
         return {
             "status": "SUCCESS",
-            "deleted_count": int(deleted_count),
+            "deleted_db_count": int(deleted_db_count),
+            "deleted_file_count": int(deleted_file_count),
+            "failed_file_count": int(failed_file_count),
             "cutoff_date": cutoff_date.isoformat(),
         }
 

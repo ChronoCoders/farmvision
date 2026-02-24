@@ -13,6 +13,12 @@ To run tests:
     python manage.py test detection
 """
 
+import io
+import tempfile
+from unittest.mock import MagicMock, patch
+
+from PIL import Image
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from rest_framework import status
@@ -197,3 +203,226 @@ class InputValidationTests(TestCase):
 
         invalid_age = 200
         self.assertFalse(0 <= invalid_age <= 150)
+
+
+class ImageValidationTests(TestCase):
+    """Test file upload validation logic."""
+
+    def _make_image_file(self, fmt="JPEG", size=(100, 100), name="test.jpg"):
+        """Create an in-memory image file for testing."""
+        img = Image.new("RGB", size, color=(128, 128, 128))
+        buf = io.BytesIO()
+        img.save(buf, format=fmt)
+        buf.seek(0)
+        buf.name = name
+        buf.size = buf.getbuffer().nbytes
+        return buf
+
+    def test_valid_jpeg_passes(self):
+        """Valid JPEG should not raise ValidationError."""
+        from detection.views import validate_image_file
+        from django.core.files.uploadedfile import InMemoryUploadedFile
+        buf = self._make_image_file()
+        uploaded = InMemoryUploadedFile(buf, "file", "test.jpg", "image/jpeg", buf.getbuffer().nbytes, None)
+        # Should not raise
+        self.assertTrue(validate_image_file(uploaded))
+
+    def test_oversized_file_raises(self):
+        """Files exceeding MAX_DETECTION_FILE_SIZE should raise ValidationError."""
+        from detection.views import validate_image_file
+        from django.core.exceptions import ValidationError
+        from django.core.files.uploadedfile import InMemoryUploadedFile
+        buf = self._make_image_file()
+        uploaded = InMemoryUploadedFile(buf, "file", "test.jpg", "image/jpeg", buf.getbuffer().nbytes, None)
+        uploaded.size = 11 * 1024 * 1024  # 11MB — over limit
+        with self.assertRaises(ValidationError):
+            validate_image_file(uploaded)
+
+    def test_invalid_extension_raises(self):
+        """Non-image extensions should raise ValidationError."""
+        from detection.views import validate_image_file
+        from django.core.exceptions import ValidationError
+        from django.core.files.uploadedfile import InMemoryUploadedFile
+        buf = io.BytesIO(b"not an image")
+        buf.name = "malicious.exe"
+        buf.size = 100
+        uploaded = InMemoryUploadedFile(buf, "file", "malicious.exe", "application/octet-stream", 100, None)
+        with self.assertRaises(ValidationError):
+            validate_image_file(uploaded)
+
+    def test_path_traversal_in_filename_raises(self):
+        """Path traversal in filename should raise ValidationError."""
+        from detection.views import sanitize_filename
+        from django.core.exceptions import ValidationError
+        with self.assertRaises(ValidationError):
+            sanitize_filename("../../etc/passwd")
+
+
+class AsyncDetectionViewTests(TestCase):
+    """Test async detection endpoint."""
+
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username="asyncuser", password="pass123")
+        self.client.login(username="asyncuser", password="pass123")
+
+    def _make_upload_file(self):
+        img = Image.new("RGB", (100, 100), color=(0, 255, 0))
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG")
+        buf.seek(0)
+        return buf
+
+    @patch("detection.views.process_image_detection")
+    @patch("detection.views.get_cached_prediction", return_value=None)
+    @patch("detection.views.magic.from_buffer", return_value="image/jpeg")
+    @patch("detection.views.magic.from_file", return_value="image/jpeg")
+    def test_async_detection_queues_task(self, mock_magic_file, mock_magic_buf, mock_cache, mock_task):
+        """Successful upload should queue a Celery task and return 202."""
+        mock_task.delay.return_value = MagicMock(id="test-task-id-123")
+        buf = self._make_upload_file()
+        response = self.client.post(
+            "/detection/async/",
+            {
+                "meyve_grubu": "mandalina",
+                "agac_sayisi": "100",
+                "agac_yasi": "5",
+                "file": buf,
+            },
+        )
+        self.assertEqual(response.status_code, 202)
+        data = response.json()
+        self.assertIn("task_id", data)
+        self.assertEqual(data["status"], "PENDING")
+
+    def test_async_detection_requires_login(self):
+        """Unauthenticated requests should be redirected."""
+        self.client.logout()
+        response = self.client.post("/detection/async/", {})
+        self.assertIn(response.status_code, [302, 403])
+
+    def test_async_detection_missing_fields(self):
+        """Missing required fields should return 400."""
+        response = self.client.post("/detection/async/", {"meyve_grubu": "mandalina"})
+        self.assertEqual(response.status_code, 400)
+
+    def test_async_detection_invalid_fruit_type(self):
+        """Invalid fruit type should return 400."""
+        buf = self._make_upload_file()
+        response = self.client.post(
+            "/detection/async/",
+            {
+                "meyve_grubu": "kavun",  # not a valid type
+                "agac_sayisi": "10",
+                "agac_yasi": "3",
+                "file": buf,
+            },
+        )
+        self.assertEqual(response.status_code, 400)
+
+
+class TaskStatusViewTests(TestCase):
+    """Test Celery task status endpoint."""
+
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username="taskuser", password="pass123")
+        self.client.login(username="taskuser", password="pass123")
+
+    @patch("detection.views.AsyncResult")
+    def test_pending_task_status(self, mock_async_result):
+        """PENDING task should return correct structure."""
+        mock_result = MagicMock()
+        mock_result.state = "PENDING"
+        mock_result.info = None
+        mock_async_result.return_value = mock_result
+
+        response = self.client.get("/detection/task-status/fake-task-id/")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["status"], "PENDING")
+        self.assertEqual(data["progress"], 0)
+
+    @patch("detection.views.AsyncResult")
+    def test_success_task_status(self, mock_async_result):
+        """SUCCESS task should include result data."""
+        mock_result = MagicMock()
+        mock_result.state = "SUCCESS"
+        mock_result.result = {"detected_count": 42, "confidence_score": 0.91}
+        mock_async_result.return_value = mock_result
+
+        response = self.client.get("/detection/task-status/fake-task-id/")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["status"], "SUCCESS")
+        self.assertIn("result", data)
+        self.assertEqual(data["progress"], 100)
+
+
+class CacheInvalidatePermissionTests(TestCase):
+    """Test that cache invalidation requires admin."""
+
+    def setUp(self):
+        self.client = Client()
+        self.regular_user = User.objects.create_user(username="regular", password="pass123")
+        self.admin_user = User.objects.create_user(username="admin", password="pass123", is_staff=True)
+
+    def test_regular_user_cannot_invalidate_cache(self):
+        """Non-staff user should get 403."""
+        self.client.login(username="regular", password="pass123")
+        response = self.client.post("/detection/cache/invalidate/", {"all": "true"})
+        self.assertEqual(response.status_code, 403)
+
+    def test_admin_user_can_invalidate_cache(self):
+        """Staff user should be able to invalidate cache."""
+        self.client.login(username="admin", password="pass123")
+        with patch("detection.views.invalidate_all_predictions", return_value=0):
+            response = self.client.post("/detection/cache/invalidate/", {"all": "true"})
+        self.assertEqual(response.status_code, 200)
+
+
+class CleanupTaskTests(TestCase):
+    """Test cleanup_old_results task behavior."""
+
+    def setUp(self):
+        from datetime import timedelta
+        from django.utils import timezone
+
+        old_time = timezone.now() - timedelta(days=40)
+
+        self.old_result = DetectionResult.objects.create(
+            fruit_type="elma",
+            tree_count=10,
+            tree_age=3,
+            detected_count=50,
+            weight=5.25,
+            total_weight=52.5,
+            processing_time=1.2,
+            image_path="detected/old/test.jpg",
+        )
+        # Manually set created_at to past
+        DetectionResult.objects.filter(pk=self.old_result.pk).update(created_at=old_time)
+
+    def test_cleanup_removes_old_db_records(self):
+        """Records older than threshold should be deleted from DB."""
+        from detection.tasks import cleanup_old_results
+        result = cleanup_old_results(days_old=30)
+        self.assertEqual(result["status"], "SUCCESS")
+        self.assertGreaterEqual(result["deleted_db_count"], 1)
+        self.assertFalse(DetectionResult.objects.filter(pk=self.old_result.pk).exists())
+
+    def test_cleanup_skips_recent_records(self):
+        """Recent records should not be deleted."""
+        recent = DetectionResult.objects.create(
+            fruit_type="armut",
+            tree_count=5,
+            tree_age=2,
+            detected_count=20,
+            weight=4.4,
+            total_weight=22.0,
+            processing_time=0.8,
+            image_path="detected/recent/test.jpg",
+        )
+        from detection.tasks import cleanup_old_results
+        cleanup_old_results(days_old=30)
+        self.assertTrue(DetectionResult.objects.filter(pk=recent.pk).exists())

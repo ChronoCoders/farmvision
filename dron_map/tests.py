@@ -12,6 +12,10 @@ To run tests:
     python manage.py test dron_map
 """
 
+import io
+from unittest.mock import patch, MagicMock
+
+from PIL import Image
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from rest_framework import status
@@ -102,3 +106,69 @@ class ProjectViewTests(TestCase):
         self.client.login(username="viewuser", password="testpass123")
         response = self.client.get("/dron-map/projects/")
         self.assertIn(response.status_code, [200, 302])
+
+
+class ProjectViewCreateTests(TestCase):
+    """Test project creation via web views."""
+
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username="mapuser", password="pass123")
+        self.client.login(username="mapuser", password="pass123")
+
+    def test_add_project_page_loads(self):
+        """Add project page should return 200."""
+        response = self.client.get("/dron-map/add-projects/")
+        self.assertIn(response.status_code, [200, 302])
+
+    def test_map_page_requires_login(self):
+        """Map page should redirect unauthenticated users."""
+        self.client.logout()
+        response = self.client.get("/dron-map/map/")
+        self.assertEqual(response.status_code, 302)
+
+
+class ProjectAPIWriteTests(APITestCase):
+    """Test project create/update/delete via API."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="apiwriter", password="pass123")
+        self.client.force_authenticate(user=self.user)
+
+    def test_create_project(self):
+        """Authenticated user should be able to create a project."""
+        response = self.client.post(
+            "/api/projects/",
+            {
+                "Farm": "New Farm",
+                "Field": "Field C",
+                "Title": "New Project",
+                "State": "Active",
+            },
+            format="json",
+        )
+        self.assertIn(response.status_code, [200, 201])
+
+    def test_unauthenticated_cannot_create_project(self):
+        """Unauthenticated requests should be rejected."""
+        self.client.logout()
+        response = self.client.post(
+            "/api/projects/",
+            {"Farm": "Hack Farm"},
+            format="json",
+        )
+        self.assertIn(response.status_code, [401, 403])
+
+
+class HealthAlgorithmTests(TestCase):
+    """Test vegetation index algorithm names are valid."""
+
+    def test_health_algorithms_not_empty(self):
+        """HEALTH_ALGORITHMS dict should have entries."""
+        from dron_map.views import HEALTH_ALGORITHMS
+        self.assertGreater(len(HEALTH_ALGORITHMS), 0)
+
+    def test_ndvi_present(self):
+        """NDVI must be present as it is the most common index."""
+        from dron_map.views import HEALTH_ALGORITHMS
+        self.assertIn("ndvi", HEALTH_ALGORITHMS)
