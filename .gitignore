@@ -34,3 +34,6 @@ env/
 
 models/
 *.pt
+
+*.pyc
+__pycache__/
