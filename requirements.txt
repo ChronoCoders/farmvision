@@ -92,3 +92,4 @@ urllib3==2.2.3
 vine==5.1.0
 zope.event==6.0
 zope.interface==8.0.1
+reportlab==4.1.0

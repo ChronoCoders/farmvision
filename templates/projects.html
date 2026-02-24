@@ -104,6 +104,11 @@
 								<td>{{proj.Title}}</td>
 								<td>{{proj.State}}</td>
 								<td class="text-success">{{proj.Data_time}}</td>
+                                <td>
+                                    <button class="btn btn-xs btn-primary" onclick="requestDroneReport({{ proj.id }}, ['pdf', 'xlsx'])" title="Rapor Oluştur">
+                                        <i class="fa fa-file-text-o"></i>
+                                    </button>
+                                </td>
 								<td><a href="{% url 'dron_map:add_projects' slug='update' id=proj.id %}"><i class="fa-solid fa-pen-to-square"></i></a></td>
 								<td><a href="{% url 'dron_map:add_projects' slug='delete' id=proj.id %}"><i class="fa-solid fa-eraser"></i></a></td>
 							</tr>
@@ -116,4 +121,51 @@
 		</div>
 	</div>
 </div>
+
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    function requestDroneReport(id, formats) {
+        if (!confirm('Bu proje için rapor oluşturmak istiyor musunuz?')) return;
+        
+        fetch("{% url 'reports:request-drone' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({
+                project_id: id,
+                formats: formats
+            })
+        })
+        .then(response => {
+            if (response.status === 202) {
+                alert("Rapor oluşturma başlatıldı. Raporlar sayfasından indirebilirsiniz.");
+                window.location.href = "{% url 'reports:list' %}";
+            } else {
+                return response.json().then(data => {
+                    throw new Error(data.error || "Bilinmeyen hata");
+                });
+            }
+        })
+        .catch(error => {
+            alert("Hata: " + error.message);
+        });
+    }
+</script>
 {% endblock %}

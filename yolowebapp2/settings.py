@@ -94,6 +94,7 @@ INSTALLED_APPS = [
     "django_filters",
     "detection.apps.DetectionConfig",
     "dron_map.apps.DronMapConfig",
+    "reports",
 ]   
 
 

@@ -361,7 +361,7 @@ def index(request: HttpRequest) -> HttpResponse:
 
                     # Save detection result to database
                     try:
-                        DetectionResult.objects.create(
+                        detection_instance = DetectionResult.objects.create(
                             fruit_type=meyve_grubu,
                             tree_count=agac_sayisi_int,
                             tree_age=agac_yasi_int,
@@ -378,6 +378,8 @@ def index(request: HttpRequest) -> HttpResponse:
                         logger.info(
                             f"Detection result saved: {meyve_grubu}, count={count}, confidence={confidence_score:.3f}"
                         )
+                        # Add detection_id to response context for report generation
+                        response["detection_id"] = detection_instance.pk
                     except Exception as db_error:
                         logger.error("Veritabanı kaydetme hatası: %s", db_error)
                         # Don't fail the request if DB save fails, just log it

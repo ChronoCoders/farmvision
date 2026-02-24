@@ -17,6 +17,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("detection/", include("detection.urls")),
     path("dron-map/", include("dron_map.urls")),
+    path("reports/", include("reports.urls")),
     path(
         "favicon.ico", RedirectView.as_view(url="/static/favicon.ico", permanent=True)
     ),

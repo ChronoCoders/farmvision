@@ -40,7 +40,12 @@
                   <div class="row small-spacing">
                     <div id="map"></div>
                     <div id="dashboard-widgets" style="position:absolute; top:10px; right:10px; z-index:1000;">
-                      <div class="card" style="padding:8px 12px; margin-bottom:6px;">
+                <div class="card" style="padding:8px 12px; margin-bottom:6px;">
+                  <button class="btn btn-sm btn-primary btn-block" onclick="requestDroneReport({{ projes.id }}, ['pdf', 'xlsx'])">
+                    <i class="fa fa-file-text-o"></i> Rapor Oluştur
+                  </button>
+                </div>
+                <div class="card" style="padding:8px 12px; margin-bottom:6px;">
                         <strong>Yüksek Stres Alanı:</strong>
                         <span id="stress-area-percent">-</span>%
                       </div>
@@ -79,6 +84,52 @@
       
 
 <script >   
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    function requestDroneReport(id, formats) {
+        if (!confirm('Bu proje için rapor oluşturmak istiyor musunuz?')) return;
+        
+        fetch("{% url 'reports:request-drone' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({
+                project_id: id,
+                formats: formats
+            })
+        })
+        .then(response => {
+            if (response.status === 202) {
+                alert("Rapor oluşturma başlatıldı. Raporlar sayfasından indirebilirsiniz.");
+                // Optional: redirect to reports list or stay here
+                // window.location.href = "{% url 'reports:list' %}";
+            } else {
+                return response.json().then(data => {
+                    throw new Error(data.error || "Bilinmeyen hata");
+                });
+            }
+        })
+        .catch(error => {
+            alert("Hata: " + error.message);
+        });
+    }
 
 var popup = L.popup();
 var map = L.map('map'); //.setView([0, 0], 5)
