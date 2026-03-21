@@ -1,0 +1,42 @@
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+media/
+staticfiles/
+
+# Claude Code
+.claude/agents/
+
+# IDE
+.vscode/
+.idea/
+db.sqlite3
+logs/
+*.log
+__pycache__/
+*.pyc
+media/
+.env
+
+.venv/
+venv/
+env/
+
+models/
+*.pt
+
+*.pyc
+__pycache__/
